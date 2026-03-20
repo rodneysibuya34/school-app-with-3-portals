@@ -12,6 +12,7 @@ const portals = [
     ),
     gradient: "from-[#1E3A5F] to-[#2E5A8F]",
     borderColor: "#3B82F6",
+    loginHref: "/login",
   },
   {
     id: "teacher",
@@ -24,6 +25,7 @@ const portals = [
     ),
     gradient: "from-[#7C3AED] to-[#A855F7]",
     borderColor: "#A855F7",
+    loginHref: "/login",
   },
   {
     id: "admin",
@@ -36,6 +38,7 @@ const portals = [
     ),
     gradient: "from-[#059669] to-[#10B981]",
     borderColor: "#10B981",
+    loginHref: "/admin",
   },
 ];
 
@@ -76,7 +79,7 @@ export default function Home() {
           {portals.map((portal) => (
             <Link
               key={portal.id}
-              href={`/${portal.id}`}
+              href={portal.loginHref}
               className="group relative p-8 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl overflow-hidden"
             >
               <div className={`absolute inset-0 bg-gradient-to-br ${portal.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
@@ -89,6 +92,11 @@ export default function Home() {
                 </div>
                 <h2 className="text-2xl font-semibold text-white mb-3 font-['Outfit']">{portal.title}</h2>
                 <p className="text-slate-400 leading-relaxed">{portal.description}</p>
+                <div className="mt-4 pt-4 border-t border-white/10">
+                  <span className="text-sm font-medium" style={{ color: portal.borderColor }}>
+                    Click to Login →
+                  </span>
+                </div>
               </div>
               <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r transparent group-hover:opacity-100 transition-opacity duration-300" style={{ background: `linear-gradient(90deg, ${portal.borderColor}, transparent)` }} />
             </Link>

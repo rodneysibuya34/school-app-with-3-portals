@@ -95,15 +95,33 @@ export default function AdminPortal() {
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
+  const generateUsername = (name: string, school: string, count: number) => {
+    const namePart = name.toLowerCase().replace(/\s+/g, '.').split('.')[0];
+    const schoolPrefix = school.split(' ')[0].toLowerCase().substring(0, 3);
+    return `${schoolPrefix}.${namePart}${count.toString().padStart(3, '0')}`;
+  };
+
+  const generatePassword = (count: number) => {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    let password = "";
+    for (let i = 0; i < 8; i++) {
+      password += chars.charAt((count + i) % chars.length);
+    }
+    return password + "@123";
+  };
+
   const handleSubmit = (type: ModalType) => {
     const startDate = getStartDate();
     const renewalDate = getRenewalDate();
 
     if (type === 'school') {
-      if (!formData.name || !formData.location || !formData.adminUsername || !formData.adminPassword) {
-        alert("Please fill in all required fields: School Name, Location, Username, and Password");
+      if (!formData.name || !formData.location) {
+        alert("Please fill in School Name and Location");
         return;
       }
+      const schoolUsername = formData.name.split(' ')[0].toLowerCase() + "_admin";
+      const schoolPassword = generatePassword(schools.length + 1);
+      
       const newSchool = {
         id: schools.length + 1,
         name: formData.name,
@@ -112,8 +130,8 @@ export default function AdminPortal() {
         teachers: 0,
         status: "Active",
         type: formData.type,
-        adminUsername: formData.adminUsername,
-        adminPassword: formData.adminPassword
+        adminUsername: schoolUsername,
+        adminPassword: schoolPassword
       };
       setSchools([...schools, newSchool]);
       
@@ -128,39 +146,44 @@ export default function AdminPortal() {
       };
       setSubscriptions([...subscriptions, newSub]);
     } else if (type === 'teacher') {
-      if (!formData.teacherName || !formData.teacherSchool || !formData.teacherSubject || !formData.teacherUsername || !formData.teacherPassword) {
-        alert("Please fill in all required fields: Name, School, Subject, Username, and Password");
+      if (!formData.teacherName || !formData.teacherSchool || !formData.teacherSubject) {
+        alert("Please fill in Name, School, and Subject");
         return;
       }
+      const teacherUsername = generateUsername(formData.teacherName, formData.teacherSchool, teachers.length + 1);
+      const teacherPassword = generatePassword(teachers.length + 1);
       const newTeacher = {
         id: teachers.length + 1,
         name: formData.teacherName,
-        email: formData.teacherEmail,
+        email: formData.teacherEmail || `${teacherUsername}@${formData.teacherSchool.split(' ')[0].toLowerCase()}.edu`,
         school: formData.teacherSchool,
         subject: formData.teacherSubject,
         status: "Active",
-        username: formData.teacherUsername,
-        password: formData.teacherPassword
+        username: teacherUsername,
+        password: teacherPassword
       };
       setTeachers([...teachers, newTeacher]);
       
       setSchools(schools.map(s => 
         s.name === formData.teacherSchool ? { ...s, teachers: s.teachers + 1 } : s
       ));
+      alert(`Teacher created! Username: ${teacherUsername}, Password: ${teacherPassword}`);
     } else if (type === 'student') {
-      if (!formData.studentName || !formData.studentGrade || !formData.studentSchool || !formData.studentUsername || !formData.studentPassword) {
-        alert("Please fill in all required fields: Name, Grade, School, Username, and Password");
+      if (!formData.studentName || !formData.studentGrade || !formData.studentSchool) {
+        alert("Please fill in Name, Grade, and School");
         return;
       }
+      const studentUsername = generateUsername(formData.studentName, formData.studentSchool, students.length + 1);
+      const studentPassword = generatePassword(students.length + 1);
       const newStudent = {
         id: students.length + 1,
         name: formData.studentName,
-        email: formData.studentEmail,
+        email: formData.studentEmail || `${studentUsername}@${formData.studentSchool.split(' ')[0].toLowerCase()}.edu`,
         grade: parseInt(formData.studentGrade),
         school: formData.studentSchool,
         status: "Active",
-        username: formData.studentUsername,
-        password: formData.studentPassword
+        username: studentUsername,
+        password: studentPassword
       };
       setStudents([...students, newStudent]);
       
@@ -223,19 +246,8 @@ export default function AdminPortal() {
                 </select>
               </div>
               <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-                <p className="text-emerald-400 text-sm font-medium mb-3">School Admin Credentials</p>
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-slate-400 text-xs mb-1">Username</label>
-                    <input type="text" value={formData.adminUsername} onChange={(e) => setFormData({...formData, adminUsername: e.target.value})}
-                      className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:border-emerald-500 focus:outline-none text-sm" placeholder="school_admin" />
-                  </div>
-                  <div>
-                    <label className="block text-slate-400 text-xs mb-1">Password</label>
-                    <input type="text" value={formData.adminPassword} onChange={(e) => setFormData({...formData, adminPassword: e.target.value})}
-                      className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:border-emerald-500 focus:outline-none text-sm" placeholder="Password123" />
-                  </div>
-                </div>
+                <p className="text-emerald-400 text-sm font-medium mb-2">Credentials will be auto-generated</p>
+                <p className="text-slate-400 text-xs">Username: [school_admin], Password: [auto-generated]</p>
               </div>
             </div>
           )}
@@ -243,17 +255,12 @@ export default function AdminPortal() {
           {showModal === 'teacher' && (
             <div className="space-y-4">
               <div>
-                <label className="block text-slate-400 text-sm mb-2">Full Name</label>
+                <label className="block text-slate-400 text-sm mb-2">Full Name *</label>
                 <input type="text" value={formData.teacherName} onChange={(e) => setFormData({...formData, teacherName: e.target.value})}
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500 focus:outline-none" placeholder="Enter teacher name" />
               </div>
               <div>
-                <label className="block text-slate-400 text-sm mb-2">Email</label>
-                <input type="email" value={formData.teacherEmail} onChange={(e) => setFormData({...formData, teacherEmail: e.target.value})}
-                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500 focus:outline-none" placeholder="teacher@school.edu" />
-              </div>
-              <div>
-                <label className="block text-slate-400 text-sm mb-2">School</label>
+                <label className="block text-slate-400 text-sm mb-2">School *</label>
                 <select value={formData.teacherSchool} onChange={(e) => setFormData({...formData, teacherSchool: e.target.value})}
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500 focus:outline-none">
                   <option value="">Select School</option>
@@ -261,24 +268,13 @@ export default function AdminPortal() {
                 </select>
               </div>
               <div>
-                <label className="block text-slate-400 text-sm mb-2">Subject</label>
+                <label className="block text-slate-400 text-sm mb-2">Subject *</label>
                 <input type="text" value={formData.teacherSubject} onChange={(e) => setFormData({...formData, teacherSubject: e.target.value})}
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500 focus:outline-none" placeholder="Mathematics, Science, etc." />
               </div>
               <div className="p-4 rounded-xl bg-purple-500/10 border border-purple-500/20">
-                <p className="text-purple-400 text-sm font-medium mb-3">Teacher Login Credentials</p>
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-slate-400 text-xs mb-1">Username</label>
-                    <input type="text" value={formData.teacherUsername} onChange={(e) => setFormData({...formData, teacherUsername: e.target.value})}
-                      className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:border-purple-500 focus:outline-none text-sm" placeholder="t.username" />
-                  </div>
-                  <div>
-                    <label className="block text-slate-400 text-xs mb-1">Password</label>
-                    <input type="text" value={formData.teacherPassword} onChange={(e) => setFormData({...formData, teacherPassword: e.target.value})}
-                      className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:border-purple-500 focus:outline-none text-sm" placeholder="Password123" />
-                  </div>
-                </div>
+                <p className="text-purple-400 text-sm font-medium mb-2">Credentials will be auto-generated</p>
+                <p className="text-slate-400 text-xs">Click &quot;Create&quot; to generate login credentials</p>
               </div>
             </div>
           )}
@@ -286,22 +282,17 @@ export default function AdminPortal() {
           {showModal === 'student' && (
             <div className="space-y-4">
               <div>
-                <label className="block text-slate-400 text-sm mb-2">Full Name</label>
+                <label className="block text-slate-400 text-sm mb-2">Full Name *</label>
                 <input type="text" value={formData.studentName} onChange={(e) => setFormData({...formData, studentName: e.target.value})}
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500 focus:outline-none" placeholder="Enter student name" />
               </div>
               <div>
-                <label className="block text-slate-400 text-sm mb-2">Email</label>
-                <input type="email" value={formData.studentEmail} onChange={(e) => setFormData({...formData, studentEmail: e.target.value})}
-                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500 focus:outline-none" placeholder="student@school.edu" />
-              </div>
-              <div>
-                <label className="block text-slate-400 text-sm mb-2">Grade</label>
+                <label className="block text-slate-400 text-sm mb-2">Grade *</label>
                 <input type="number" value={formData.studentGrade} onChange={(e) => setFormData({...formData, studentGrade: e.target.value})}
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500 focus:outline-none" placeholder="1-12" />
               </div>
               <div>
-                <label className="block text-slate-400 text-sm mb-2">School</label>
+                <label className="block text-slate-400 text-sm mb-2">School *</label>
                 <select value={formData.studentSchool} onChange={(e) => setFormData({...formData, studentSchool: e.target.value})}
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500 focus:outline-none">
                   <option value="">Select School</option>
@@ -309,19 +300,8 @@ export default function AdminPortal() {
                 </select>
               </div>
               <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20">
-                <p className="text-blue-400 text-sm font-medium mb-3">Student Login Credentials</p>
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-slate-400 text-xs mb-1">Username</label>
-                    <input type="text" value={formData.studentUsername} onChange={(e) => setFormData({...formData, studentUsername: e.target.value})}
-                      className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:border-blue-500 focus:outline-none text-sm" placeholder="student.name" />
-                  </div>
-                  <div>
-                    <label className="block text-slate-400 text-xs mb-1">Password</label>
-                    <input type="text" value={formData.studentPassword} onChange={(e) => setFormData({...formData, studentPassword: e.target.value})}
-                      className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:border-blue-500 focus:outline-none text-sm" placeholder="Password123" />
-                  </div>
-                </div>
+                <p className="text-blue-400 text-sm font-medium mb-2">Credentials will be auto-generated</p>
+                <p className="text-slate-400 text-xs">Click &quot;Create&quot; to generate login credentials</p>
               </div>
             </div>
           )}
