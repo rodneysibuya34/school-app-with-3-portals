@@ -1,7 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+const ADMIN_PASSWORD = "Admin.manager@123.com";
 
 const navItems = [
   { icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6", label: "Dashboard", href: "/admin" },
@@ -13,26 +15,26 @@ const navItems = [
 ];
 
 const initialSchools = [
-  { id: 1, name: "Oakridge Preparatory Academy", location: "Boston, MA", students: 892, teachers: 48, status: "Active", type: "High School" },
-  { id: 2, name: "Westfield Christian School", location: "Chicago, IL", students: 456, teachers: 28, status: "Active", type: "Primary" },
-  { id: 3, name: "Riverside Elementary", location: "Miami, FL", students: 324, teachers: 22, status: "Active", type: "Primary" },
-  { id: 4, name: "Highland Academy", location: "Seattle, WA", students: 678, teachers: 35, status: "Trial", type: "High School" },
+  { id: 1, name: "Oakridge Preparatory Academy", location: "Boston, MA", students: 892, teachers: 48, status: "Active", type: "High School", adminUsername: "oakridge_admin", adminPassword: "Oak@2024" },
+  { id: 2, name: "Westfield Christian School", location: "Chicago, IL", students: 456, teachers: 28, status: "Active", type: "Primary", adminUsername: "westfield_admin", adminPassword: "West@2024" },
+  { id: 3, name: "Riverside Elementary", location: "Miami, FL", students: 324, teachers: 22, status: "Active", type: "Primary", adminUsername: "riverside_admin", adminPassword: "River@2024" },
+  { id: 4, name: "Highland Academy", location: "Seattle, WA", students: 678, teachers: 35, status: "Trial", type: "High School", adminUsername: "highland_admin", adminPassword: "High@2024" },
 ];
 
 const initialTeachers = [
-  { id: 1, name: "Dr. Sarah Mitchell", email: "s.mitchell@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "Mathematics", status: "Active" },
-  { id: 2, name: "Mr. David Park", email: "d.park@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "English Literature", status: "Active" },
-  { id: 3, name: "Mrs. Emily Roberts", email: "e.roberts@westfield.edu", school: "Westfield Christian School", subject: "Chemistry", status: "Active" },
-  { id: 4, name: "Dr. James Chen", email: "j.chen@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "Physics", status: "Active" },
-  { id: 5, name: "Ms. Anna Williams", email: "a.williams@riverside.edu", school: "Riverside Elementary", subject: "History", status: "Pending" },
+  { id: 1, name: "Dr. Sarah Mitchell", email: "s.mitchell@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "Mathematics", status: "Active", username: "s.mitchell", password: "Mitch@123" },
+  { id: 2, name: "Mr. David Park", email: "d.park@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "English Literature", status: "Active", username: "d.park", password: "Park@123" },
+  { id: 3, name: "Mrs. Emily Roberts", email: "e.roberts@westfield.edu", school: "Westfield Christian School", subject: "Chemistry", status: "Active", username: "e.roberts", password: "Rob@123" },
+  { id: 4, name: "Dr. James Chen", email: "j.chen@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "Physics", status: "Active", username: "j.chen", password: "Chen@123" },
+  { id: 5, name: "Ms. Anna Williams", email: "a.williams@riverside.edu", school: "Riverside Elementary", subject: "History", status: "Pending", username: "a.williams", password: "Will@123" },
 ];
 
 const initialStudents = [
-  { id: 1, name: "Alex Thompson", email: "a.thompson@oakridge.edu", grade: 11, school: "Oakridge Preparatory Academy", status: "Active" },
-  { id: 2, name: "Emma Wilson", email: "e.wilson@oakridge.edu", grade: 10, school: "Oakridge Preparatory Academy", status: "Active" },
-  { id: 3, name: "Michael Brown", email: "m.brown@westfield.edu", grade: 9, school: "Westfield Christian School", status: "Active" },
-  { id: 4, name: "Sophia Lee", email: "s.lee@oakridge.edu", grade: 12, school: "Oakridge Preparatory Academy", status: "Active" },
-  { id: 5, name: "James Garcia", email: "j.garcia@riverside.edu", grade: 8, school: "Riverside Elementary", status: "Inactive" },
+  { id: 1, name: "Alex Thompson", email: "a.thompson@oakridge.edu", grade: 11, school: "Oakridge Preparatory Academy", status: "Active", username: "alex.t", password: "Alex@123" },
+  { id: 2, name: "Emma Wilson", email: "e.wilson@oakridge.edu", grade: 10, school: "Oakridge Preparatory Academy", status: "Active", username: "emma.w", password: "Emma@123" },
+  { id: 3, name: "Michael Brown", email: "m.brown@westfield.edu", grade: 9, school: "Westfield Christian School", status: "Active", username: "michael.b", password: "Mike@123" },
+  { id: 4, name: "Sophia Lee", email: "s.lee@oakridge.edu", grade: 12, school: "Oakridge Preparatory Academy", status: "Active", username: "sophia.l", password: "Soph@123" },
+  { id: 5, name: "James Garcia", email: "j.garcia@riverside.edu", grade: 8, school: "Riverside Elementary", status: "Inactive", username: "james.g", password: "Jame@123" },
 ];
 
 const initialSubscriptions = [
@@ -45,19 +47,38 @@ const initialSubscriptions = [
 type ModalType = 'school' | 'teacher' | 'student' | 'subscription' | null;
 
 export default function AdminPortal() {
+  const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [passwordInput, setPasswordInput] = useState("");
+  const [authError, setAuthError] = useState("");
   const [activeTab, setActiveTab] = useState("dashboard");
   const [showModal, setShowModal] = useState<ModalType>(null);
+  const [showPasswordModal, setShowPasswordModal] = useState<string | null>(null);
   const [schools, setSchools] = useState(initialSchools);
   const [teachers, setTeachers] = useState(initialTeachers);
   const [students, setStudents] = useState(initialStudents);
   const [subscriptions, setSubscriptions] = useState(initialSubscriptions);
 
   const [formData, setFormData] = useState({
-    name: '', location: '', type: 'Primary',
-    teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '',
-    studentName: '', studentEmail: '', studentGrade: '', studentSchool: '',
+    name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '',
+    teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', teacherUsername: '', teacherPassword: '',
+    studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', studentUsername: '', studentPassword: '',
     subSchool: '', subType: 'Primary', subStartDate: ''
   });
+
+  const handleLogin = () => {
+    if (passwordInput === ADMIN_PASSWORD) {
+      setIsAuthenticated(true);
+      setAuthError("");
+    } else {
+      setAuthError("Invalid password");
+    }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    router.push("/");
+  };
 
   const calculatePrice = (type: string) => {
     return type === "Primary" ? "R1,500/mo" : "R2,500/mo";
@@ -86,7 +107,9 @@ export default function AdminPortal() {
         students: 0,
         teachers: 0,
         status: "Active",
-        type: formData.type
+        type: formData.type,
+        adminUsername: formData.adminUsername,
+        adminPassword: formData.adminPassword
       };
       setSchools([...schools, newSchool]);
       
@@ -107,9 +130,15 @@ export default function AdminPortal() {
         email: formData.teacherEmail,
         school: formData.teacherSchool,
         subject: formData.teacherSubject,
-        status: "Active"
+        status: "Active",
+        username: formData.teacherUsername,
+        password: formData.teacherPassword
       };
       setTeachers([...teachers, newTeacher]);
+      
+      setSchools(schools.map(s => 
+        s.name === formData.teacherSchool ? { ...s, teachers: s.teachers + 1 } : s
+      ));
     } else if (type === 'student') {
       const newStudent = {
         id: students.length + 1,
@@ -117,9 +146,15 @@ export default function AdminPortal() {
         email: formData.studentEmail,
         grade: parseInt(formData.studentGrade),
         school: formData.studentSchool,
-        status: "Active"
+        status: "Active",
+        username: formData.studentUsername,
+        password: formData.studentPassword
       };
       setStudents([...students, newStudent]);
+      
+      setSchools(schools.map(s => 
+        s.name === formData.studentSchool ? { ...s, students: s.students + 1 } : s
+      ));
     } else if (type === 'subscription') {
       const newSub = {
         id: subscriptions.length + 1,
@@ -135,26 +170,19 @@ export default function AdminPortal() {
     
     setShowModal(null);
     setFormData({
-      name: '', location: '', type: 'Primary',
-      teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '',
-      studentName: '', studentEmail: '', studentGrade: '', studentSchool: '',
+      name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '',
+      teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', teacherUsername: '', teacherPassword: '',
+      studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', studentUsername: '', studentPassword: '',
       subSchool: '', subType: 'Primary', subStartDate: ''
     });
   };
-
-  const totalRevenue = subscriptions
-    .filter(s => s.status === 'Active' && s.price !== 'Free')
-    .reduce((acc, sub) => {
-      const num = parseInt(sub.price.replace(/[^0-9]/g, ''));
-      return acc + num;
-    }, 0);
 
   const renderModal = () => {
     if (!showModal) return null;
 
     return (
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-        <div className="bg-[#1E293B] rounded-2xl p-6 w-full max-w-md border border-white/10">
+        <div className="bg-[#1E293B] rounded-2xl p-6 w-full max-w-md border border-white/10 max-h-[90vh] overflow-y-auto">
           <h2 className="text-2xl font-bold text-white mb-6">
             {showModal === 'school' && 'Create New School'}
             {showModal === 'teacher' && 'Add New Teacher'}
@@ -178,14 +206,24 @@ export default function AdminPortal() {
                 <label className="block text-slate-400 text-sm mb-2">School Type</label>
                 <select value={formData.type} onChange={(e) => setFormData({...formData, type: e.target.value})}
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500 focus:outline-none">
-                  <option value="Primary">Primary School</option>
-                  <option value="High School">High School</option>
+                  <option value="Primary">Primary School (R1,500/mo)</option>
+                  <option value="High School">High School (R2,500/mo)</option>
                 </select>
               </div>
               <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-                <p className="text-emerald-400 text-sm">
-                  {formData.type === 'Primary' ? 'R1,500/month' : 'R2,500/month'}
-                </p>
+                <p className="text-emerald-400 text-sm font-medium mb-3">School Admin Credentials</p>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-slate-400 text-xs mb-1">Username</label>
+                    <input type="text" value={formData.adminUsername} onChange={(e) => setFormData({...formData, adminUsername: e.target.value})}
+                      className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:border-emerald-500 focus:outline-none text-sm" placeholder="school_admin" />
+                  </div>
+                  <div>
+                    <label className="block text-slate-400 text-xs mb-1">Password</label>
+                    <input type="text" value={formData.adminPassword} onChange={(e) => setFormData({...formData, adminPassword: e.target.value})}
+                      className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:border-emerald-500 focus:outline-none text-sm" placeholder="Password123" />
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -215,6 +253,21 @@ export default function AdminPortal() {
                 <input type="text" value={formData.teacherSubject} onChange={(e) => setFormData({...formData, teacherSubject: e.target.value})}
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500 focus:outline-none" placeholder="Mathematics, Science, etc." />
               </div>
+              <div className="p-4 rounded-xl bg-purple-500/10 border border-purple-500/20">
+                <p className="text-purple-400 text-sm font-medium mb-3">Teacher Login Credentials</p>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-slate-400 text-xs mb-1">Username</label>
+                    <input type="text" value={formData.teacherUsername} onChange={(e) => setFormData({...formData, teacherUsername: e.target.value})}
+                      className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:border-purple-500 focus:outline-none text-sm" placeholder="t.username" />
+                  </div>
+                  <div>
+                    <label className="block text-slate-400 text-xs mb-1">Password</label>
+                    <input type="text" value={formData.teacherPassword} onChange={(e) => setFormData({...formData, teacherPassword: e.target.value})}
+                      className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:border-purple-500 focus:outline-none text-sm" placeholder="Password123" />
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
@@ -242,6 +295,21 @@ export default function AdminPortal() {
                   <option value="">Select School</option>
                   {schools.map(s => <option key={s.id} value={s.name}>{s.name}</option>)}
                 </select>
+              </div>
+              <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                <p className="text-blue-400 text-sm font-medium mb-3">Student Login Credentials</p>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-slate-400 text-xs mb-1">Username</label>
+                    <input type="text" value={formData.studentUsername} onChange={(e) => setFormData({...formData, studentUsername: e.target.value})}
+                      className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:border-blue-500 focus:outline-none text-sm" placeholder="student.name" />
+                  </div>
+                  <div>
+                    <label className="block text-slate-400 text-xs mb-1">Password</label>
+                    <input type="text" value={formData.studentPassword} onChange={(e) => setFormData({...formData, studentPassword: e.target.value})}
+                      className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:border-blue-500 focus:outline-none text-sm" placeholder="Password123" />
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -285,6 +353,84 @@ export default function AdminPortal() {
     );
   };
 
+  const renderPasswordModal = () => {
+    if (!showPasswordModal) return null;
+
+    let username = "", password = "";
+    if (showPasswordModal.startsWith("school_")) {
+      const id = parseInt(showPasswordModal.replace("school_", ""));
+      const school = schools.find(s => s.id === id);
+      if (school) { username = school.adminUsername; password = school.adminPassword; }
+    } else if (showPasswordModal.startsWith("teacher_")) {
+      const id = parseInt(showPasswordModal.replace("teacher_", ""));
+      const teacher = teachers.find(t => t.id === id);
+      if (teacher) { username = teacher.username || ""; password = teacher.password || ""; }
+    } else if (showPasswordModal.startsWith("student_")) {
+      const id = parseInt(showPasswordModal.replace("student_", ""));
+      const student = students.find(s => s.id === id);
+      if (student) { username = student.username || ""; password = student.password || ""; }
+    }
+
+    return (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="bg-[#1E293B] rounded-2xl p-6 w-full max-w-sm border border-white/10">
+          <h2 className="text-xl font-bold text-white mb-4">Login Credentials</h2>
+          <div className="space-y-3">
+            <div className="p-3 rounded-xl bg-white/5">
+              <p className="text-slate-400 text-xs">Username</p>
+              <p className="text-white font-medium">{username}</p>
+            </div>
+            <div className="p-3 rounded-xl bg-white/5">
+              <p className="text-slate-400 text-xs">Password</p>
+              <p className="text-white font-medium">{password}</p>
+            </div>
+          </div>
+          <button onClick={() => setShowPasswordModal(null)} className="w-full mt-4 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-colors">
+            Close
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  const renderLoginScreen = () => (
+    <div className="min-h-screen bg-[#0F172A] flex items-center justify-center">
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl" />
+      </div>
+      <div className="relative z-10 p-8 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 w-full max-w-md">
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+          </div>
+          <h1 className="text-2xl font-bold text-white font-['Outfit']">Admin Portal</h1>
+          <p className="text-slate-400 mt-2">Enter your admin password</p>
+        </div>
+        <div className="space-y-4">
+          <input
+            type="password"
+            value={passwordInput}
+            onChange={(e) => setPasswordInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+            placeholder="Enter password"
+            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500 focus:outline-none"
+          />
+          {authError && <p className="text-red-400 text-sm">{authError}</p>}
+          <button onClick={handleLogin} className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-colors">
+            Login
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  if (!isAuthenticated) {
+    return renderLoginScreen();
+  }
+
   const renderContent = () => {
     switch (activeTab) {
       case "schools":
@@ -312,7 +458,7 @@ export default function AdminPortal() {
                     <th className="text-left py-4 px-4 text-slate-400 font-medium">Students</th>
                     <th className="text-left py-4 px-4 text-slate-400 font-medium">Teachers</th>
                     <th className="text-left py-4 px-4 text-slate-400 font-medium">Status</th>
-                    <th className="text-left py-4 px-4 text-slate-400 font-medium">Actions</th>
+                    <th className="text-left py-4 px-4 text-slate-400 font-medium">Credentials</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -337,7 +483,9 @@ export default function AdminPortal() {
                         </span>
                       </td>
                       <td className="py-4 px-4">
-                        <button className="text-slate-400 hover:text-white transition-colors">Edit</button>
+                        <button onClick={() => setShowPasswordModal(`school_${school.id}`)} className="text-emerald-400 hover:text-emerald-300 transition-colors text-sm">
+                          View
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -371,7 +519,7 @@ export default function AdminPortal() {
                     <th className="text-left py-4 px-4 text-slate-400 font-medium">School</th>
                     <th className="text-left py-4 px-4 text-slate-400 font-medium">Subject</th>
                     <th className="text-left py-4 px-4 text-slate-400 font-medium">Status</th>
-                    <th className="text-left py-4 px-4 text-slate-400 font-medium">Actions</th>
+                    <th className="text-left py-4 px-4 text-slate-400 font-medium">Credentials</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -389,8 +537,9 @@ export default function AdminPortal() {
                         </span>
                       </td>
                       <td className="py-4 px-4">
-                        <button className="text-slate-400 hover:text-white transition-colors mr-3">Edit</button>
-                        <button className="text-red-400 hover:text-red-300 transition-colors">Remove</button>
+                        <button onClick={() => setShowPasswordModal(`teacher_${teacher.id}`)} className="text-purple-400 hover:text-purple-300 transition-colors text-sm mr-3">View</button>
+                        <button className="text-slate-400 hover:text-white transition-colors text-sm mr-3">Edit</button>
+                        <button className="text-red-400 hover:text-red-300 transition-colors text-sm">Remove</button>
                       </td>
                     </tr>
                   ))}
@@ -424,7 +573,7 @@ export default function AdminPortal() {
                     <th className="text-left py-4 px-4 text-slate-400 font-medium">Grade</th>
                     <th className="text-left py-4 px-4 text-slate-400 font-medium">School</th>
                     <th className="text-left py-4 px-4 text-slate-400 font-medium">Status</th>
-                    <th className="text-left py-4 px-4 text-slate-400 font-medium">Actions</th>
+                    <th className="text-left py-4 px-4 text-slate-400 font-medium">Credentials</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -442,8 +591,9 @@ export default function AdminPortal() {
                         </span>
                       </td>
                       <td className="py-4 px-4">
-                        <button className="text-slate-400 hover:text-white transition-colors mr-3">Edit</button>
-                        <button className="text-red-400 hover:text-red-300 transition-colors">Remove</button>
+                        <button onClick={() => setShowPasswordModal(`student_${student.id}`)} className="text-blue-400 hover:text-blue-300 transition-colors text-sm mr-3">View</button>
+                        <button className="text-slate-400 hover:text-white transition-colors text-sm mr-3">Edit</button>
+                        <button className="text-red-400 hover:text-red-300 transition-colors text-sm">Remove</button>
                       </td>
                     </tr>
                   ))}
@@ -471,12 +621,12 @@ export default function AdminPortal() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
               <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
                 <p className="text-slate-400 text-sm mb-2">Total Monthly Revenue</p>
-                <p className="text-3xl font-bold text-white">R{totalRevenue.toLocaleString()}</p>
+                <p className="text-3xl font-bold text-white">R{subscriptions.filter(s => s.status === 'Active' && s.price !== 'Free').reduce((acc, s) => acc + parseInt(s.price.replace(/[^0-9]/g, '')), 0).toLocaleString()}</p>
                 <p className="text-green-400 text-sm mt-2">+12% from last month</p>
               </div>
               <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
                 <p className="text-slate-400 text-sm mb-2">Annual Run Rate</p>
-                <p className="text-3xl font-bold text-white">R{(totalRevenue * 12).toLocaleString()}</p>
+                <p className="text-3xl font-bold text-white">R{(subscriptions.filter(s => s.status === 'Active' && s.price !== 'Free').reduce((acc, s) => acc + parseInt(s.price.replace(/[^0-9]/g, '')), 0) * 12).toLocaleString()}</p>
                 <p className="text-green-400 text-sm mt-2">+8% YoY</p>
               </div>
               <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
@@ -500,7 +650,6 @@ export default function AdminPortal() {
                     <th className="text-left py-4 px-4 text-slate-400 font-medium">Start Date</th>
                     <th className="text-left py-4 px-4 text-slate-400 font-medium">Next Renewal</th>
                     <th className="text-left py-4 px-4 text-slate-400 font-medium">Status</th>
-                    <th className="text-left py-4 px-4 text-slate-400 font-medium">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -524,10 +673,6 @@ export default function AdminPortal() {
                           {sub.status}
                         </span>
                       </td>
-                      <td className="py-4 px-4">
-                        <button className="text-slate-400 hover:text-white transition-colors mr-3">Manage</button>
-                        <button className="text-emerald-400 hover:text-emerald-300 transition-colors">Invoice</button>
-                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -537,6 +682,7 @@ export default function AdminPortal() {
         );
 
       default:
+        const totalRevenue = subscriptions.filter(s => s.status === 'Active' && s.price !== 'Free').reduce((acc, s) => acc + parseInt(s.price.replace(/[^0-9]/g, '')), 0);
         const dashboardStats = [
           { label: "Total Schools", value: schools.length.toString(), icon: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4", color: "#3B82F6" },
           { label: "Active Teachers", value: teachers.filter(t => t.status === 'Active').length.toString(), icon: "M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z", color: "#A855F7" },
@@ -552,10 +698,8 @@ export default function AdminPortal() {
                 <p className="text-slate-400 mt-1">Welcome back! Here&apos;s your platform overview.</p>
               </div>
               <div className="flex items-center gap-4">
-                <button className="p-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                  </svg>
+                <button onClick={handleLogout} className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-medium transition-colors">
+                  Logout
                 </button>
               </div>
             </div>
@@ -651,16 +795,17 @@ export default function AdminPortal() {
   return (
     <div className="min-h-screen bg-[#0F172A] flex">
       {renderModal()}
+      {renderPasswordModal()}
       <aside className="w-72 bg-[#1E293B] border-r border-white/10 flex flex-col">
         <div className="p-6 border-b border-white/10">
-          <Link href="/" className="flex items-center gap-3 mb-6">
+          <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
               <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
               </svg>
             </div>
             <span className="text-xl font-semibold text-white font-['Outfit']">EduHub</span>
-          </Link>
+          </div>
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white font-semibold">
               AD
@@ -702,12 +847,12 @@ export default function AdminPortal() {
         </nav>
 
         <div className="p-4 border-t border-white/10">
-          <Link href="/" className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200">
+          <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
             <span>Log Out</span>
-          </Link>
+          </button>
         </div>
       </aside>
 
