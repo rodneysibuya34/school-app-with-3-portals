@@ -12,45 +12,278 @@ const navItems = [
   { icon: "M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z", label: "Messages", href: "/admin/messages" },
 ];
 
-const stats = [
-  { label: "Total Schools", value: "12", icon: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4", color: "#3B82F6" },
-  { label: "Active Teachers", value: "156", icon: "M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z", color: "#A855F7" },
-  { label: "Total Students", value: "2,847", icon: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253", color: "#10B981" },
-  { label: "Monthly Revenue", value: "$48,500", icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z", color: "#F59E0B" },
+const initialSchools = [
+  { id: 1, name: "Oakridge Preparatory Academy", location: "Boston, MA", students: 892, teachers: 48, status: "Active", type: "High School" },
+  { id: 2, name: "Westfield Christian School", location: "Chicago, IL", students: 456, teachers: 28, status: "Active", type: "Primary" },
+  { id: 3, name: "Riverside Elementary", location: "Miami, FL", students: 324, teachers: 22, status: "Active", type: "Primary" },
+  { id: 4, name: "Highland Academy", location: "Seattle, WA", students: 678, teachers: 35, status: "Trial", type: "High School" },
 ];
 
-const schools = [
-  { id: 1, name: "Oakridge Preparatory Academy", location: "Boston, MA", students: 892, teachers: 48, status: "Active", plan: "Enterprise" },
-  { id: 2, name: "Westfield Christian School", location: "Chicago, IL", students: 456, teachers: 28, status: "Active", plan: "Professional" },
-  { id: 3, name: "Riverside Elementary", location: "Miami, FL", students: 324, teachers: 22, status: "Active", plan: "Basic" },
-  { id: 4, name: "Highland Academy", location: "Seattle, WA", students: 678, teachers: 35, status: "Trial", plan: "Trial" },
-];
-
-const teachers = [
-  { id: 1, name: "Dr. Sarah Mitchell", email: "s.mitchell@oakridge.edu", school: "Oakridge Preparatory", subject: "Mathematics", status: "Active" },
-  { id: 2, name: "Mr. David Park", email: "d.park@oakridge.edu", school: "Oakridge Preparatory", subject: "English Literature", status: "Active" },
-  { id: 3, name: "Mrs. Emily Roberts", email: "e.roberts@westfield.edu", school: "Westfield Christian", subject: "Chemistry", status: "Active" },
-  { id: 4, name: "Dr. James Chen", email: "j.chen@oakridge.edu", school: "Oakridge Preparatory", subject: "Physics", status: "Active" },
+const initialTeachers = [
+  { id: 1, name: "Dr. Sarah Mitchell", email: "s.mitchell@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "Mathematics", status: "Active" },
+  { id: 2, name: "Mr. David Park", email: "d.park@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "English Literature", status: "Active" },
+  { id: 3, name: "Mrs. Emily Roberts", email: "e.roberts@westfield.edu", school: "Westfield Christian School", subject: "Chemistry", status: "Active" },
+  { id: 4, name: "Dr. James Chen", email: "j.chen@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "Physics", status: "Active" },
   { id: 5, name: "Ms. Anna Williams", email: "a.williams@riverside.edu", school: "Riverside Elementary", subject: "History", status: "Pending" },
 ];
 
-const students = [
-  { id: 1, name: "Alex Thompson", email: "a.thompson@oakridge.edu", grade: 11, school: "Oakridge Preparatory", status: "Active" },
-  { id: 2, name: "Emma Wilson", email: "e.wilson@oakridge.edu", grade: 10, school: "Oakridge Preparatory", status: "Active" },
-  { id: 3, name: "Michael Brown", email: "m.brown@westfield.edu", grade: 9, school: "Westfield Christian", status: "Active" },
-  { id: 4, name: "Sophia Lee", email: "s.lee@oakridge.edu", grade: 12, school: "Oakridge Preparatory", status: "Active" },
+const initialStudents = [
+  { id: 1, name: "Alex Thompson", email: "a.thompson@oakridge.edu", grade: 11, school: "Oakridge Preparatory Academy", status: "Active" },
+  { id: 2, name: "Emma Wilson", email: "e.wilson@oakridge.edu", grade: 10, school: "Oakridge Preparatory Academy", status: "Active" },
+  { id: 3, name: "Michael Brown", email: "m.brown@westfield.edu", grade: 9, school: "Westfield Christian School", status: "Active" },
+  { id: 4, name: "Sophia Lee", email: "s.lee@oakridge.edu", grade: 12, school: "Oakridge Preparatory Academy", status: "Active" },
   { id: 5, name: "James Garcia", email: "j.garcia@riverside.edu", grade: 8, school: "Riverside Elementary", status: "Inactive" },
 ];
 
-const subscriptions = [
-  { id: 1, school: "Oakridge Preparatory Academy", plan: "Enterprise", price: "$2,499/mo", startDate: "Jan 1, 2026", status: "Active", renewal: "Jan 1, 2027" },
-  { id: 2, school: "Westfield Christian School", plan: "Professional", price: "$899/mo", startDate: "Mar 15, 2025", status: "Active", renewal: "Mar 15, 2026" },
-  { id: 3, school: "Riverside Elementary", plan: "Basic", price: "$299/mo", startDate: "Jun 1, 2025", status: "Active", renewal: "Jun 1, 2026" },
-  { id: 4, school: "Highland Academy", plan: "Trial", price: "Free", startDate: "Mar 1, 2026", status: "Trial", renewal: "Mar 31, 2026" },
+const initialSubscriptions = [
+  { id: 1, school: "Oakridge Preparatory Academy", schoolType: "High School", price: "R2,500/mo", startDate: "Jan 1, 2026", status: "Active", renewal: "Jan 1, 2027" },
+  { id: 2, school: "Westfield Christian School", schoolType: "Primary", price: "R1,500/mo", startDate: "Mar 15, 2025", status: "Active", renewal: "Mar 15, 2026" },
+  { id: 3, school: "Riverside Elementary", schoolType: "Primary", price: "R1,500/mo", startDate: "Jun 1, 2025", status: "Active", renewal: "Jun 1, 2026" },
+  { id: 4, school: "Highland Academy", schoolType: "High School", price: "Free", startDate: "Mar 1, 2026", status: "Trial", renewal: "Mar 31, 2026" },
 ];
+
+type ModalType = 'school' | 'teacher' | 'student' | 'subscription' | null;
 
 export default function AdminPortal() {
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [showModal, setShowModal] = useState<ModalType>(null);
+  const [schools, setSchools] = useState(initialSchools);
+  const [teachers, setTeachers] = useState(initialTeachers);
+  const [students, setStudents] = useState(initialStudents);
+  const [subscriptions, setSubscriptions] = useState(initialSubscriptions);
+
+  const [formData, setFormData] = useState({
+    name: '', location: '', type: 'Primary',
+    teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '',
+    studentName: '', studentEmail: '', studentGrade: '', studentSchool: '',
+    subSchool: '', subType: 'Primary', subStartDate: ''
+  });
+
+  const calculatePrice = (type: string) => {
+    return type === "Primary" ? "R1,500/mo" : "R2,500/mo";
+  };
+
+  const getStartDate = () => {
+    const d = new Date();
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  };
+
+  const getRenewalDate = () => {
+    const d = new Date();
+    d.setFullYear(d.getFullYear() + 1);
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  };
+
+  const handleSubmit = (type: ModalType) => {
+    const startDate = getStartDate();
+    const renewalDate = getRenewalDate();
+
+    if (type === 'school') {
+      const newSchool = {
+        id: schools.length + 1,
+        name: formData.name,
+        location: formData.location,
+        students: 0,
+        teachers: 0,
+        status: "Active",
+        type: formData.type
+      };
+      setSchools([...schools, newSchool]);
+      
+      const newSub = {
+        id: subscriptions.length + 1,
+        school: formData.name,
+        schoolType: formData.type,
+        price: calculatePrice(formData.type),
+        startDate: startDate,
+        status: "Active",
+        renewal: renewalDate
+      };
+      setSubscriptions([...subscriptions, newSub]);
+    } else if (type === 'teacher') {
+      const newTeacher = {
+        id: teachers.length + 1,
+        name: formData.teacherName,
+        email: formData.teacherEmail,
+        school: formData.teacherSchool,
+        subject: formData.teacherSubject,
+        status: "Active"
+      };
+      setTeachers([...teachers, newTeacher]);
+    } else if (type === 'student') {
+      const newStudent = {
+        id: students.length + 1,
+        name: formData.studentName,
+        email: formData.studentEmail,
+        grade: parseInt(formData.studentGrade),
+        school: formData.studentSchool,
+        status: "Active"
+      };
+      setStudents([...students, newStudent]);
+    } else if (type === 'subscription') {
+      const newSub = {
+        id: subscriptions.length + 1,
+        school: formData.subSchool,
+        schoolType: formData.subType,
+        price: calculatePrice(formData.subType),
+        startDate: formData.subStartDate || startDate,
+        status: "Active",
+        renewal: renewalDate
+      };
+      setSubscriptions([...subscriptions, newSub]);
+    }
+    
+    setShowModal(null);
+    setFormData({
+      name: '', location: '', type: 'Primary',
+      teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '',
+      studentName: '', studentEmail: '', studentGrade: '', studentSchool: '',
+      subSchool: '', subType: 'Primary', subStartDate: ''
+    });
+  };
+
+  const totalRevenue = subscriptions
+    .filter(s => s.status === 'Active' && s.price !== 'Free')
+    .reduce((acc, sub) => {
+      const num = parseInt(sub.price.replace(/[^0-9]/g, ''));
+      return acc + num;
+    }, 0);
+
+  const renderModal = () => {
+    if (!showModal) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="bg-[#1E293B] rounded-2xl p-6 w-full max-w-md border border-white/10">
+          <h2 className="text-2xl font-bold text-white mb-6">
+            {showModal === 'school' && 'Create New School'}
+            {showModal === 'teacher' && 'Add New Teacher'}
+            {showModal === 'student' && 'Add New Student'}
+            {showModal === 'subscription' && 'Create New Subscription'}
+          </h2>
+
+          {showModal === 'school' && (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-slate-400 text-sm mb-2">School Name</label>
+                <input type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500 focus:outline-none" placeholder="Enter school name" />
+              </div>
+              <div>
+                <label className="block text-slate-400 text-sm mb-2">Location</label>
+                <input type="text" value={formData.location} onChange={(e) => setFormData({...formData, location: e.target.value})}
+                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500 focus:outline-none" placeholder="City, State" />
+              </div>
+              <div>
+                <label className="block text-slate-400 text-sm mb-2">School Type</label>
+                <select value={formData.type} onChange={(e) => setFormData({...formData, type: e.target.value})}
+                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500 focus:outline-none">
+                  <option value="Primary">Primary School</option>
+                  <option value="High School">High School</option>
+                </select>
+              </div>
+              <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                <p className="text-emerald-400 text-sm">
+                  {formData.type === 'Primary' ? 'R1,500/month' : 'R2,500/month'}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {showModal === 'teacher' && (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-slate-400 text-sm mb-2">Full Name</label>
+                <input type="text" value={formData.teacherName} onChange={(e) => setFormData({...formData, teacherName: e.target.value})}
+                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500 focus:outline-none" placeholder="Enter teacher name" />
+              </div>
+              <div>
+                <label className="block text-slate-400 text-sm mb-2">Email</label>
+                <input type="email" value={formData.teacherEmail} onChange={(e) => setFormData({...formData, teacherEmail: e.target.value})}
+                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500 focus:outline-none" placeholder="teacher@school.edu" />
+              </div>
+              <div>
+                <label className="block text-slate-400 text-sm mb-2">School</label>
+                <select value={formData.teacherSchool} onChange={(e) => setFormData({...formData, teacherSchool: e.target.value})}
+                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500 focus:outline-none">
+                  <option value="">Select School</option>
+                  {schools.map(s => <option key={s.id} value={s.name}>{s.name}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-slate-400 text-sm mb-2">Subject</label>
+                <input type="text" value={formData.teacherSubject} onChange={(e) => setFormData({...formData, teacherSubject: e.target.value})}
+                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500 focus:outline-none" placeholder="Mathematics, Science, etc." />
+              </div>
+            </div>
+          )}
+
+          {showModal === 'student' && (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-slate-400 text-sm mb-2">Full Name</label>
+                <input type="text" value={formData.studentName} onChange={(e) => setFormData({...formData, studentName: e.target.value})}
+                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500 focus:outline-none" placeholder="Enter student name" />
+              </div>
+              <div>
+                <label className="block text-slate-400 text-sm mb-2">Email</label>
+                <input type="email" value={formData.studentEmail} onChange={(e) => setFormData({...formData, studentEmail: e.target.value})}
+                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500 focus:outline-none" placeholder="student@school.edu" />
+              </div>
+              <div>
+                <label className="block text-slate-400 text-sm mb-2">Grade</label>
+                <input type="number" value={formData.studentGrade} onChange={(e) => setFormData({...formData, studentGrade: e.target.value})}
+                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500 focus:outline-none" placeholder="1-12" />
+              </div>
+              <div>
+                <label className="block text-slate-400 text-sm mb-2">School</label>
+                <select value={formData.studentSchool} onChange={(e) => setFormData({...formData, studentSchool: e.target.value})}
+                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500 focus:outline-none">
+                  <option value="">Select School</option>
+                  {schools.map(s => <option key={s.id} value={s.name}>{s.name}</option>)}
+                </select>
+              </div>
+            </div>
+          )}
+
+          {showModal === 'subscription' && (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-slate-400 text-sm mb-2">School</label>
+                <select value={formData.subSchool} onChange={(e) => setFormData({...formData, subSchool: e.target.value})}
+                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500 focus:outline-none">
+                  <option value="">Select School</option>
+                  {schools.filter(s => !subscriptions.some(sub => sub.school === s.name)).map(s => <option key={s.id} value={s.name}>{s.name}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-slate-400 text-sm mb-2">School Type</label>
+                <select value={formData.subType} onChange={(e) => setFormData({...formData, subType: e.target.value})}
+                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500 focus:outline-none">
+                  <option value="Primary">Primary School - R1,500/mo</option>
+                  <option value="High School">High School - R2,500/mo</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-slate-400 text-sm mb-2">Start Date</label>
+                <input type="date" value={formData.subStartDate} onChange={(e) => setFormData({...formData, subStartDate: e.target.value})}
+                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500 focus:outline-none" />
+              </div>
+            </div>
+          )}
+
+          <div className="flex gap-3 mt-6">
+            <button onClick={() => setShowModal(null)} className="flex-1 py-3 rounded-xl border border-white/20 text-white hover:bg-white/5 font-medium transition-colors">
+              Cancel
+            </button>
+            <button onClick={() => handleSubmit(showModal)} className="flex-1 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-colors">
+              Create
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   const renderContent = () => {
     switch (activeTab) {
@@ -62,22 +295,22 @@ export default function AdminPortal() {
                 <h1 className="text-3xl font-bold text-white font-['Outfit']">School Management</h1>
                 <p className="text-slate-400 mt-1">Manage all registered schools</p>
               </div>
-              <button className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-colors flex items-center gap-2">
+              <button onClick={() => setShowModal('school')} className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-colors flex items-center gap-2">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
                 Create School
               </button>
             </div>
-            <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
+            <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-white/10">
                     <th className="text-left py-4 px-4 text-slate-400 font-medium">School Name</th>
                     <th className="text-left py-4 px-4 text-slate-400 font-medium">Location</th>
+                    <th className="text-left py-4 px-4 text-slate-400 font-medium">Type</th>
                     <th className="text-left py-4 px-4 text-slate-400 font-medium">Students</th>
                     <th className="text-left py-4 px-4 text-slate-400 font-medium">Teachers</th>
-                    <th className="text-left py-4 px-4 text-slate-400 font-medium">Plan</th>
                     <th className="text-left py-4 px-4 text-slate-400 font-medium">Status</th>
                     <th className="text-left py-4 px-4 text-slate-400 font-medium">Actions</th>
                   </tr>
@@ -87,18 +320,15 @@ export default function AdminPortal() {
                     <tr key={school.id} className="border-b border-white/5 hover:bg-white/5">
                       <td className="py-4 px-4 text-white font-medium">{school.name}</td>
                       <td className="py-4 px-4 text-slate-400">{school.location}</td>
-                      <td className="py-4 px-4 text-white">{school.students}</td>
-                      <td className="py-4 px-4 text-white">{school.teachers}</td>
                       <td className="py-4 px-4">
                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          school.plan === 'Enterprise' ? 'bg-purple-500/20 text-purple-400' :
-                          school.plan === 'Professional' ? 'bg-blue-500/20 text-blue-400' :
-                          school.plan === 'Basic' ? 'bg-green-500/20 text-green-400' :
-                          'bg-yellow-500/20 text-yellow-400'
+                          school.type === 'High School' ? 'bg-purple-500/20 text-purple-400' : 'bg-blue-500/20 text-blue-400'
                         }`}>
-                          {school.plan}
+                          {school.type}
                         </span>
                       </td>
+                      <td className="py-4 px-4 text-white">{school.students}</td>
+                      <td className="py-4 px-4 text-white">{school.teachers}</td>
                       <td className="py-4 px-4">
                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                           school.status === 'Active' ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
@@ -125,14 +355,14 @@ export default function AdminPortal() {
                 <h1 className="text-3xl font-bold text-white font-['Outfit']">Teacher Management</h1>
                 <p className="text-slate-400 mt-1">Manage all teachers across schools</p>
               </div>
-              <button className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-colors flex items-center gap-2">
+              <button onClick={() => setShowModal('teacher')} className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-colors flex items-center gap-2">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
                 Add Teacher
               </button>
             </div>
-            <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
+            <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-white/10">
@@ -178,14 +408,14 @@ export default function AdminPortal() {
                 <h1 className="text-3xl font-bold text-white font-['Outfit']">Student Management</h1>
                 <p className="text-slate-400 mt-1">Manage all students across schools</p>
               </div>
-              <button className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-colors flex items-center gap-2">
+              <button onClick={() => setShowModal('student')} className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-colors flex items-center gap-2">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
                 Add Student
               </button>
             </div>
-            <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
+            <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-white/10">
@@ -231,7 +461,7 @@ export default function AdminPortal() {
                 <h1 className="text-3xl font-bold text-white font-['Outfit']">Subscription Management</h1>
                 <p className="text-slate-400 mt-1">Manage school subscriptions and billing</p>
               </div>
-              <button className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-colors flex items-center gap-2">
+              <button onClick={() => setShowModal('subscription')} className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-colors flex items-center gap-2">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
@@ -241,18 +471,18 @@ export default function AdminPortal() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
               <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
                 <p className="text-slate-400 text-sm mb-2">Total Monthly Revenue</p>
-                <p className="text-3xl font-bold text-white">$48,500</p>
+                <p className="text-3xl font-bold text-white">R{totalRevenue.toLocaleString()}</p>
                 <p className="text-green-400 text-sm mt-2">+12% from last month</p>
               </div>
               <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
                 <p className="text-slate-400 text-sm mb-2">Annual Run Rate</p>
-                <p className="text-3xl font-bold text-white">$582,000</p>
+                <p className="text-3xl font-bold text-white">R{(totalRevenue * 12).toLocaleString()}</p>
                 <p className="text-green-400 text-sm mt-2">+8% YoY</p>
               </div>
               <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
                 <p className="text-slate-400 text-sm mb-2">Active Subscriptions</p>
-                <p className="text-3xl font-bold text-white">11</p>
-                <p className="text-slate-400 text-sm mt-2">1 trial pending</p>
+                <p className="text-3xl font-bold text-white">{subscriptions.filter(s => s.status === 'Active').length}</p>
+                <p className="text-slate-400 text-sm mt-2">{subscriptions.filter(s => s.status === 'Trial').length} trial</p>
               </div>
               <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
                 <p className="text-slate-400 text-sm mb-2">Churn Rate</p>
@@ -260,12 +490,12 @@ export default function AdminPortal() {
                 <p className="text-green-400 text-sm mt-2">-0.5% from last quarter</p>
               </div>
             </div>
-            <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
+            <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-white/10">
                     <th className="text-left py-4 px-4 text-slate-400 font-medium">School</th>
-                    <th className="text-left py-4 px-4 text-slate-400 font-medium">Plan</th>
+                    <th className="text-left py-4 px-4 text-slate-400 font-medium">Type</th>
                     <th className="text-left py-4 px-4 text-slate-400 font-medium">Price</th>
                     <th className="text-left py-4 px-4 text-slate-400 font-medium">Start Date</th>
                     <th className="text-left py-4 px-4 text-slate-400 font-medium">Next Renewal</th>
@@ -279,15 +509,12 @@ export default function AdminPortal() {
                       <td className="py-4 px-4 text-white font-medium">{sub.school}</td>
                       <td className="py-4 px-4">
                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          sub.plan === 'Enterprise' ? 'bg-purple-500/20 text-purple-400' :
-                          sub.plan === 'Professional' ? 'bg-blue-500/20 text-blue-400' :
-                          sub.plan === 'Basic' ? 'bg-green-500/20 text-green-400' :
-                          'bg-yellow-500/20 text-yellow-400'
+                          sub.schoolType === 'High School' ? 'bg-purple-500/20 text-purple-400' : 'bg-blue-500/20 text-blue-400'
                         }`}>
-                          {sub.plan}
+                          {sub.schoolType}
                         </span>
                       </td>
-                      <td className="py-4 px-4 text-white">{sub.price}</td>
+                      <td className="py-4 px-4 text-white font-medium">{sub.price}</td>
                       <td className="py-4 px-4 text-slate-400">{sub.startDate}</td>
                       <td className="py-4 px-4 text-slate-400">{sub.renewal}</td>
                       <td className="py-4 px-4">
@@ -310,6 +537,13 @@ export default function AdminPortal() {
         );
 
       default:
+        const dashboardStats = [
+          { label: "Total Schools", value: schools.length.toString(), icon: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4", color: "#3B82F6" },
+          { label: "Active Teachers", value: teachers.filter(t => t.status === 'Active').length.toString(), icon: "M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z", color: "#A855F7" },
+          { label: "Total Students", value: students.length.toString(), icon: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253", color: "#10B981" },
+          { label: "Monthly Revenue", value: `R${totalRevenue.toLocaleString()}`, icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z", color: "#F59E0B" },
+        ];
+
         return (
           <div>
             <div className="flex items-center justify-between mb-8">
@@ -327,7 +561,7 @@ export default function AdminPortal() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-              {stats.map((stat) => (
+              {dashboardStats.map((stat) => (
                 <div key={stat.label} className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all duration-300">
                   <div className="flex items-center justify-between mb-4">
                     <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: `${stat.color}20` }}>
@@ -370,7 +604,7 @@ export default function AdminPortal() {
                   <h2 className="text-xl font-semibold text-white font-['Outfit']">Quick Actions</h2>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <button onClick={() => setActiveTab("schools")} className="p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-left">
+                  <button onClick={() => setShowModal('school')} className="p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-left">
                     <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center mb-3">
                       <svg className="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -379,7 +613,7 @@ export default function AdminPortal() {
                     <p className="text-white font-medium">Create School</p>
                     <p className="text-slate-400 text-sm">Add new school</p>
                   </button>
-                  <button onClick={() => setActiveTab("teachers")} className="p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-left">
+                  <button onClick={() => setShowModal('teacher')} className="p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-left">
                     <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center mb-3">
                       <svg className="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
@@ -388,7 +622,7 @@ export default function AdminPortal() {
                     <p className="text-white font-medium">Add Teacher</p>
                     <p className="text-slate-400 text-sm">New faculty member</p>
                   </button>
-                  <button onClick={() => setActiveTab("students")} className="p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-left">
+                  <button onClick={() => setShowModal('student')} className="p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-left">
                     <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center mb-3">
                       <svg className="w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
@@ -397,14 +631,14 @@ export default function AdminPortal() {
                     <p className="text-white font-medium">Add Student</p>
                     <p className="text-slate-400 text-sm">Enroll new student</p>
                   </button>
-                  <button onClick={() => setActiveTab("subscriptions")} className="p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-left">
+                  <button onClick={() => setShowModal('subscription')} className="p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-left">
                     <div className="w-10 h-10 rounded-lg bg-yellow-500/20 flex items-center justify-center mb-3">
                       <svg className="w-5 h-5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                       </svg>
                     </div>
-                    <p className="text-white font-medium">Manage Billing</p>
-                    <p className="text-slate-400 text-sm">View subscriptions</p>
+                    <p className="text-white font-medium">New Subscription</p>
+                    <p className="text-slate-400 text-sm">Add subscription</p>
                   </button>
                 </div>
               </div>
@@ -416,6 +650,7 @@ export default function AdminPortal() {
 
   return (
     <div className="min-h-screen bg-[#0F172A] flex">
+      {renderModal()}
       <aside className="w-72 bg-[#1E293B] border-r border-white/10 flex flex-col">
         <div className="p-6 border-b border-white/10">
           <Link href="/" className="flex items-center gap-3 mb-6">
