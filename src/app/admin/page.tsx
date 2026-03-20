@@ -100,6 +100,10 @@ export default function AdminPortal() {
     const renewalDate = getRenewalDate();
 
     if (type === 'school') {
+      if (!formData.name || !formData.location || !formData.adminUsername || !formData.adminPassword) {
+        alert("Please fill in all required fields: School Name, Location, Username, and Password");
+        return;
+      }
       const newSchool = {
         id: schools.length + 1,
         name: formData.name,
@@ -124,6 +128,10 @@ export default function AdminPortal() {
       };
       setSubscriptions([...subscriptions, newSub]);
     } else if (type === 'teacher') {
+      if (!formData.teacherName || !formData.teacherSchool || !formData.teacherSubject || !formData.teacherUsername || !formData.teacherPassword) {
+        alert("Please fill in all required fields: Name, School, Subject, Username, and Password");
+        return;
+      }
       const newTeacher = {
         id: teachers.length + 1,
         name: formData.teacherName,
@@ -140,6 +148,10 @@ export default function AdminPortal() {
         s.name === formData.teacherSchool ? { ...s, teachers: s.teachers + 1 } : s
       ));
     } else if (type === 'student') {
+      if (!formData.studentName || !formData.studentGrade || !formData.studentSchool || !formData.studentUsername || !formData.studentPassword) {
+        alert("Please fill in all required fields: Name, Grade, School, Username, and Password");
+        return;
+      }
       const newStudent = {
         id: students.length + 1,
         name: formData.studentName,
