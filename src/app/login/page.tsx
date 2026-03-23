@@ -10,7 +10,7 @@ const schoolsData = [
   { id: 4, name: "Highland Academy", location: "Seattle, WA", type: "High School", adminUsername: "highland_admin", adminPassword: "High@2024" },
 ];
 
-const teachersData = [
+const defaultTeachers = [
   { id: 1, name: "Dr. Sarah Mitchell", email: "s.mitchell@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "Mathematics", username: "s.mitchell", password: "Mitch@123" },
   { id: 2, name: "Mr. David Park", email: "d.park@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "English Literature", username: "d.park", password: "Park@123" },
   { id: 3, name: "Mrs. Emily Roberts", email: "e.roberts@westfield.edu", school: "Westfield Christian School", subject: "Chemistry", username: "e.roberts", password: "Rob@123" },
@@ -18,13 +18,26 @@ const teachersData = [
   { id: 5, name: "Ms. Anna Williams", email: "a.williams@riverside.edu", school: "Riverside Elementary", subject: "History", username: "a.williams", password: "Will@123" },
 ];
 
-const studentsData = [
+const defaultStudents = [
   { id: 1, name: "Alex Thompson", email: "a.thompson@oakridge.edu", grade: 11, school: "Oakridge Preparatory Academy", username: "alex.t", password: "Alex@123" },
   { id: 2, name: "Emma Wilson", email: "e.wilson@oakridge.edu", grade: 10, school: "Oakridge Preparatory Academy", username: "emma.w", password: "Emma@123" },
   { id: 3, name: "Michael Brown", email: "m.brown@westfield.edu", grade: 9, school: "Westfield Christian School", username: "michael.b", password: "Mike@123" },
   { id: 4, name: "Sophia Lee", email: "s.lee@oakridge.edu", grade: 12, school: "Oakridge Preparatory Academy", username: "sophia.l", password: "Soph@123" },
   { id: 5, name: "James Garcia", email: "j.garcia@riverside.edu", grade: 8, school: "Riverside Elementary", username: "james.g", password: "Jame@123" },
 ];
+
+const getTeachersData = () => {
+  const stored = localStorage.getItem("teachersData");
+  return stored ? JSON.parse(stored) : defaultTeachers;
+};
+
+const getStudentsData = () => {
+  const stored = localStorage.getItem("studentsData");
+  return stored ? JSON.parse(stored) : defaultStudents;
+};
+
+const teachersData = getTeachersData();
+const studentsData = getStudentsData();
 
 export default function LoginPage() {
   const router = useRouter();
@@ -37,14 +50,14 @@ export default function LoginPage() {
     setError("");
     
     if (loginType === "student") {
-      const student = studentsData.find(s => s.username === username && s.password === password);
+      const student = studentsData.find((s: { username: string; password: string }) => s.username === username && s.password === password);
       if (student) {
         localStorage.setItem("loggedInStudent", JSON.stringify(student));
         router.push("/student");
         return;
       }
     } else {
-      const teacher = teachersData.find(t => t.username === username && t.password === password);
+      const teacher = teachersData.find((t: { username: string; password: string }) => t.username === username && t.password === password);
       if (teacher) {
         localStorage.setItem("loggedInTeacher", JSON.stringify(teacher));
         router.push("/teacher");

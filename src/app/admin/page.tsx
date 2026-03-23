@@ -46,6 +46,28 @@ const initialSubscriptions = [
 
 type ModalType = 'school' | 'teacher' | 'student' | 'subscription' | null;
 
+interface Teacher {
+  id: number;
+  name: string;
+  email: string;
+  school: string;
+  subject: string;
+  status: string;
+  username: string;
+  password: string;
+}
+
+interface Student {
+  id: number;
+  name: string;
+  email: string;
+  grade: number;
+  school: string;
+  status: string;
+  username: string;
+  password: string;
+}
+
 export default function AdminPortal() {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -55,8 +77,14 @@ export default function AdminPortal() {
   const [showModal, setShowModal] = useState<ModalType>(null);
   const [showPasswordModal, setShowPasswordModal] = useState<string | null>(null);
   const [schools, setSchools] = useState(initialSchools);
-  const [teachers, setTeachers] = useState(initialTeachers);
-  const [students, setStudents] = useState(initialStudents);
+  const [teachers, setTeachers] = useState<Teacher[]>(() => {
+    const stored = localStorage.getItem("teachersData");
+    return stored ? JSON.parse(stored) : initialTeachers;
+  });
+  const [students, setStudents] = useState<Student[]>(() => {
+    const stored = localStorage.getItem("studentsData");
+    return stored ? JSON.parse(stored) : initialStudents;
+  });
   const [subscriptions, setSubscriptions] = useState(initialSubscriptions);
 
   const [formData, setFormData] = useState({
@@ -164,6 +192,8 @@ export default function AdminPortal() {
       };
       setTeachers([...teachers, newTeacher]);
       
+      localStorage.setItem("teachersData", JSON.stringify([...teachers, newTeacher]));
+      
       setSchools(schools.map(s => 
         s.name === formData.teacherSchool ? { ...s, teachers: s.teachers + 1 } : s
       ));
@@ -195,6 +225,8 @@ export default function AdminPortal() {
         password: studentPassword
       };
       setStudents([...students, newStudent]);
+      
+      localStorage.setItem("studentsData", JSON.stringify([...students, newStudent]));
       
       setSchools(schools.map(s => 
         s.name === formData.studentSchool ? { ...s, students: s.students + 1 } : s
@@ -370,15 +402,15 @@ export default function AdminPortal() {
     let username = "", password = "";
     if (showPasswordModal.startsWith("school_")) {
       const id = parseInt(showPasswordModal.replace("school_", ""));
-      const school = schools.find(s => s.id === id);
+      const school = schools.find((s: { id: number }) => s.id === id);
       if (school) { username = school.adminUsername; password = school.adminPassword; }
     } else if (showPasswordModal.startsWith("teacher_")) {
       const id = parseInt(showPasswordModal.replace("teacher_", ""));
-      const teacher = teachers.find(t => t.id === id);
+      const teacher = teachers.find((t: { id: number }) => t.id === id);
       if (teacher) { username = teacher.username || ""; password = teacher.password || ""; }
     } else if (showPasswordModal.startsWith("student_")) {
       const id = parseInt(showPasswordModal.replace("student_", ""));
-      const student = students.find(s => s.id === id);
+      const student = students.find((s: { id: number }) => s.id === id);
       if (student) { username = student.username || ""; password = student.password || ""; }
     }
 
@@ -696,7 +728,7 @@ export default function AdminPortal() {
         const totalRevenue = subscriptions.filter(s => s.status === 'Active' && s.price !== 'Free').reduce((acc, s) => acc + parseInt(s.price.replace(/[^0-9]/g, '')), 0);
         const dashboardStats = [
           { label: "Total Schools", value: schools.length.toString(), icon: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4", color: "#3B82F6" },
-          { label: "Active Teachers", value: teachers.filter(t => t.status === 'Active').length.toString(), icon: "M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z", color: "#A855F7" },
+          { label: "Active Teachers", value: teachers.filter((t: { status: string }) => t.status === 'Active').length.toString(), icon: "M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z", color: "#A855F7" },
           { label: "Total Students", value: students.length.toString(), icon: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253", color: "#10B981" },
           { label: "Monthly Revenue", value: `R${totalRevenue.toLocaleString()}`, icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z", color: "#F59E0B" },
         ];
