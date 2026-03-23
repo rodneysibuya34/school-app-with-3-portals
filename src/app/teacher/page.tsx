@@ -83,6 +83,8 @@ export default function TeacherPortal() {
   const [showHomeworkModal, setShowHomeworkModal] = useState(false);
   const [showTestModal, setShowTestModal] = useState(false);
   const [showAnnouncementModal, setShowAnnouncementModal] = useState(false);
+  const [showExamModal, setShowExamModal] = useState(false);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [newHomework, setNewHomework] = useState({ title: "", description: "", dueDate: "", grade: "" });
   const [newTest, setNewTest] = useState({ title: "", description: "", dueDate: "", grade: "" });
   const [newAnnouncement, setNewAnnouncement] = useState<{ title: string; content: string; priority: "normal" | "important" | "urgent" }>({ title: "", content: "", priority: "normal" });
@@ -100,6 +102,8 @@ export default function TeacherPortal() {
     { day: "Tuesday", time: "08:00 - 09:00", subject: "Mathematics", grade: 11 },
     { day: "Wednesday", time: "10:00 - 11:00", subject: "Mathematics", grade: 12 },
   ]);
+  const [newExam, setNewExam] = useState({ date: "", exam: "", time: "", venue: "" });
+  const [newSchedule, setNewSchedule] = useState({ day: "Monday", time: "08:00 - 09:00", subject: "", grade: "" });
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -179,6 +183,36 @@ export default function TeacherPortal() {
       setNewAnnouncement({ title: "", content: "", priority: "normal" });
       setShowAnnouncementModal(false);
     }
+  };
+
+  const handleAddExam = () => {
+    if (newExam.date && newExam.exam && newExam.time && newExam.venue) {
+      setExamTimetable([...examTimetable, newExam]);
+      setNewExam({ date: "", exam: "", time: "", venue: "" });
+      setShowExamModal(false);
+    }
+  };
+
+  const handleDeleteExam = (index: number) => {
+    setExamTimetable(examTimetable.filter((_, i) => i !== index));
+  };
+
+  const handleAddSchedule = () => {
+    if (newSchedule.day && newSchedule.time && newSchedule.subject && newSchedule.grade) {
+      setWeeklyTimetable([...weeklyTimetable, { ...newSchedule, grade: parseInt(newSchedule.grade) }]);
+      setNewSchedule({ day: "Monday", time: "08:00 - 09:00", subject: "", grade: "" });
+      setShowScheduleModal(false);
+    }
+  };
+
+  const handleDeleteSchedule = (day: string, index: number) => {
+    const daySchedules = weeklyTimetable.filter(t => t.day === day);
+    const itemToDelete = daySchedules[index];
+    setWeeklyTimetable(weeklyTimetable.filter(t => !(t.day === itemToDelete.day && t.time === itemToDelete.time && t.subject === itemToDelete.subject)));
+  };
+
+  const handlePublishTest = (testId: number) => {
+    setTestList(testList.map(t => t.id === testId ? { ...t, published: !t.published } : t));
   };
 
   const renderDashboard = () => {
@@ -382,7 +416,7 @@ export default function TeacherPortal() {
               <span className="text-slate-500">Due: {test.dueDate}</span>
               <div className="flex gap-2">
                 <button onClick={() => { setCurrentTestId(test.id); setShowQuestionModal(true); }} className="text-purple-400 hover:text-purple-300">Add Questions</button>
-                <button className="text-blue-400 hover:text-blue-300">{test.published ? 'Edit' : 'Publish'}</button>
+                <button onClick={() => handlePublishTest(test.id)} className="text-blue-400 hover:text-blue-300">{test.published ? 'Unpublish' : 'Publish'}</button>
               </div>
             </div>
           </div>
@@ -484,7 +518,7 @@ export default function TeacherPortal() {
           <h1 className="text-3xl font-bold text-white font-['Outfit']">Exam Timetable</h1>
           <p className="text-slate-400 mt-1">Manage exam schedules and venues</p>
         </div>
-        <button className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-medium transition-colors flex items-center gap-2">
+        <button onClick={() => setShowExamModal(true)} className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-medium transition-colors flex items-center gap-2">
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
@@ -512,8 +546,7 @@ export default function TeacherPortal() {
                   <td className="py-4 px-4 text-slate-300">{exam.time}</td>
                   <td className="py-4 px-4 text-slate-300">{exam.venue}</td>
                   <td className="py-4 px-4">
-                    <button className="text-purple-400 hover:text-purple-300 text-sm mr-3">Edit</button>
-                    <button className="text-red-400 hover:text-red-300 text-sm">Delete</button>
+                    <button onClick={() => handleDeleteExam(idx)} className="text-red-400 hover:text-red-300 text-sm">Delete</button>
                   </td>
                 </tr>
               ))}
@@ -521,6 +554,38 @@ export default function TeacherPortal() {
           </table>
         </div>
       </div>
+
+      {showExamModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-[#1E293B] rounded-2xl p-6 w-full max-w-md border border-white/10">
+            <h3 className="text-xl font-semibold text-white mb-6">Add New Exam</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm text-slate-400 mb-2">Exam Name</label>
+                <input type="text" value={newExam.exam} onChange={(e) => setNewExam({...newExam, exam: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-500" placeholder="e.g., Mathematics Paper 1" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm text-slate-400 mb-2">Date</label>
+                  <input type="date" value={newExam.date} onChange={(e) => setNewExam({...newExam, date: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-500" />
+                </div>
+                <div>
+                  <label className="block text-sm text-slate-400 mb-2">Time</label>
+                  <input type="text" value={newExam.time} onChange={(e) => setNewExam({...newExam, time: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-500" placeholder="09:00 - 11:00" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm text-slate-400 mb-2">Venue</label>
+                <input type="text" value={newExam.venue} onChange={(e) => setNewExam({...newExam, venue: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-500" placeholder="e.g., Hall A" />
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button onClick={() => setShowExamModal(false)} className="flex-1 px-4 py-3 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors">Cancel</button>
+              <button onClick={handleAddExam} className="flex-1 px-4 py-3 rounded-xl bg-purple-600 text-white hover:bg-purple-700 transition-colors">Add Exam</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 
@@ -531,7 +596,7 @@ export default function TeacherPortal() {
           <h1 className="text-3xl font-bold text-white font-['Outfit']">Weekly Timetable</h1>
           <p className="text-slate-400 mt-1">Manage weekly class schedules</p>
         </div>
-        <button className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-medium transition-colors flex items-center gap-2">
+        <button onClick={() => setShowScheduleModal(true)} className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-medium transition-colors flex items-center gap-2">
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
@@ -545,9 +610,10 @@ export default function TeacherPortal() {
             <h3 className="text-lg font-semibold text-white mb-4 text-center pb-2 border-b border-white/10">{day}</h3>
             <div className="space-y-2">
               {weeklyTimetable.filter(t => t.day === day).map((t, idx) => (
-                <div key={idx} className="p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
+                <div key={idx} className="p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors group">
                   <p className="text-white text-sm font-medium">{t.subject}</p>
                   <p className="text-slate-400 text-xs">Grade {t.grade} • {t.time}</p>
+                  <button onClick={() => handleDeleteSchedule(day, idx)} className="text-red-400 text-xs opacity-0 group-hover:opacity-100 mt-2">Delete</button>
                 </div>
               ))}
               {weeklyTimetable.filter(t => t.day === day).length === 0 && (
@@ -557,6 +623,41 @@ export default function TeacherPortal() {
           </div>
         ))}
       </div>
+
+      {showScheduleModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-[#1E293B] rounded-2xl p-6 w-full max-w-md border border-white/10">
+            <h3 className="text-xl font-semibold text-white mb-6">Add New Schedule</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm text-slate-400 mb-2">Day</label>
+                <select value={newSchedule.day} onChange={(e) => setNewSchedule({...newSchedule, day: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-500">
+                  {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map(d => <option key={d} value={d}>{d}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm text-slate-400 mb-2">Time</label>
+                <input type="text" value={newSchedule.time} onChange={(e) => setNewSchedule({...newSchedule, time: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-500" placeholder="08:00 - 09:00" />
+              </div>
+              <div>
+                <label className="block text-sm text-slate-400 mb-2">Subject</label>
+                <input type="text" value={newSchedule.subject} onChange={(e) => setNewSchedule({...newSchedule, subject: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-500" placeholder="e.g., Mathematics" />
+              </div>
+              <div>
+                <label className="block text-sm text-slate-400 mb-2">Grade</label>
+                <select value={newSchedule.grade} onChange={(e) => setNewSchedule({...newSchedule, grade: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-500">
+                  <option value="">Select Grade</option>
+                  {[8,9,10,11,12].map(g => <option key={g} value={g}>Grade {g}</option>)}
+                </select>
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button onClick={() => setShowScheduleModal(false)} className="flex-1 px-4 py-3 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors">Cancel</button>
+              <button onClick={handleAddSchedule} className="flex-1 px-4 py-3 rounded-xl bg-purple-600 text-white hover:bg-purple-700 transition-colors">Add Schedule</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 
