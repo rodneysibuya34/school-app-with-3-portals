@@ -93,18 +93,20 @@ export default function TeacherPortal() {
   const [showQuestionModal, setShowQuestionModal] = useState(false);
   const [currentTestId, setCurrentTestId] = useState<number | null>(null);
   const [newQuestion, setNewQuestion] = useState({ text: "", type: "mcq" as "mcq" | "truefalse", options: ["", "", "", ""], correctAnswer: "" });
-  const [examTimetable, setExamTimetable] = useState<{ date: string; exam: string; time: string; venue: string }[]>([
+  const [examTimetable, setExamTimetable] = useState<{ date: string; exam: string; time: string; venue: string; fileUrl?: string; fileType?: string }[]>([
     { date: "2024-04-15", exam: "Mathematics Paper 1", time: "09:00 - 11:00", venue: "Hall A" },
     { date: "2024-04-16", exam: "English Literature", time: "09:00 - 11:30", venue: "Hall B" },
   ]);
-  const [weeklyTimetable, setWeeklyTimetable] = useState<{ day: string; time: string; subject: string; grade: number }[]>([
+  const [weeklyTimetable, setWeeklyTimetable] = useState<{ day: string; time: string; subject: string; grade: number; fileUrl?: string; fileType?: string }[]>([
     { day: "Monday", time: "08:00 - 09:00", subject: "Mathematics", grade: 11 },
     { day: "Monday", time: "09:00 - 10:00", subject: "Mathematics", grade: 10 },
     { day: "Tuesday", time: "08:00 - 09:00", subject: "Mathematics", grade: 11 },
     { day: "Wednesday", time: "10:00 - 11:00", subject: "Mathematics", grade: 12 },
   ]);
   const [newExam, setNewExam] = useState({ date: "", exam: "", time: "", venue: "" });
+  const [examFile, setExamFile] = useState<{ name: string; data: string; type: string } | null>(null);
   const [newSchedule, setNewSchedule] = useState({ day: "Monday", time: "08:00 - 09:00", subject: "", grade: "" });
+  const [scheduleFile, setScheduleFile] = useState<{ name: string; data: string; type: string } | null>(null);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -210,10 +212,17 @@ export default function TeacherPortal() {
 
   const handleAddExam = () => {
     if (newExam.date && newExam.exam && newExam.time && newExam.venue) {
-      setExamTimetable([...examTimetable, newExam]);
+      setExamTimetable([...examTimetable, { ...newExam, fileUrl: examFile?.data, fileType: examFile?.type }]);
       setNewExam({ date: "", exam: "", time: "", venue: "" });
+      setExamFile(null);
       setShowExamModal(false);
     }
+  };
+
+  const handleCloseExamModal = () => {
+    setShowExamModal(false);
+    setNewExam({ date: "", exam: "", time: "", venue: "" });
+    setExamFile(null);
   };
 
   const handleDeleteExam = (index: number) => {
@@ -222,10 +231,17 @@ export default function TeacherPortal() {
 
   const handleAddSchedule = () => {
     if (newSchedule.day && newSchedule.time && newSchedule.subject && newSchedule.grade) {
-      setWeeklyTimetable([...weeklyTimetable, { ...newSchedule, grade: parseInt(newSchedule.grade) }]);
+      setWeeklyTimetable([...weeklyTimetable, { ...newSchedule, grade: parseInt(newSchedule.grade), fileUrl: scheduleFile?.data, fileType: scheduleFile?.type }]);
       setNewSchedule({ day: "Monday", time: "08:00 - 09:00", subject: "", grade: "" });
+      setScheduleFile(null);
       setShowScheduleModal(false);
     }
+  };
+
+  const handleCloseScheduleModal = () => {
+    setShowScheduleModal(false);
+    setNewSchedule({ day: "Monday", time: "08:00 - 09:00", subject: "", grade: "" });
+    setScheduleFile(null);
   };
 
   const handleDeleteSchedule = (day: string, index: number) => {
@@ -584,6 +600,7 @@ export default function TeacherPortal() {
                 <th className="text-left py-4 px-4 text-slate-400 font-medium">Exam</th>
                 <th className="text-left py-4 px-4 text-slate-400 font-medium">Time</th>
                 <th className="text-left py-4 px-4 text-slate-400 font-medium">Venue</th>
+                <th className="text-left py-4 px-4 text-slate-400 font-medium">Timetable</th>
                 <th className="text-left py-4 px-4 text-slate-400 font-medium">Actions</th>
               </tr>
             </thead>
@@ -594,6 +611,13 @@ export default function TeacherPortal() {
                   <td className="py-4 px-4 text-white font-medium">{exam.exam}</td>
                   <td className="py-4 px-4 text-slate-300">{exam.time}</td>
                   <td className="py-4 px-4 text-slate-300">{exam.venue}</td>
+                  <td className="py-4 px-4">
+                    {exam.fileUrl ? (
+                      <a href={exam.fileUrl} target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:text-purple-300 text-sm">
+                        {exam.fileType?.startsWith('image/') ? 'View Image' : 'View'}
+                      </a>
+                    ) : <span className="text-slate-500 text-sm">-</span>}
+                  </td>
                   <td className="py-4 px-4">
                     <button onClick={() => handleDeleteExam(idx)} className="text-red-400 hover:text-red-300 text-sm">Delete</button>
                   </td>
@@ -627,9 +651,27 @@ export default function TeacherPortal() {
                 <label className="block text-sm text-slate-400 mb-2">Venue</label>
                 <input type="text" value={newExam.venue} onChange={(e) => setNewExam({...newExam, venue: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-500" placeholder="e.g., Hall A" />
               </div>
+              <div>
+                <label className="block text-sm text-slate-400 mb-2">Upload Timetable (Optional)</label>
+                <input 
+                  type="file" 
+                  id="exam-file"
+                  accept="image/*,application/pdf"
+                  capture="environment"
+                  onChange={(e) => { const file = e.target.files?.[0]; if (file) { const reader = new FileReader(); reader.onloadend = () => setExamFile({ name: file.name, data: reader.result as string, type: file.type }); reader.readAsDataURL(file); }}}
+                  className="hidden"
+                />
+                <label htmlFor="exam-file" className="border-2 border-dashed border-white/20 rounded-xl p-4 text-center hover:border-purple-500 transition-colors cursor-pointer block">
+                  {examFile ? (
+                    <p className="text-green-400 text-sm">{examFile.name}</p>
+                  ) : (
+                    <p className="text-slate-400 text-sm">Tap to upload timetable image/PDF</p>
+                  )}
+                </label>
+              </div>
             </div>
             <div className="flex gap-3 mt-6">
-              <button onClick={() => setShowExamModal(false)} className="flex-1 px-4 py-3 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors">Cancel</button>
+              <button onClick={handleCloseExamModal} className="flex-1 px-4 py-3 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors">Cancel</button>
               <button onClick={handleAddExam} className="flex-1 px-4 py-3 rounded-xl bg-purple-600 text-white hover:bg-purple-700 transition-colors">Add Exam</button>
             </div>
           </div>
@@ -662,7 +704,10 @@ export default function TeacherPortal() {
                 <div key={idx} className="p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors group">
                   <p className="text-white text-sm font-medium">{t.subject}</p>
                   <p className="text-slate-400 text-xs">Grade {t.grade} • {t.time}</p>
-                  <button onClick={() => handleDeleteSchedule(day, idx)} className="text-red-400 text-xs opacity-0 group-hover:opacity-100 mt-2">Delete</button>
+                  {t.fileUrl && (
+                    <a href={t.fileUrl} target="_blank" rel="noopener noreferrer" className="text-purple-400 text-xs block mt-1">View Timetable</a>
+                  )}
+                  <button onClick={() => handleDeleteSchedule(day, idx)} className="text-red-400 text-xs opacity-0 group-hover:opacity-100 mt-1">Delete</button>
                 </div>
               ))}
               {weeklyTimetable.filter(t => t.day === day).length === 0 && (
@@ -699,9 +744,27 @@ export default function TeacherPortal() {
                   {[8,9,10,11,12].map(g => <option key={g} value={g}>Grade {g}</option>)}
                 </select>
               </div>
+              <div>
+                <label className="block text-sm text-slate-400 mb-2">Upload Timetable (Optional)</label>
+                <input 
+                  type="file" 
+                  id="schedule-file"
+                  accept="image/*,application/pdf"
+                  capture="environment"
+                  onChange={(e) => { const file = e.target.files?.[0]; if (file) { const reader = new FileReader(); reader.onloadend = () => setScheduleFile({ name: file.name, data: reader.result as string, type: file.type }); reader.readAsDataURL(file); }}}
+                  className="hidden"
+                />
+                <label htmlFor="schedule-file" className="border-2 border-dashed border-white/20 rounded-xl p-4 text-center hover:border-purple-500 transition-colors cursor-pointer block">
+                  {scheduleFile ? (
+                    <p className="text-green-400 text-sm">{scheduleFile.name}</p>
+                  ) : (
+                    <p className="text-slate-400 text-sm">Tap to upload timetable image/PDF</p>
+                  )}
+                </label>
+              </div>
             </div>
             <div className="flex gap-3 mt-6">
-              <button onClick={() => setShowScheduleModal(false)} className="flex-1 px-4 py-3 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors">Cancel</button>
+              <button onClick={handleCloseScheduleModal} className="flex-1 px-4 py-3 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors">Cancel</button>
               <button onClick={handleAddSchedule} className="flex-1 px-4 py-3 rounded-xl bg-purple-600 text-white hover:bg-purple-700 transition-colors">Add Schedule</button>
             </div>
           </div>
