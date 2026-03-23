@@ -167,7 +167,16 @@ export default function AdminPortal() {
       setSchools(schools.map(s => 
         s.name === formData.teacherSchool ? { ...s, teachers: s.teachers + 1 } : s
       ));
-      alert(`Teacher created! Username: ${teacherUsername}, Password: ${teacherPassword}`);
+      
+      setShowModal(null);
+      setFormData({
+        name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '',
+        teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', teacherUsername: '', teacherPassword: '',
+        studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', studentUsername: '', studentPassword: '',
+        subSchool: '', subType: 'Primary', subStartDate: ''
+      });
+      
+      alert(`Teacher created!\n\nUsername: ${teacherUsername}\nPassword: ${teacherPassword}\n\nShare these credentials with the teacher.`);
     } else if (type === 'student') {
       if (!formData.studentName || !formData.studentGrade || !formData.studentSchool) {
         alert("Please fill in Name, Grade, and School");
@@ -190,6 +199,16 @@ export default function AdminPortal() {
       setSchools(schools.map(s => 
         s.name === formData.studentSchool ? { ...s, students: s.students + 1 } : s
       ));
+      
+      setShowModal(null);
+      setFormData({
+        name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '',
+        teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', teacherUsername: '', teacherPassword: '',
+        studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', studentUsername: '', studentPassword: '',
+        subSchool: '', subType: 'Primary', subStartDate: ''
+      });
+      
+      alert(`Student created!\n\nUsername: ${studentUsername}\nPassword: ${studentPassword}\n\nShare these credentials with the student.`);
     } else if (type === 'subscription') {
       const newSub = {
         id: subscriptions.length + 1,

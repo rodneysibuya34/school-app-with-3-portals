@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 
 const studentsData = [
@@ -270,7 +270,7 @@ export default function StudentPortal() {
     router.push("/");
   };
 
-  const handleSubmitTest = () => {
+  const handleSubmitTest = useCallback(() => {
     if (!activeTest) return;
     let correct = 0;
     activeTest.questions.forEach((q) => {
@@ -279,7 +279,7 @@ export default function StudentPortal() {
     setTestScore({ correct, total: activeTest.questions.length });
     setTestSubmitted(true);
     if (timerRef.current) clearTimeout(timerRef.current);
-  };
+  }, [activeTest, answers]);
 
   useEffect(() => {
     if (!activeTest || testSubmitted || timeLeft <= 0) return;
@@ -291,13 +291,13 @@ export default function StudentPortal() {
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [timeLeft]);
+  }, [timeLeft, activeTest, testSubmitted]);
 
   useEffect(() => {
     if (activeTest && timeLeft === 0 && !testSubmitted) {
       handleSubmitTest();
     }
-  }, [timeLeft]);
+  }, [timeLeft, activeTest, testSubmitted, handleSubmitTest]);
 
   if (isLoading || !loggedInStudent) {
     return (
