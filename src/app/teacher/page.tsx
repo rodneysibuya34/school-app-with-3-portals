@@ -19,18 +19,87 @@ const studentsData = [
   { id: 5, name: "James Garcia", email: "j.garcia@riverside.edu", grade: 8, school: "Riverside Elementary", username: "james.g", password: "Jame@123" },
 ];
 
+interface Homework {
+  id: number;
+  title: string;
+  description: string;
+  dueDate: string;
+  grade: number;
+  fileUrl: string;
+  fileType: string;
+}
+
+interface Test {
+  id: number;
+  title: string;
+  description: string;
+  dueDate: string;
+  grade: number;
+  questions: Question[];
+  published: boolean;
+}
+
+interface Question {
+  id: number;
+  text: string;
+  type: "mcq" | "truefalse";
+  options?: string[];
+  correctAnswer: string;
+}
+
+interface Announcement {
+  id: number;
+  title: string;
+  content: string;
+  date: string;
+  priority: "normal" | "important" | "urgent";
+}
+
 const navItems = [
   { icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6", label: "Dashboard" },
-  { icon: "M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10", label: "Classes" },
-  { icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01", label: "Grade Book" },
+  { icon: "M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10", label: "Homework" },
+  { icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01", label: "Tests" },
+  { icon: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z", label: "Exam Timetable" },
+  { icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", label: "Weekly Timetable" },
   { icon: "M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z", label: "Announcements" },
-  { icon: "M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z", label: "Messages" },
 ];
 
 export default function TeacherPortal() {
   const router = useRouter();
   const [loggedInTeacher, setLoggedInTeacher] = useState<typeof teachersData[0] | null>(null);
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [homeworkList, setHomeworkList] = useState<Homework[]>([
+    { id: 1, title: "Algebra Practice Problems", description: "Complete exercises 1-20 from Chapter 5", dueDate: "2024-03-25", grade: 11, fileUrl: "/homework/algebra.pdf", fileType: "pdf" },
+    { id: 2, title: "Geometry Proofs", description: "Submit proofs for theorems 1-5", dueDate: "2024-03-28", grade: 10, fileUrl: "/homework/geometry.pdf", fileType: "pdf" },
+  ]);
+  const [testList, setTestList] = useState<Test[]>([
+    { id: 1, title: "Mid-term Exam", description: "Covers chapters 1-5", dueDate: "2024-04-15", grade: 11, questions: [], published: true },
+    { id: 2, title: "Quiz: Trigonometry", description: "Short quiz on basic trig functions", dueDate: "2024-04-10", grade: 10, questions: [], published: false },
+  ]);
+  const [announcements, setAnnouncements] = useState<Announcement[]>([
+    { id: 1, title: "Parent-Teacher Meeting", content: "Join us this Friday at 2 PM for the quarterly parent-teacher meeting.", date: "2024-03-20", priority: "important" },
+    { id: 2, title: "Exam Preparation", content: "Please ensure all students complete practice papers before the mid-term.", date: "2024-03-18", priority: "normal" },
+  ]);
+  const [showHomeworkModal, setShowHomeworkModal] = useState(false);
+  const [showTestModal, setShowTestModal] = useState(false);
+  const [showAnnouncementModal, setShowAnnouncementModal] = useState(false);
+  const [newHomework, setNewHomework] = useState({ title: "", description: "", dueDate: "", grade: "" });
+  const [newTest, setNewTest] = useState({ title: "", description: "", dueDate: "", grade: "" });
+  const [newAnnouncement, setNewAnnouncement] = useState<{ title: string; content: string; priority: "normal" | "important" | "urgent" }>({ title: "", content: "", priority: "normal" });
+  const [testQuestions, setTestQuestions] = useState<Question[]>([]);
+  const [showQuestionModal, setShowQuestionModal] = useState(false);
+  const [currentTestId, setCurrentTestId] = useState<number | null>(null);
+  const [newQuestion, setNewQuestion] = useState({ text: "", type: "mcq" as "mcq" | "truefalse", options: ["", "", "", ""], correctAnswer: "" });
+  const [examTimetable, setExamTimetable] = useState<{ date: string; exam: string; time: string; venue: string }[]>([
+    { date: "2024-04-15", exam: "Mathematics Paper 1", time: "09:00 - 11:00", venue: "Hall A" },
+    { date: "2024-04-16", exam: "English Literature", time: "09:00 - 11:30", venue: "Hall B" },
+  ]);
+  const [weeklyTimetable, setWeeklyTimetable] = useState<{ day: string; time: string; subject: string; grade: number }[]>([
+    { day: "Monday", time: "08:00 - 09:00", subject: "Mathematics", grade: 11 },
+    { day: "Monday", time: "09:00 - 10:00", subject: "Mathematics", grade: 10 },
+    { day: "Tuesday", time: "08:00 - 09:00", subject: "Mathematics", grade: 11 },
+    { day: "Wednesday", time: "10:00 - 11:00", subject: "Mathematics", grade: 12 },
+  ]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -47,6 +116,521 @@ export default function TeacherPortal() {
     localStorage.removeItem("loggedInTeacher");
     router.push("/");
   };
+
+  const handleAddHomework = () => {
+    if (newHomework.title && newHomework.dueDate && newHomework.grade) {
+      const hw: Homework = {
+        id: Date.now(),
+        title: newHomework.title,
+        description: newHomework.description,
+        dueDate: newHomework.dueDate,
+        grade: parseInt(newHomework.grade),
+        fileUrl: "/homework/uploaded.pdf",
+        fileType: "pdf"
+      };
+      setHomeworkList([...homeworkList, hw]);
+      setNewHomework({ title: "", description: "", dueDate: "", grade: "" });
+      setShowHomeworkModal(false);
+    }
+  };
+
+  const handleAddTest = () => {
+    if (newTest.title && newTest.dueDate && newTest.grade) {
+      const test: Test = {
+        id: Date.now(),
+        title: newTest.title,
+        description: newTest.description,
+        dueDate: newTest.dueDate,
+        grade: parseInt(newTest.grade),
+        questions: [],
+        published: false
+      };
+      setTestList([...testList, test]);
+      setNewTest({ title: "", description: "", dueDate: "", grade: "" });
+      setShowTestModal(false);
+    }
+  };
+
+  const handleAddQuestion = () => {
+    if (newQuestion.text && newQuestion.correctAnswer) {
+      const q: Question = {
+        id: Date.now(),
+        text: newQuestion.text,
+        type: newQuestion.type,
+        options: newQuestion.type === "mcq" ? newQuestion.options : undefined,
+        correctAnswer: newQuestion.correctAnswer
+      };
+      setTestQuestions([...testQuestions, q]);
+      setNewQuestion({ text: "", type: "mcq", options: ["", "", "", ""], correctAnswer: "" });
+      setShowQuestionModal(false);
+    }
+  };
+
+  const handleAddAnnouncement = () => {
+    if (newAnnouncement.title && newAnnouncement.content) {
+      const ann: Announcement = {
+        id: Date.now(),
+        title: newAnnouncement.title,
+        content: newAnnouncement.content,
+        date: new Date().toISOString().split('T')[0],
+        priority: newAnnouncement.priority
+      };
+      setAnnouncements([...announcements, ann]);
+      setNewAnnouncement({ title: "", content: "", priority: "normal" });
+      setShowAnnouncementModal(false);
+    }
+  };
+
+  const renderDashboard = () => {
+    if (!loggedInTeacher) return null;
+    return (
+    <>
+      <div className="p-6 rounded-2xl bg-gradient-to-r from-purple-500/20 to-blue-500/10 border border-purple-500/20 mb-8">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white text-xl font-bold">
+              {getInitials(loggedInTeacher.name)}
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold text-white">{loggedInTeacher.name}</h2>
+              <p className="text-purple-300">{loggedInTeacher.subject} • {loggedInTeacher.school}</p>
+              <p className="text-slate-400 text-sm">Teacher ID: 2024-{loggedInTeacher.id.toString().padStart(4, '0')}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        {stats.map((stat) => (
+          <div key={stat.label} className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all duration-300">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: `${stat.color}20` }}>
+                <svg className="w-6 h-6" style={{ color: stat.color }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={stat.icon} />
+                </svg>
+              </div>
+            </div>
+            <p className="text-3xl font-bold text-white mb-1">{stat.value}</p>
+            <p className="text-slate-400 text-sm">{stat.label}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
+          <h2 className="text-xl font-semibold text-white mb-6 font-['Outfit']">My Students ({loggedInTeacher.school})</h2>
+          <div className="space-y-3">
+            {schoolStudents.map((student) => (
+              <div key={student.id} className="p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-sm font-medium">
+                      {getInitials(student.name)}
+                    </div>
+                    <div>
+                      <h3 className="text-white font-medium">{student.name}</h3>
+                      <p className="text-slate-400 text-sm">Grade {student.grade}</p>
+                    </div>
+                  </div>
+                  <button className="text-purple-400 hover:text-purple-300 text-sm">View Grades</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
+          <h2 className="text-xl font-semibold text-white mb-6 font-['Outfit']">School Staff</h2>
+          <div className="space-y-3">
+            {schoolTeachers.map((teacher) => (
+              <div key={teacher.id} className="p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white text-sm font-medium">
+                    {getInitials(teacher.name)}
+                  </div>
+                  <div>
+                    <h3 className="text-white font-medium">{teacher.name}</h3>
+                    <p className="text-slate-400 text-sm">{teacher.subject}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </>
+    );
+  };
+
+  const renderHomework = () => (
+    <div>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-white font-['Outfit']">Homework & Assignments</h1>
+          <p className="text-slate-400 mt-1">Upload and manage homework assignments</p>
+        </div>
+        <button onClick={() => setShowHomeworkModal(true)} className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-medium transition-colors flex items-center gap-2">
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          Add Homework
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {homeworkList.map((hw) => (
+          <div key={hw.id} className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all duration-300">
+            <div className="flex items-start justify-between mb-4">
+              <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                <svg className="w-6 h-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-300">Grade {hw.grade}</span>
+            </div>
+            <h3 className="text-lg font-semibold text-white mb-2">{hw.title}</h3>
+            <p className="text-slate-400 text-sm mb-4">{hw.description}</p>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-slate-500">Due: {hw.dueDate}</span>
+              <button className="text-purple-400 hover:text-purple-300">View/Download</button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {showHomeworkModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-[#1E293B] rounded-2xl p-6 w-full max-w-md border border-white/10">
+            <h3 className="text-xl font-semibold text-white mb-6">Add New Homework</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm text-slate-400 mb-2">Title</label>
+                <input type="text" value={newHomework.title} onChange={(e) => setNewHomework({...newHomework, title: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-500" placeholder="Homework title" />
+              </div>
+              <div>
+                <label className="block text-sm text-slate-400 mb-2">Description</label>
+                <textarea value={newHomework.description} onChange={(e) => setNewHomework({...newHomework, description: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-500" rows={3} placeholder="Homework description" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm text-slate-400 mb-2">Due Date</label>
+                  <input type="date" value={newHomework.dueDate} onChange={(e) => setNewHomework({...newHomework, dueDate: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-500" />
+                </div>
+                <div>
+                  <label className="block text-sm text-slate-400 mb-2">Grade</label>
+                  <select value={newHomework.grade} onChange={(e) => setNewHomework({...newHomework, grade: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-500">
+                    <option value="">Select Grade</option>
+                    {[8,9,10,11,12].map(g => <option key={g} value={g}>Grade {g}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm text-slate-400 mb-2">Upload File (PDF/Image)</label>
+                <div className="border-2 border-dashed border-white/20 rounded-xl p-6 text-center hover:border-purple-500 transition-colors cursor-pointer">
+                  <svg className="w-8 h-8 text-slate-400 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                  <p className="text-slate-400 text-sm">Click to upload or drag and drop</p>
+                  <p className="text-slate-500 text-xs mt-1">PDF, PNG, JPG up to 10MB</p>
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button onClick={() => setShowHomeworkModal(false)} className="flex-1 px-4 py-3 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors">Cancel</button>
+              <button onClick={handleAddHomework} className="flex-1 px-4 py-3 rounded-xl bg-purple-600 text-white hover:bg-purple-700 transition-colors">Create Homework</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  const renderTests = () => (
+    <div>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-white font-['Outfit']">Online Tests & Quizzes</h1>
+          <p className="text-slate-400 mt-1">Create and manage MCQ and True/False tests</p>
+        </div>
+        <button onClick={() => setShowTestModal(true)} className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-medium transition-colors flex items-center gap-2">
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          Create Test
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        {testList.map((test) => (
+          <div key={test.id} className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all duration-300">
+            <div className="flex items-start justify-between mb-4">
+              <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center">
+                <svg className="w-6 h-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                </svg>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-300">Grade {test.grade}</span>
+                <span className={`px-3 py-1 rounded-full text-xs font-medium ${test.published ? 'bg-blue-500/20 text-blue-300' : 'bg-yellow-500/20 text-yellow-300'}`}>
+                  {test.published ? 'Published' : 'Draft'}
+                </span>
+              </div>
+            </div>
+            <h3 className="text-lg font-semibold text-white mb-2">{test.title}</h3>
+            <p className="text-slate-400 text-sm mb-4">{test.description}</p>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-slate-500">Due: {test.dueDate}</span>
+              <div className="flex gap-2">
+                <button onClick={() => { setCurrentTestId(test.id); setShowQuestionModal(true); }} className="text-purple-400 hover:text-purple-300">Add Questions</button>
+                <button className="text-blue-400 hover:text-blue-300">{test.published ? 'Edit' : 'Publish'}</button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {showTestModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-[#1E293B] rounded-2xl p-6 w-full max-w-md border border-white/10">
+            <h3 className="text-xl font-semibold text-white mb-6">Create New Test</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm text-slate-400 mb-2">Test Title</label>
+                <input type="text" value={newTest.title} onChange={(e) => setNewTest({...newTest, title: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-500" placeholder="Test title" />
+              </div>
+              <div>
+                <label className="block text-sm text-slate-400 mb-2">Description</label>
+                <textarea value={newTest.description} onChange={(e) => setNewTest({...newTest, description: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-500" rows={3} placeholder="Test description" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm text-slate-400 mb-2">Due Date</label>
+                  <input type="date" value={newTest.dueDate} onChange={(e) => setNewTest({...newTest, dueDate: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-500" />
+                </div>
+                <div>
+                  <label className="block text-sm text-slate-400 mb-2">Grade</label>
+                  <select value={newTest.grade} onChange={(e) => setNewTest({...newTest, grade: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-500">
+                    <option value="">Select Grade</option>
+                    {[8,9,10,11,12].map(g => <option key={g} value={g}>Grade {g}</option>)}
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button onClick={() => setShowTestModal(false)} className="flex-1 px-4 py-3 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors">Cancel</button>
+              <button onClick={handleAddTest} className="flex-1 px-4 py-3 rounded-xl bg-purple-600 text-white hover:bg-purple-700 transition-colors">Create Test</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showQuestionModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-[#1E293B] rounded-2xl p-6 w-full max-w-lg border border-white/10">
+            <h3 className="text-xl font-semibold text-white mb-6">Add Question</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm text-slate-400 mb-2">Question Type</label>
+                <select value={newQuestion.type} onChange={(e) => setNewQuestion({...newQuestion, type: e.target.value as "mcq" | "truefalse"})} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-500">
+                  <option value="mcq">Multiple Choice (MCQ)</option>
+                  <option value="truefalse">True/False</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm text-slate-400 mb-2">Question Text</label>
+                <textarea value={newQuestion.text} onChange={(e) => setNewQuestion({...newQuestion, text: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-500" rows={2} placeholder="Enter your question" />
+              </div>
+              {newQuestion.type === "mcq" && (
+                <div className="space-y-2">
+                  <label className="block text-sm text-slate-400 mb-2">Options</label>
+                  {newQuestion.options.map((opt, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <input type="radio" name="correct" checked={newQuestion.correctAnswer === opt} onChange={() => setNewQuestion({...newQuestion, correctAnswer: opt})} className="w-4 h-4 accent-purple-500" />
+                      <input type="text" value={opt} onChange={(e) => { const newOpts = [...newQuestion.options]; newOpts[i] = e.target.value; setNewQuestion({...newQuestion, options: newOpts}); }} className="flex-1 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white text-sm focus:outline-none focus:border-purple-500" placeholder={`Option ${i+1}`} />
+                    </div>
+                  ))}
+                </div>
+              )}
+              {newQuestion.type === "truefalse" && (
+                <div>
+                  <label className="block text-sm text-slate-400 mb-2">Correct Answer</label>
+                  <div className="flex gap-4">
+                    <label className="flex items-center gap-2 text-white">
+                      <input type="radio" name="tf" checked={newQuestion.correctAnswer === "True"} onChange={() => setNewQuestion({...newQuestion, correctAnswer: "True"})} className="w-4 h-4 accent-purple-500" />
+                      True
+                    </label>
+                    <label className="flex items-center gap-2 text-white">
+                      <input type="radio" name="tf" checked={newQuestion.correctAnswer === "False"} onChange={() => setNewQuestion({...newQuestion, correctAnswer: "False"})} className="w-4 h-4 accent-purple-500" />
+                      False
+                    </label>
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button onClick={() => setShowQuestionModal(false)} className="flex-1 px-4 py-3 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors">Cancel</button>
+              <button onClick={handleAddQuestion} className="flex-1 px-4 py-3 rounded-xl bg-purple-600 text-white hover:bg-purple-700 transition-colors">Add Question</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  const renderExamTimetable = () => (
+    <div>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-white font-['Outfit']">Exam Timetable</h1>
+          <p className="text-slate-400 mt-1">Manage exam schedules and venues</p>
+        </div>
+        <button className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-medium transition-colors flex items-center gap-2">
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          Add Exam
+        </button>
+      </div>
+
+      <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-white/10">
+                <th className="text-left py-4 px-4 text-slate-400 font-medium">Date</th>
+                <th className="text-left py-4 px-4 text-slate-400 font-medium">Exam</th>
+                <th className="text-left py-4 px-4 text-slate-400 font-medium">Time</th>
+                <th className="text-left py-4 px-4 text-slate-400 font-medium">Venue</th>
+                <th className="text-left py-4 px-4 text-slate-400 font-medium">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {examTimetable.map((exam, idx) => (
+                <tr key={idx} className="border-b border-white/5 hover:bg-white/5">
+                  <td className="py-4 px-4 text-white">{exam.date}</td>
+                  <td className="py-4 px-4 text-white font-medium">{exam.exam}</td>
+                  <td className="py-4 px-4 text-slate-300">{exam.time}</td>
+                  <td className="py-4 px-4 text-slate-300">{exam.venue}</td>
+                  <td className="py-4 px-4">
+                    <button className="text-purple-400 hover:text-purple-300 text-sm mr-3">Edit</button>
+                    <button className="text-red-400 hover:text-red-300 text-sm">Delete</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderWeeklyTimetable = () => (
+    <div>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-white font-['Outfit']">Weekly Timetable</h1>
+          <p className="text-slate-400 mt-1">Manage weekly class schedules</p>
+        </div>
+        <button className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-medium transition-colors flex items-center gap-2">
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          Add Schedule
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+        {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map((day) => (
+          <div key={day} className="p-4 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
+            <h3 className="text-lg font-semibold text-white mb-4 text-center pb-2 border-b border-white/10">{day}</h3>
+            <div className="space-y-2">
+              {weeklyTimetable.filter(t => t.day === day).map((t, idx) => (
+                <div key={idx} className="p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
+                  <p className="text-white text-sm font-medium">{t.subject}</p>
+                  <p className="text-slate-400 text-xs">Grade {t.grade} • {t.time}</p>
+                </div>
+              ))}
+              {weeklyTimetable.filter(t => t.day === day).length === 0 && (
+                <p className="text-slate-500 text-sm text-center py-4">No classes</p>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderAnnouncements = () => (
+    <div>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-white font-['Outfit']">Announcements</h1>
+          <p className="text-slate-400 mt-1">Post updates and notifications</p>
+        </div>
+        <button onClick={() => setShowAnnouncementModal(true)} className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-medium transition-colors flex items-center gap-2">
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          New Announcement
+        </button>
+      </div>
+
+      <div className="space-y-4">
+        {announcements.map((ann) => (
+          <div key={ann.id} className={`p-6 rounded-2xl border transition-all duration-300 ${
+            ann.priority === "urgent" ? "bg-red-500/10 border-red-500/30" :
+            ann.priority === "important" ? "bg-yellow-500/10 border-yellow-500/30" :
+            "bg-white/5 border-white/10"
+          }`}>
+            <div className="flex items-start justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                  ann.priority === "urgent" ? "bg-red-500/20 text-red-300" :
+                  ann.priority === "important" ? "bg-yellow-500/20 text-yellow-300" :
+                  "bg-blue-500/20 text-blue-300"
+                }`}>
+                  {ann.priority.toUpperCase()}
+                </span>
+                <h3 className="text-lg font-semibold text-white">{ann.title}</h3>
+              </div>
+              <span className="text-slate-500 text-sm">{ann.date}</span>
+            </div>
+            <p className="text-slate-300">{ann.content}</p>
+          </div>
+        ))}
+      </div>
+
+      {showAnnouncementModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-[#1E293B] rounded-2xl p-6 w-full max-w-md border border-white/10">
+            <h3 className="text-xl font-semibold text-white mb-6">New Announcement</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm text-slate-400 mb-2">Title</label>
+                <input type="text" value={newAnnouncement.title} onChange={(e) => setNewAnnouncement({...newAnnouncement, title: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-500" placeholder="Announcement title" />
+              </div>
+              <div>
+                <label className="block text-sm text-slate-400 mb-2">Content</label>
+                <textarea value={newAnnouncement.content} onChange={(e) => setNewAnnouncement({...newAnnouncement, content: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-500" rows={4} placeholder="Announcement content" />
+              </div>
+              <div>
+                <label className="block text-sm text-slate-400 mb-2">Priority</label>
+                <select value={newAnnouncement.priority} onChange={(e) => setNewAnnouncement({...newAnnouncement, priority: e.target.value as "normal" | "important" | "urgent"})} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-500">
+                  <option value="normal">Normal</option>
+                  <option value="important">Important</option>
+                  <option value="urgent">Urgent</option>
+                </select>
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button onClick={() => setShowAnnouncementModal(false)} className="flex-1 px-4 py-3 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors">Cancel</button>
+              <button onClick={handleAddAnnouncement} className="flex-1 px-4 py-3 rounded-xl bg-purple-600 text-white hover:bg-purple-700 transition-colors">Post</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 
   if (!loggedInTeacher) {
     return (
@@ -123,96 +707,12 @@ export default function TeacherPortal() {
       </aside>
 
       <main className="flex-1 p-8 overflow-y-auto">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-white font-['Outfit']">Teacher Dashboard</h1>
-            <p className="text-slate-400 mt-1">Welcome back, {loggedInTeacher.name.split(" ")[1]}!</p>
-          </div>
-          <div className="flex items-center gap-4">
-            <button className="p-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-              </svg>
-            </button>
-            <button className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-medium transition-colors">
-              Create Announcement
-            </button>
-          </div>
-        </div>
-
-        <div className="p-6 rounded-2xl bg-gradient-to-r from-purple-500/20 to-blue-500/10 border border-purple-500/20 mb-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white text-xl font-bold">
-                {getInitials(loggedInTeacher.name)}
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold text-white">{loggedInTeacher.name}</h2>
-                <p className="text-purple-300">{loggedInTeacher.subject} • {loggedInTeacher.school}</p>
-                <p className="text-slate-400 text-sm">Teacher ID: 2024-{loggedInTeacher.id.toString().padStart(4, '0')}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          {stats.map((stat) => (
-            <div key={stat.label} className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all duration-300">
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: `${stat.color}20` }}>
-                  <svg className="w-6 h-6" style={{ color: stat.color }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={stat.icon} />
-                  </svg>
-                </div>
-              </div>
-              <p className="text-3xl font-bold text-white mb-1">{stat.value}</p>
-              <p className="text-slate-400 text-sm">{stat.label}</p>
-            </div>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
-            <h2 className="text-xl font-semibold text-white mb-6 font-['Outfit']">My Students ({loggedInTeacher.school})</h2>
-            <div className="space-y-3">
-              {schoolStudents.map((student) => (
-                <div key={student.id} className="p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-sm font-medium">
-                        {getInitials(student.name)}
-                      </div>
-                      <div>
-                        <h3 className="text-white font-medium">{student.name}</h3>
-                        <p className="text-slate-400 text-sm">Grade {student.grade}</p>
-                      </div>
-                    </div>
-                    <button className="text-purple-400 hover:text-purple-300 text-sm">View Grades</button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
-            <h2 className="text-xl font-semibold text-white mb-6 font-['Outfit']">School Staff</h2>
-            <div className="space-y-3">
-              {schoolTeachers.map((teacher) => (
-                <div key={teacher.id} className="p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white text-sm font-medium">
-                      {getInitials(teacher.name)}
-                    </div>
-                    <div>
-                      <h3 className="text-white font-medium">{teacher.name}</h3>
-                      <p className="text-slate-400 text-sm">{teacher.subject}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+        {activeTab === "dashboard" && renderDashboard()}
+        {activeTab === "homework" && renderHomework()}
+        {activeTab === "tests" && renderTests()}
+        {activeTab === "exam timetable" && renderExamTimetable()}
+        {activeTab === "weekly timetable" && renderWeeklyTimetable()}
+        {activeTab === "announcements" && renderAnnouncements()}
       </main>
     </div>
   );
