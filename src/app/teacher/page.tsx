@@ -86,6 +86,7 @@ export default function TeacherPortal() {
   const [showExamModal, setShowExamModal] = useState(false);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [newHomework, setNewHomework] = useState({ title: "", description: "", dueDate: "", grade: "" });
+  const [homeworkFile, setHomeworkFile] = useState<{ name: string; data: string; type: string } | null>(null);
   const [newTest, setNewTest] = useState({ title: "", description: "", dueDate: "", grade: "" });
   const [newAnnouncement, setNewAnnouncement] = useState<{ title: string; content: string; priority: "normal" | "important" | "urgent" }>({ title: "", content: "", priority: "normal" });
   const [testQuestions, setTestQuestions] = useState<Question[]>([]);
@@ -121,6 +122,21 @@ export default function TeacherPortal() {
     router.push("/");
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setHomeworkFile({
+          name: file.name,
+          data: reader.result as string,
+          type: file.type
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleAddHomework = () => {
     if (newHomework.title && newHomework.dueDate && newHomework.grade) {
       const hw: Homework = {
@@ -129,13 +145,20 @@ export default function TeacherPortal() {
         description: newHomework.description,
         dueDate: newHomework.dueDate,
         grade: parseInt(newHomework.grade),
-        fileUrl: "/homework/uploaded.pdf",
-        fileType: "pdf"
+        fileUrl: homeworkFile?.data || "",
+        fileType: homeworkFile?.type || "unknown"
       };
       setHomeworkList([...homeworkList, hw]);
       setNewHomework({ title: "", description: "", dueDate: "", grade: "" });
+      setHomeworkFile(null);
       setShowHomeworkModal(false);
     }
+  };
+
+  const handleCloseHomeworkModal = () => {
+    setShowHomeworkModal(false);
+    setNewHomework({ title: "", description: "", dueDate: "", grade: "" });
+    setHomeworkFile(null);
   };
 
   const handleAddTest = () => {
@@ -326,7 +349,13 @@ export default function TeacherPortal() {
             <p className="text-slate-400 text-sm mb-4">{hw.description}</p>
             <div className="flex items-center justify-between text-sm">
               <span className="text-slate-500">Due: {hw.dueDate}</span>
-              <button className="text-purple-400 hover:text-purple-300">View/Download</button>
+              {hw.fileUrl ? (
+                <a href={hw.fileUrl} target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:text-purple-300">
+                  {hw.fileType.startsWith('image/') ? 'View Image' : 'View/Download'}
+                </a>
+              ) : (
+                <span className="text-slate-500">No file</span>
+              )}
             </div>
           </div>
         ))}
@@ -360,17 +389,37 @@ export default function TeacherPortal() {
               </div>
               <div>
                 <label className="block text-sm text-slate-400 mb-2">Upload File (PDF/Image)</label>
-                <div className="border-2 border-dashed border-white/20 rounded-xl p-6 text-center hover:border-purple-500 transition-colors cursor-pointer">
-                  <svg className="w-8 h-8 text-slate-400 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                  </svg>
-                  <p className="text-slate-400 text-sm">Click to upload or drag and drop</p>
-                  <p className="text-slate-500 text-xs mt-1">PDF, PNG, JPG up to 10MB</p>
-                </div>
+                <input 
+                  type="file" 
+                  id="homework-file"
+                  accept="image/*,application/pdf"
+                  capture="environment"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+                <label htmlFor="homework-file" className="border-2 border-dashed border-white/20 rounded-xl p-6 text-center hover:border-purple-500 transition-colors cursor-pointer block">
+                  {homeworkFile ? (
+                    <div className="flex flex-col items-center">
+                      <svg className="w-8 h-8 text-green-400 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <p className="text-green-400 text-sm font-medium">{homeworkFile.name}</p>
+                      <p className="text-slate-500 text-xs mt-1">Click to change file</p>
+                    </div>
+                  ) : (
+                    <>
+                      <svg className="w-8 h-8 text-slate-400 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                      </svg>
+                      <p className="text-slate-400 text-sm">Tap to upload from camera or files</p>
+                      <p className="text-slate-500 text-xs mt-1">PDF, PNG, JPG up to 10MB</p>
+                    </>
+                  )}
+                </label>
               </div>
             </div>
             <div className="flex gap-3 mt-6">
-              <button onClick={() => setShowHomeworkModal(false)} className="flex-1 px-4 py-3 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors">Cancel</button>
+              <button onClick={handleCloseHomeworkModal} className="flex-1 px-4 py-3 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors">Cancel</button>
               <button onClick={handleAddHomework} className="flex-1 px-4 py-3 rounded-xl bg-purple-600 text-white hover:bg-purple-700 transition-colors">Create Homework</button>
             </div>
           </div>
