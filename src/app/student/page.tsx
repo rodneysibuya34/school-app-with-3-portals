@@ -244,6 +244,7 @@ const navItems = [
 export default function StudentPortal() {
   const router = useRouter();
   const [loggedInStudent, setLoggedInStudent] = useState<typeof studentsData[0] | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [activeTest, setActiveTest] = useState<Test | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -260,27 +261,45 @@ export default function StudentPortal() {
       router.push("/login");
       return;
     }
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoggedInStudent(JSON.parse(student));
+    setIsLoading(false);
   }, [router]);
-
-  useEffect(() => {
-    if (activeTest && timeLeft > 0 && !testSubmitted) {
-      timerRef.current = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
-    } else if (activeTest && timeLeft === 0 && !testSubmitted) {
-      handleSubmitTest();
-    }
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
-  }, [timeLeft, activeTest, testSubmitted]);
 
   const handleLogout = () => {
     localStorage.removeItem("loggedInStudent");
     router.push("/");
   };
 
-  if (!loggedInStudent) {
+  const handleSubmitTest = () => {
+    if (!activeTest) return;
+    let correct = 0;
+    activeTest.questions.forEach((q) => {
+      if (answers[q.id] === q.correctAnswer) correct++;
+    });
+    setTestScore({ correct, total: activeTest.questions.length });
+    setTestSubmitted(true);
+    if (timerRef.current) clearTimeout(timerRef.current);
+  };
+
+  useEffect(() => {
+    if (!activeTest || testSubmitted || timeLeft <= 0) return;
+    
+    timerRef.current = setTimeout(() => {
+      setTimeLeft(prev => prev - 1);
+    }, 1000);
+
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [timeLeft]);
+
+  useEffect(() => {
+    if (activeTest && timeLeft === 0 && !testSubmitted) {
+      handleSubmitTest();
+    }
+  }, [timeLeft]);
+
+  if (isLoading || !loggedInStudent) {
     return (
       <div className="min-h-screen bg-[#0F172A] flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
@@ -315,17 +334,6 @@ export default function StudentPortal() {
     setTestSubmitted(false);
     setTestScore(null);
     setTimeLeft(test.timeLimit * 60);
-  };
-
-  const handleSubmitTest = () => {
-    if (!activeTest) return;
-    let correct = 0;
-    activeTest.questions.forEach((q) => {
-      if (answers[q.id] === q.correctAnswer) correct++;
-    });
-    setTestScore({ correct, total: activeTest.questions.length });
-    setTestSubmitted(true);
-    if (timerRef.current) clearTimeout(timerRef.current);
   };
 
   const renderDashboard = () => (
