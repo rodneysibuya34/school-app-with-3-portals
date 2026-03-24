@@ -44,7 +44,7 @@ const initialSubscriptions = [
   { id: 4, school: "Highland Academy", schoolType: "High School", price: "Free", startDate: "Mar 1, 2026", status: "Trial", renewal: "Mar 31, 2026" },
 ];
 
-type ModalType = 'school' | 'teacher' | 'student' | 'subscription' | null;
+type ModalType = 'school' | 'teacher' | 'student' | 'subscription' | 'newYear' | null;
 
 interface Teacher {
   id: number;
@@ -86,6 +86,39 @@ export default function AdminPortal() {
     return stored ? JSON.parse(stored) : initialStudents;
   });
   const [subscriptions, setSubscriptions] = useState(initialSubscriptions);
+  const [currentYear, setCurrentYear] = useState(() => {
+    const stored = localStorage.getItem("academicYear");
+    return stored ? parseInt(stored) : new Date().getFullYear();
+  });
+
+  const handleNewYear = () => {
+    const confirmNewYear = confirm(`⚠️ START NEW ACADEMIC YEAR ${currentYear + 1}?
+
+This will:
+• Remove all current teachers
+• Remove all current students
+• Reset student/teacher counts for all schools
+• Keep schools and subscriptions intact
+
+Are you sure you want to proceed?`);
+    
+    if (confirmNewYear) {
+      const nextYear = currentYear + 1;
+      setCurrentYear(nextYear);
+      localStorage.setItem("academicYear", nextYear.toString());
+      
+      setTeachers([]);
+      localStorage.setItem("teachersData", JSON.stringify([]));
+      
+      setStudents([]);
+      localStorage.setItem("studentsData", JSON.stringify([]));
+      
+      setSchools(schools.map(s => ({ ...s, students: 0, teachers: 0 })));
+      
+      alert(`🎉 Academic Year ${nextYear} started!\n\nAll previous teachers and students have been removed. You can now add new users for the new year.`);
+      setShowModal(null);
+    }
+  };
 
   const [formData, setFormData] = useState({
     name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '',
@@ -274,6 +307,7 @@ export default function AdminPortal() {
             {showModal === 'teacher' && 'Add New Teacher'}
             {showModal === 'student' && 'Add New Student'}
             {showModal === 'subscription' && 'Create New Subscription'}
+            {showModal === 'newYear' && 'Start New Academic Year'}
           </h2>
 
           {showModal === 'school' && (
@@ -383,13 +417,57 @@ export default function AdminPortal() {
             </div>
           )}
 
+          {showModal === 'newYear' && (
+            <div className="space-y-4">
+              <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-center">
+                <div className="w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <h3 className="text-white font-semibold text-lg mb-2">Start New Academic Year</h3>
+                <p className="text-slate-400 text-sm mb-4">Current Year: <span className="text-white font-medium">{currentYear}</span></p>
+                <p className="text-slate-400 text-sm">New Year: <span className="text-red-400 font-medium text-lg">{currentYear + 1}</span></p>
+              </div>
+              
+              <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                <p className="text-slate-400 text-sm font-medium mb-3">This will:</p>
+                <ul className="text-slate-400 text-sm space-y-2">
+                  <li className="flex items-center gap-2">
+                    <span className="text-red-400">✗</span> Remove all {teachers.length} teachers
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-red-400">✗</span> Remove all {students.length} students
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-red-400">✗</span> Reset school student/teacher counts to 0
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-green-400">✓</span> Keep all schools intact
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-green-400">✓</span> Keep all subscriptions intact
+                  </li>
+                </ul>
+              </div>
+              
+              <p className="text-yellow-400 text-sm text-center">⚠️ This action cannot be undone!</p>
+            </div>
+          )}
+
           <div className="flex gap-3 mt-6">
             <button onClick={() => setShowModal(null)} className="flex-1 py-3 rounded-xl border border-white/20 text-white hover:bg-white/5 font-medium transition-colors">
               Cancel
             </button>
-            <button onClick={() => handleSubmit(showModal)} className="flex-1 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-colors">
-              Create
-            </button>
+            {showModal === 'newYear' ? (
+              <button onClick={handleNewYear} className="flex-1 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-medium transition-colors">
+                Start {currentYear + 1}
+              </button>
+            ) : (
+              <button onClick={() => handleSubmit(showModal)} className="flex-1 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-colors">
+                Create
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -826,6 +904,15 @@ export default function AdminPortal() {
                     </div>
                     <p className="text-white font-medium">New Subscription</p>
                     <p className="text-slate-400 text-sm">Add subscription</p>
+                  </button>
+                  <button onClick={() => setShowModal('newYear')} className="p-4 rounded-xl bg-red-500/10 hover:bg-red-500/20 transition-colors text-left border border-red-500/20">
+                    <div className="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center mb-3">
+                      <svg className="w-5 h-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <p className="text-white font-medium">Start New Year</p>
+                    <p className="text-red-400 text-sm">Clear users for {currentYear + 1}</p>
                   </button>
                 </div>
               </div>
