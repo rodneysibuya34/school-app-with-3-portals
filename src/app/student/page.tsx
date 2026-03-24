@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 
 interface StudentData {
@@ -59,6 +59,7 @@ interface StudyMaterial {
   description: string;
   fileUrl: string;
   fileType: string;
+  grade: number;
 }
 
 const homeworkByGrade: Record<number, Homework[]> = {
@@ -188,24 +189,24 @@ const weeklyTimetableByGrade: Record<number, { day: string; time: string; subjec
 
 const studyMaterialsByGrade: Record<number, StudyMaterial[]> = {
   8: [
-    { id: 1, title: "Math Basics Guide", subject: "Mathematics", description: "Basic math formulas and concepts", fileUrl: "", fileType: "pdf" },
-    { id: 2, title: "Science Experiment Guide", subject: "Science", description: "How to conduct experiments", fileUrl: "", fileType: "pdf" },
+    { id: 1, title: "Math Basics Guide", subject: "Mathematics", description: "Basic math formulas and concepts", fileUrl: "", fileType: "pdf", grade: 8 },
+    { id: 2, title: "Science Experiment Guide", subject: "Science", description: "How to conduct experiments", fileUrl: "", fileType: "pdf", grade: 8 },
   ],
   9: [
-    { id: 3, title: "Algebra Cheat Sheet", subject: "Mathematics", description: "Key algebra formulas", fileUrl: "", fileType: "pdf" },
-    { id: 4, title: "Physics Formula Sheet", subject: "Physics", description: "Motion and force formulas", fileUrl: "", fileType: "pdf" },
+    { id: 3, title: "Algebra Cheat Sheet", subject: "Mathematics", description: "Key algebra formulas", fileUrl: "", fileType: "pdf", grade: 9 },
+    { id: 4, title: "Physics Formula Sheet", subject: "Physics", description: "Motion and force formulas", fileUrl: "", fileType: "pdf", grade: 9 },
   ],
   10: [
-    { id: 5, title: "Trigonometry Notes", subject: "Mathematics", description: "Complete trig guide", fileUrl: "", fileType: "pdf" },
-    { id: 6, title: "Periodic Table", subject: "Chemistry", description: "Full periodic table with properties", fileUrl: "", fileType: "pdf" },
+    { id: 5, title: "Trigonometry Notes", subject: "Mathematics", description: "Complete trig guide", fileUrl: "", fileType: "pdf", grade: 10 },
+    { id: 6, title: "Periodic Table", subject: "Chemistry", description: "Full periodic table with properties", fileUrl: "", fileType: "pdf", grade: 10 },
   ],
   11: [
-    { id: 7, title: "Calculus Quick Reference", subject: "Mathematics", description: "Derivatives and integrals", fileUrl: "", fileType: "pdf" },
-    { id: 8, title: "Physics MCAT Prep", subject: "Physics", description: "Practice problems", fileUrl: "", fileType: "pdf" },
+    { id: 7, title: "Calculus Quick Reference", subject: "Mathematics", description: "Derivatives and integrals", fileUrl: "", fileType: "pdf", grade: 11 },
+    { id: 8, title: "Physics MCAT Prep", subject: "Physics", description: "Practice problems", fileUrl: "", fileType: "pdf", grade: 11 },
   ],
   12: [
-    { id: 9, title: "AP Calculus Review", subject: "Mathematics", description: "Full AP review guide", fileUrl: "", fileType: "pdf" },
-    { id: 10, title: "AP Physics Formula Sheet", subject: "Physics", description: "All formulas needed", fileUrl: "", fileType: "pdf" },
+    { id: 9, title: "AP Calculus Review", subject: "Mathematics", description: "Full AP review guide", fileUrl: "", fileType: "pdf", grade: 12 },
+    { id: 10, title: "AP Physics Formula Sheet", subject: "Physics", description: "All formulas needed", fileUrl: "", fileType: "pdf", grade: 12 },
   ],
 };
 
@@ -264,6 +265,14 @@ export default function StudentPortal() {
   const [testScore, setTestScore] = useState<{ correct: number; total: number } | null>(null);
   const [timeLeft, setTimeLeft] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Data state
+  const [homeworkList, setHomeworkList] = useState<Homework[]>([]);
+  const [testList, setTestList] = useState<Test[]>([]);
+  const [examTimetableList, setExamTimetableList] = useState<{ date: string; exam: string; time: string; venue: string; grade: number; fileUrl?: string }[]>([]);
+  const [weeklyTimetableList, setWeeklyTimetableList] = useState<{ day: string; time: string; subject: string; grade: number }[]>([]);
+  const [studyMaterialsList, setStudyMaterialsList] = useState<StudyMaterial[]>([]);
+  const [coursesList, setCoursesList] = useState<Array<{name: string, teacher: string, grade: string, progress: number, testScores: number[]}>>([]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -274,6 +283,205 @@ export default function StudentPortal() {
     }
     setLoggedInStudent(JSON.parse(student));
     setIsLoading(false);
+    
+    // Load all data from localStorage
+    const storedHomework = localStorage.getItem("homeworkData");
+    if (storedHomework) {
+      setHomeworkList(JSON.parse(storedHomework));
+    }
+    const storedTests = localStorage.getItem("testData");
+    if (storedTests) {
+      setTestList(JSON.parse(storedTests));
+    }
+    const storedExamTimetable = localStorage.getItem("examTimetableData");
+    if (storedExamTimetable) {
+      setExamTimetableList(JSON.parse(storedExamTimetable));
+    }
+    const storedWeeklyTimetable = localStorage.getItem("weeklyTimetableData");
+    if (storedWeeklyTimetable) {
+      setWeeklyTimetableList(JSON.parse(storedWeeklyTimetable));
+    }
+    const storedStudyMaterials = localStorage.getItem("studyMaterialsData");
+    if (storedStudyMaterials) {
+      setStudyMaterialsList(JSON.parse(storedStudyMaterials));
+    }
+    const storedCourses = localStorage.getItem("coursesData");
+    if (storedCourses) {
+      setCoursesList(JSON.parse(storedCourses));
+    }
+  }, [router]);
+
+  const getInitials = (name: string) => {
+    return name.split(" ").map(n => n[0]).join("").toUpperCase();
+  };
+  const [homework, setHomework] = useState<Homework[]>([]);
+  const [tests, setTests] = useState<Test[]>([]);
+  const [examTimetables, setExamTimetables] = useState<{ date: string; exam: string; time: string; venue: string; grade: number; fileUrl?: string }[]>([]);
+  const [weeklyTimetables, setWeeklyTimetables] = useState<{ day: string; time: string; subject: string; grade: number }[]>([]);
+  const [studyMaterialsList, setStudyMaterialsList] = useState<StudyMaterial[]>([]);
+  const [coursesList, setCoursesList] = useState<Array<{name: string, teacher: string, grade: string, progress: number, testScores: number[]}>>([]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const student = localStorage.getItem("loggedInStudent");
+    if (!student) {
+      router.push("/login");
+      return;
+    }
+    setLoggedInStudent(JSON.parse(student));
+    setIsLoading(false);
+    
+    // Load all data from localStorage
+    const storedHomework = localStorage.getItem("homeworkData");
+    if (storedHomework) {
+      setHomework(JSON.parse(storedHomework));
+    }
+    const storedTests = localStorage.getItem("testData");
+    if (storedTests) {
+      setTests(JSON.parse(storedTests));
+    }
+    const storedExamTimetable = localStorage.getItem("examTimetableData");
+    if (storedExamTimetable) {
+      setExamTimetables(JSON.parse(storedExamTimetable));
+    }
+    const storedWeeklyTimetable = localStorage.getItem("weeklyTimetableData");
+    if (storedWeeklyTimetable) {
+      setWeeklyTimetables(JSON.parse(storedWeeklyTimetable));
+    }
+    const storedStudyMaterials = localStorage.getItem("studyMaterialsData");
+    if (storedStudyMaterials) {
+      setStudyMaterialsList(JSON.parse(storedStudyMaterials));
+    }
+    const storedCourses = localStorage.getItem("coursesData");
+    if (storedCourses) {
+      setCoursesList(JSON.parse(storedCourses));
+    }
+  }, [router]);
+
+  const getInitials = (name: string) => {
+    return name.split(" ").map(n => n[0]).join("").toUpperCase();
+  };
+
+  const homeworkList = useMemo(() => {
+    return [...homework].filter(hw => hw.grade === (loggedInStudent?.grade ?? 0));
+  }, [homework, loggedInStudent?.grade]);
+
+  const testList = useMemo(() => {
+    return [...tests].filter(t => t.grade === (loggedInStudent?.grade ?? 0));
+  }, [tests, loggedInStudent?.grade]);
+
+  const examTimetable = useMemo(() => {
+    return [...examTimetables].filter(et => et.grade === (loggedInStudent?.grade ?? 0));
+  }, [examTimetables, loggedInStudent?.grade]);
+
+  const weeklyTimetable = useMemo(() => {
+    return [...weeklyTimetables].filter(wt => wt.grade === (loggedInStudent?.grade ?? 0));
+  }, [weeklyTimetables, loggedInStudent?.grade]);
+
+  const studyMaterials = useMemo(() => {
+    return [...studyMaterialsList].filter(sm => sm.grade === (loggedInStudent?.grade ?? 0));
+  }, [studyMaterialsList, loggedInStudent?.grade]);
+
+  const courses = useMemo(() => {
+    return [...coursesList].filter(c => c.grade === (loggedInStudent?.grade ?? 0));
+  }, [coursesList, loggedInStudent?.grade]);
+  const [homework, setHomework] = useState<Homework[]>([]);
+  const [tests, setTests] = useState<Test[]>([]);
+  const [examTimetables, setExamTimetables] = useState<{ date: string; exam: string; time: string; venue: string; grade: number; fileUrl?: string }[]>([]);
+  const [weeklyTimetables, setWeeklyTimetables] = useState<{ day: string; time: string; subject: string; grade: number }[]>([]);
+  const [studyMaterialsList, setStudyMaterialsList] = useState<StudyMaterial[]>([]);
+  const [coursesList, setCoursesList] = useState<Array<{name: string, teacher: string, grade: string, progress: number, testScores: number[]}>>([]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const student = localStorage.getItem("loggedInStudent");
+    if (!student) {
+      router.push("/login");
+      return;
+    }
+    setLoggedInStudent(JSON.parse(student));
+    setIsLoading(false);
+    
+    // Load all data from localStorage
+    const storedHomework = localStorage.getItem("homeworkData");
+    if (storedHomework) {
+      setHomework(JSON.parse(storedHomework));
+    }
+    const storedTests = localStorage.getItem("testData");
+    if (storedTests) {
+      setTests(JSON.parse(storedTests));
+    }
+    const storedExamTimetable = localStorage.getItem("examTimetableData");
+    if (storedExamTimetable) {
+      setExamTimetables(JSON.parse(storedExamTimetable));
+    }
+    const storedWeeklyTimetable = localStorage.getItem("weeklyTimetableData");
+    if (storedWeeklyTimetable) {
+      setWeeklyTimetables(JSON.parse(storedWeeklyTimetable));
+    }
+    const storedStudyMaterials = localStorage.getItem("studyMaterialsData");
+    if (storedStudyMaterials) {
+      setStudyMaterialsList(JSON.parse(storedStudyMaterials));
+    }
+    const storedCourses = localStorage.getItem("coursesData");
+    if (storedCourses) {
+      setCoursesList(JSON.parse(storedCourses));
+    }
+  }, [router]);
+
+  const getInitials = (name: string) => {
+    return name.split(" ").map(n => n[0]).join("").toUpperCase();
+  };
+
+  const homeworkList = [...homework].filter(hw => hw.grade === (loggedInStudent?.grade ?? 0));
+  const testList = [...tests].filter(t => t.grade === (loggedInStudent?.grade ?? 0));
+  const examTimetable = [...examTimetables].filter(et => et.grade === (loggedInStudent?.grade ?? 0));
+  const weeklyTimetable = [...weeklyTimetables].filter(wt => wt.grade === (loggedInStudent?.grade ?? 0));
+  const studyMaterials = [...studyMaterialsList].filter(sm => sm.grade === (loggedInStudent?.grade ?? 0));
+  const courses = [...coursesList].filter(c => c.grade === (loggedInStudent?.grade ?? 0));
+
+  const [homework, setHomework] = useState<Homework[]>([]);
+  const [tests, setTests] = useState<Test[]>([]);
+  const [examTimetables, setExamTimetables] = useState<{ date: string; exam: string; time: string; venue: string; grade: number; fileUrl?: string }[]>([]);
+  const [weeklyTimetables, setWeeklyTimetables] = useState<{ day: string; time: string; subject: string; grade: number }[]>([]);
+  const [studyMaterialsList, setStudyMaterialsList] = useState<StudyMaterial[]>([]);
+  const [coursesList, setCoursesList] = useState<Array<{name: string, teacher: string, grade: string, progress: number, testScores: number[]}>>([]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const student = localStorage.getItem("loggedInStudent");
+    if (!student) {
+      router.push("/login");
+      return;
+    }
+    setLoggedInStudent(JSON.parse(student));
+    setIsLoading(false);
+    
+    // Load all data from localStorage
+    const storedHomework = localStorage.getItem("homeworkData");
+    if (storedHomework) {
+      setHomework(JSON.parse(storedHomework));
+    }
+    const storedTests = localStorage.getItem("testData");
+    if (storedTests) {
+      setTests(JSON.parse(storedTests));
+    }
+    const storedExamTimetable = localStorage.getItem("examTimetableData");
+    if (storedExamTimetable) {
+      setExamTimetables(JSON.parse(storedExamTimetable));
+    }
+    const storedWeeklyTimetable = localStorage.getItem("weeklyTimetableData");
+    if (storedWeeklyTimetable) {
+      setWeeklyTimetables(JSON.parse(storedWeeklyTimetable));
+    }
+    const storedStudyMaterials = localStorage.getItem("studyMaterialsData");
+    if (storedStudyMaterials) {
+      setStudyMaterialsList(JSON.parse(storedStudyMaterials));
+    }
+    const storedCourses = localStorage.getItem("coursesData");
+    if (storedCourses) {
+      setCoursesList(JSON.parse(storedCourses));
+    }
   }, [router]);
 
   const handleLogout = () => {
@@ -318,13 +526,6 @@ export default function StudentPortal() {
     );
   }
 
-  const homeworkList = homeworkByGrade[loggedInStudent.grade as keyof typeof homeworkByGrade] || [];
-  const testList = testsByGrade[loggedInStudent.grade as keyof typeof testsByGrade] || [];
-  const examTimetable = examTimetableByGrade[loggedInStudent.grade as keyof typeof examTimetableByGrade] || [];
-  const weeklyTimetable = weeklyTimetableByGrade[loggedInStudent.grade as keyof typeof weeklyTimetableByGrade] || [];
-  const studyMaterials = studyMaterialsByGrade[loggedInStudent.grade as keyof typeof studyMaterialsByGrade] || [];
-  const courses = coursesByGrade[loggedInStudent.grade as keyof typeof coursesByGrade] || [];
-
   const gpaValues: Record<string, string> = {
     "A": "4.0", "A-": "3.7", "B+": "3.3", "B": "3.0", "B-": "2.7", "C+": "2.3", "C": "2.0"
   };
@@ -337,6 +538,13 @@ export default function StudentPortal() {
   const getInitials = (name: string) => {
     return name.split(" ").map(n => n[0]).join("").toUpperCase();
   };
+
+  const homeworkList = [...homework].filter(hw => hw.grade === loggedInStudent.grade);
+  const testList = [...tests].filter(t => t.grade === loggedInStudent.grade);
+  const examTimetable = [...examTimetables].filter(et => et.grade === loggedInStudent.grade);
+  const weeklyTimetable = [...weeklyTimetables].filter(wt => wt.grade === loggedInStudent.grade);
+  const studyMaterials = [...studyMaterialsList].filter(sm => sm.grade === loggedInStudent.grade);
+  const courses = [...coursesList].filter(c => c.grade === loggedInStudent.grade);
 
   const startTest = (test: Test) => {
     setActiveTest(test);

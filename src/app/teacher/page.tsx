@@ -90,10 +90,13 @@ export default function TeacherPortal() {
   const router = useRouter();
   const [loggedInTeacher, setLoggedInTeacher] = useState<typeof teachersData[0] | null>(null);
   const [activeTab, setActiveTab] = useState("dashboard");
-  const [homeworkList, setHomeworkList] = useState<Homework[]>([
-    { id: 1, title: "Algebra Practice Problems", description: "Complete exercises 1-20 from Chapter 5", dueDate: "2024-03-25", grade: 11, fileUrl: "/homework/algebra.pdf", fileType: "pdf" },
-    { id: 2, title: "Geometry Proofs", description: "Submit proofs for theorems 1-5", dueDate: "2024-03-28", grade: 10, fileUrl: "/homework/geometry.pdf", fileType: "pdf" },
-  ]);
+  const [homeworkList, setHomeworkList] = useState<Homework[]>(() => {
+    const stored = localStorage.getItem("homeworkData");
+    return stored ? JSON.parse(stored) : [
+      { id: 1, title: "Algebra Practice Problems", description: "Complete exercises 1-20 from Chapter 5", dueDate: "2026-03-25", grade: 11, fileUrl: "/homework/algebra.pdf", fileType: "pdf" },
+      { id: 2, title: "Geometry Proofs", description: "Submit proofs for theorems 1-5", dueDate: "2026-03-28", grade: 10, fileUrl: "/homework/geometry.pdf", fileType: "pdf" },
+    ];
+  });
   const [testList, setTestList] = useState<Test[]>([
     { id: 1, title: "Mid-term Exam", description: "Covers chapters 1-5", dueDate: "2024-04-15", grade: 11, questions: [], published: true },
     { id: 2, title: "Quiz: Trigonometry", description: "Short quiz on basic trig functions", dueDate: "2024-04-10", grade: 10, questions: [], published: false },
@@ -141,6 +144,30 @@ export default function TeacherPortal() {
     setLoggedInTeacher(JSON.parse(teacher));
   }, [router]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const storedHomework = localStorage.getItem("homeworkData");
+    if (storedHomework) {
+      setHomeworkList(JSON.parse(storedHomework));
+    }
+    const storedTests = localStorage.getItem("testData");
+    if (storedTests) {
+      setTestList(JSON.parse(storedTests));
+    }
+    const storedAnnouncements = localStorage.getItem("announcementData");
+    if (storedAnnouncements) {
+      setAnnouncements(JSON.parse(storedAnnouncements));
+    }
+    const storedExamTimetable = localStorage.getItem("examTimetableData");
+    if (storedExamTimetable) {
+      setExamTimetable(JSON.parse(storedExamTimetable));
+    }
+    const storedWeeklyTimetable = localStorage.getItem("weeklyTimetableData");
+    if (storedWeeklyTimetable) {
+      setWeeklyTimetable(JSON.parse(storedWeeklyTimetable));
+    }
+  }, []);
+
   const handleLogout = () => {
     localStorage.removeItem("loggedInTeacher");
     router.push("/");
@@ -173,6 +200,7 @@ export default function TeacherPortal() {
         fileType: homeworkFile?.type || "unknown"
       };
       setHomeworkList([...homeworkList, hw]);
+      localStorage.setItem("homeworkData", JSON.stringify([...homeworkList, hw]));
       setNewHomework({ title: "", description: "", dueDate: "", grade: "" });
       setHomeworkFile(null);
       setShowHomeworkModal(false);
@@ -185,22 +213,23 @@ export default function TeacherPortal() {
     setHomeworkFile(null);
   };
 
-  const handleAddTest = () => {
-    if (newTest.title && newTest.dueDate && newTest.grade) {
-      const test: Test = {
-        id: Date.now(),
-        title: newTest.title,
-        description: newTest.description,
-        dueDate: newTest.dueDate,
-        grade: parseInt(newTest.grade),
-        questions: [],
-        published: false
-      };
-      setTestList([...testList, test]);
-      setNewTest({ title: "", description: "", dueDate: "", grade: "" });
-      setShowTestModal(false);
-    }
-  };
+    const handleAddTest = () => {
+      if (newTest.title && newTest.dueDate && newTest.grade) {
+        const test: Test = {
+          id: Date.now(),
+          title: newTest.title,
+          description: newTest.description,
+          dueDate: newTest.dueDate,
+          grade: parseInt(newTest.grade),
+          questions: [],
+          published: false
+        };
+        setTestList([...testList, test]);
+        localStorage.setItem("testData", JSON.stringify([...testList, test]));
+        setNewTest({ title: "", description: "", dueDate: "", grade: "" });
+        setShowTestModal(false);
+      }
+    };
 
   const handleAddQuestion = () => {
     if (newQuestion.text && newQuestion.correctAnswer) {
