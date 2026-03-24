@@ -14,11 +14,11 @@ const navItems = [
   { icon: "M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z", label: "Messages", href: "/admin/messages" },
 ];
 
-const initialSchools = [
-  { id: 1, name: "Oakridge Preparatory Academy", location: "Boston, MA", students: 892, teachers: 48, status: "Active", type: "High School", adminUsername: "oakridge_admin", adminPassword: "Oak@2024" },
-  { id: 2, name: "Westfield Christian School", location: "Chicago, IL", students: 456, teachers: 28, status: "Active", type: "Primary", adminUsername: "westfield_admin", adminPassword: "West@2024" },
-  { id: 3, name: "Riverside Elementary", location: "Miami, FL", students: 324, teachers: 22, status: "Active", type: "Primary", adminUsername: "riverside_admin", adminPassword: "River@2024" },
-  { id: 4, name: "Highland Academy", location: "Seattle, WA", students: 678, teachers: 35, status: "Trial", type: "High School", adminUsername: "highland_admin", adminPassword: "High@2024" },
+const initialSchools: School[] = [
+  { id: 1, name: "Oakridge Preparatory Academy", location: "Boston, MA", students: 892, teachers: 48, status: "Active", type: "High School", adminUsername: "oakridge_admin", adminPassword: "Oak@2024", year: 2026 },
+  { id: 2, name: "Westfield Christian School", location: "Chicago, IL", students: 456, teachers: 28, status: "Active", type: "Primary", adminUsername: "westfield_admin", adminPassword: "West@2024", year: 2026 },
+  { id: 3, name: "Riverside Elementary", location: "Miami, FL", students: 324, teachers: 22, status: "Active", type: "Primary", adminUsername: "riverside_admin", adminPassword: "River@2024", year: 2026 },
+  { id: 4, name: "Highland Academy", location: "Seattle, WA", students: 678, teachers: 35, status: "Trial", type: "High School", adminUsername: "highland_admin", adminPassword: "High@2024", year: 2026 },
 ];
 
 const initialTeachers = [
@@ -68,6 +68,19 @@ interface Student {
   password: string;
 }
 
+interface School {
+  id: number;
+  name: string;
+  location: string;
+  students: number;
+  teachers: number;
+  status: string;
+  type: string;
+  adminUsername: string;
+  adminPassword: string;
+  year: number;
+}
+
 export default function AdminPortal() {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -76,7 +89,10 @@ export default function AdminPortal() {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [showModal, setShowModal] = useState<ModalType>(null);
   const [showPasswordModal, setShowPasswordModal] = useState<string | null>(null);
-  const [schools, setSchools] = useState(initialSchools);
+  const [schools, setSchools] = useState<School[]>(() => {
+    const stored = localStorage.getItem("schoolsData");
+    return stored ? JSON.parse(stored) : initialSchools;
+  });
   const [teachers, setTeachers] = useState<Teacher[]>(() => {
     const stored = localStorage.getItem("teachersData");
     return stored ? JSON.parse(stored) : initialTeachers;
@@ -113,7 +129,9 @@ Are you sure you want to proceed?`);
       setStudents([]);
       localStorage.setItem("studentsData", JSON.stringify([]));
       
-      setSchools(schools.map(s => ({ ...s, students: 0, teachers: 0 })));
+      const resetSchools = schools.map(s => ({ ...s, students: 0, teachers: 0 }));
+      setSchools(resetSchools);
+      localStorage.setItem("schoolsData", JSON.stringify(resetSchools));
       
       alert(`🎉 Academic Year ${nextYear} started!\n\nAll previous teachers and students have been removed. You can now add new users for the new year.`);
       setShowModal(null);
@@ -121,7 +139,7 @@ Are you sure you want to proceed?`);
   };
 
   const [formData, setFormData] = useState({
-    name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '',
+    name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026,
     teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', teacherUsername: '', teacherPassword: '',
     studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', studentUsername: '', studentPassword: '',
     subSchool: '', subType: 'Primary', subStartDate: ''
@@ -183,7 +201,7 @@ Are you sure you want to proceed?`);
       const schoolUsername = formData.name.split(' ')[0].toLowerCase() + "_admin";
       const schoolPassword = generatePassword(schools.length + 1);
       
-      const newSchool = {
+      const newSchool: School = {
         id: schools.length + 1,
         name: formData.name,
         location: formData.location,
@@ -192,9 +210,12 @@ Are you sure you want to proceed?`);
         status: "Active",
         type: formData.type,
         adminUsername: schoolUsername,
-        adminPassword: schoolPassword
+        adminPassword: schoolPassword,
+        year: formData.schoolYear || currentYear
       };
-      setSchools([...schools, newSchool]);
+      const updatedSchools = [...schools, newSchool];
+      setSchools(updatedSchools);
+      localStorage.setItem("schoolsData", JSON.stringify(updatedSchools));
       
       const newSub = {
         id: subscriptions.length + 1,
@@ -227,13 +248,15 @@ Are you sure you want to proceed?`);
       
       localStorage.setItem("teachersData", JSON.stringify([...teachers, newTeacher]));
       
-      setSchools(schools.map(s => 
+      const updatedSchoolsTeachers = schools.map(s => 
         s.name === formData.teacherSchool ? { ...s, teachers: s.teachers + 1 } : s
-      ));
+      );
+      setSchools(updatedSchoolsTeachers);
+      localStorage.setItem("schoolsData", JSON.stringify(updatedSchoolsTeachers));
       
       setShowModal(null);
       setFormData({
-        name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '',
+        name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026,
         teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', teacherUsername: '', teacherPassword: '',
         studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', studentUsername: '', studentPassword: '',
         subSchool: '', subType: 'Primary', subStartDate: ''
@@ -261,13 +284,15 @@ Are you sure you want to proceed?`);
       
       localStorage.setItem("studentsData", JSON.stringify([...students, newStudent]));
       
-      setSchools(schools.map(s => 
+      const updatedSchoolsStudents = schools.map(s => 
         s.name === formData.studentSchool ? { ...s, students: s.students + 1 } : s
-      ));
+      );
+      setSchools(updatedSchoolsStudents);
+      localStorage.setItem("schoolsData", JSON.stringify(updatedSchoolsStudents));
       
       setShowModal(null);
       setFormData({
-        name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '',
+        name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026,
         teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', teacherUsername: '', teacherPassword: '',
         studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', studentUsername: '', studentPassword: '',
         subSchool: '', subType: 'Primary', subStartDate: ''
@@ -289,7 +314,7 @@ Are you sure you want to proceed?`);
     
     setShowModal(null);
     setFormData({
-      name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '',
+      name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026,
       teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', teacherUsername: '', teacherPassword: '',
       studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', studentUsername: '', studentPassword: '',
       subSchool: '', subType: 'Primary', subStartDate: ''
@@ -328,6 +353,14 @@ Are you sure you want to proceed?`);
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500 focus:outline-none">
                   <option value="Primary">Primary School (R1,500/mo)</option>
                   <option value="High School">High School (R2,500/mo)</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-slate-400 text-sm mb-2">Academic Year</label>
+                <select value={formData.schoolYear || currentYear} onChange={(e) => setFormData({...formData, schoolYear: parseInt(e.target.value)})}
+                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500 focus:outline-none">
+                  <option value={currentYear}>{currentYear}</option>
+                  <option value={currentYear + 1}>{currentYear + 1}</option>
                 </select>
               </div>
               <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
@@ -576,6 +609,7 @@ Are you sure you want to proceed?`);
                     <th className="text-left py-4 px-4 text-slate-400 font-medium">School Name</th>
                     <th className="text-left py-4 px-4 text-slate-400 font-medium">Location</th>
                     <th className="text-left py-4 px-4 text-slate-400 font-medium">Type</th>
+                    <th className="text-left py-4 px-4 text-slate-400 font-medium">Year</th>
                     <th className="text-left py-4 px-4 text-slate-400 font-medium">Students</th>
                     <th className="text-left py-4 px-4 text-slate-400 font-medium">Teachers</th>
                     <th className="text-left py-4 px-4 text-slate-400 font-medium">Status</th>
@@ -594,6 +628,7 @@ Are you sure you want to proceed?`);
                           {school.type}
                         </span>
                       </td>
+                      <td className="py-4 px-4 text-white">{school.year}</td>
                       <td className="py-4 px-4 text-white">{school.students}</td>
                       <td className="py-4 px-4 text-white">{school.teachers}</td>
                       <td className="py-4 px-4">
