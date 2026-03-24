@@ -15,7 +15,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "EduHub - School Portal System",
+  title: "Geleza Mzansi - School Portal System",
   description: "Multi-portal school management system for students, teachers, and parents",
 };
 

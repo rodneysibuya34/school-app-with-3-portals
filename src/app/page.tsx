@@ -60,7 +60,7 @@ export default function Home() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14v7" />
             </svg>
           </div>
-          <span className="text-xl font-semibold text-white font-['Outfit']">EduHub</span>
+          <span className="text-xl font-semibold text-white font-['Outfit']">Geleza Mzansi</span>
         </div>
         <span className="text-slate-400 text-sm">Spring Semester 2026</span>
       </header>
@@ -68,7 +68,7 @@ export default function Home() {
       <main className="relative z-10 px-8 py-12 max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h1 className="text-5xl font-bold text-white mb-4 font-['Outfit']">
-            Welcome to <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-emerald-400 bg-clip-text text-transparent">EduHub</span>
+            Welcome to <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-emerald-400 bg-clip-text text-transparent">Geleza Mzansi</span>
           </h1>
           <p className="text-slate-400 text-lg max-w-2xl mx-auto">
             Select your portal to access personalized academic information and resources

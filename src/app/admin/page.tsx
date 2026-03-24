@@ -934,7 +934,7 @@ Are you sure you want to proceed?`);
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
               </svg>
             </div>
-            <span className="text-xl font-semibold text-white font-['Outfit']">EduHub</span>
+            <span className="text-xl font-semibold text-white font-['Outfit']">Geleza Mzansi</span>
           </div>
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white font-semibold">
