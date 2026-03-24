@@ -62,7 +62,6 @@ export default function Home() {
           </div>
           <span className="text-xl font-semibold text-white font-['Outfit']">Geleza Mzansi</span>
         </div>
-        <span className="text-slate-400 text-sm">Spring Semester 2026</span>
       </header>
 
       <main className="relative z-10 px-8 py-12 max-w-7xl mx-auto">
@@ -105,7 +104,7 @@ export default function Home() {
       </main>
 
       <footer className="relative z-10 px-8 py-6 text-center text-slate-500 text-sm">
-        <p>Oakridge Preparatory Academy • Established 1985</p>
+        <p>Enzokuhle Holdings - Established 2026</p>
       </footer>
     </div>
   );
