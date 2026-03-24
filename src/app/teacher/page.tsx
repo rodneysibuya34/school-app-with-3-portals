@@ -3,20 +3,42 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-const teachersData = [
-  { id: 1, name: "Dr. Sarah Mitchell", email: "s.mitchell@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "Mathematics", username: "s.mitchell", password: "Mitch@123" },
-  { id: 2, name: "Mr. David Park", email: "d.park@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "English Literature", username: "d.park", password: "Park@123" },
-  { id: 3, name: "Mrs. Emily Roberts", email: "e.roberts@westfield.edu", school: "Westfield Christian School", subject: "Chemistry", username: "e.roberts", password: "Rob@123" },
-  { id: 4, name: "Dr. James Chen", email: "j.chen@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "Physics", username: "j.chen", password: "Chen@123" },
-  { id: 5, name: "Ms. Anna Williams", email: "a.williams@riverside.edu", school: "Riverside Elementary", subject: "History", username: "a.williams", password: "Will@123" },
+interface TeacherData {
+  id: number;
+  name: string;
+  email: string;
+  school: string;
+  subject: string;
+  username: string;
+  password: string;
+  schoolYear: number;
+}
+
+interface StudentData {
+  id: number;
+  name: string;
+  email: string;
+  grade: number;
+  school: string;
+  username: string;
+  password: string;
+  schoolYear: number;
+}
+
+const teachersData: TeacherData[] = [
+  { id: 1, name: "Dr. Sarah Mitchell", email: "s.mitchell@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "Mathematics", username: "s.mitchell", password: "Mitch@123", schoolYear: 2026 },
+  { id: 2, name: "Mr. David Park", email: "d.park@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "English Literature", username: "d.park", password: "Park@123", schoolYear: 2026 },
+  { id: 3, name: "Mrs. Emily Roberts", email: "e.roberts@westfield.edu", school: "Westfield Christian School", subject: "Chemistry", username: "e.roberts", password: "Rob@123", schoolYear: 2026 },
+  { id: 4, name: "Dr. James Chen", email: "j.chen@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "Physics", username: "j.chen", password: "Chen@123", schoolYear: 2026 },
+  { id: 5, name: "Ms. Anna Williams", email: "a.williams@riverside.edu", school: "Riverside Elementary", subject: "History", username: "a.williams", password: "Will@123", schoolYear: 2026 },
 ];
 
-const studentsData = [
-  { id: 1, name: "Alex Thompson", email: "a.thompson@oakridge.edu", grade: 11, school: "Oakridge Preparatory Academy", username: "alex.t", password: "Alex@123" },
-  { id: 2, name: "Emma Wilson", email: "e.wilson@oakridge.edu", grade: 10, school: "Oakridge Preparatory Academy", username: "emma.w", password: "Emma@123" },
-  { id: 3, name: "Michael Brown", email: "m.brown@westfield.edu", grade: 9, school: "Westfield Christian School", username: "michael.b", password: "Mike@123" },
-  { id: 4, name: "Sophia Lee", email: "s.lee@oakridge.edu", grade: 12, school: "Oakridge Preparatory Academy", username: "sophia.l", password: "Soph@123" },
-  { id: 5, name: "James Garcia", email: "j.garcia@riverside.edu", grade: 8, school: "Riverside Elementary", username: "james.g", password: "Jame@123" },
+const studentsData: StudentData[] = [
+  { id: 1, name: "Alex Thompson", email: "a.thompson@oakridge.edu", grade: 11, school: "Oakridge Preparatory Academy", username: "alex.t", password: "Alex@123", schoolYear: 2026 },
+  { id: 2, name: "Emma Wilson", email: "e.wilson@oakridge.edu", grade: 10, school: "Oakridge Preparatory Academy", username: "emma.w", password: "Emma@123", schoolYear: 2026 },
+  { id: 3, name: "Michael Brown", email: "m.brown@westfield.edu", grade: 9, school: "Westfield Christian School", username: "michael.b", password: "Mike@123", schoolYear: 2026 },
+  { id: 4, name: "Sophia Lee", email: "s.lee@oakridge.edu", grade: 12, school: "Oakridge Preparatory Academy", username: "sophia.l", password: "Soph@123", schoolYear: 2026 },
+  { id: 5, name: "James Garcia", email: "j.garcia@riverside.edu", grade: 8, school: "Riverside Elementary", username: "james.g", password: "Jame@123", schoolYear: 2026 },
 ];
 
 interface Homework {
@@ -267,7 +289,7 @@ export default function TeacherPortal() {
             <div>
               <h2 className="text-xl font-semibold text-white">{loggedInTeacher.name}</h2>
               <p className="text-purple-300">{loggedInTeacher.subject} • {loggedInTeacher.school}</p>
-              <p className="text-slate-400 text-sm">Teacher ID: 2024-{loggedInTeacher.id.toString().padStart(4, '0')}</p>
+              <p className="text-slate-400 text-sm">Teacher ID: {loggedInTeacher.schoolYear}-{loggedInTeacher.id.toString().padStart(4, '0')}</p>
             </div>
           </div>
         </div>

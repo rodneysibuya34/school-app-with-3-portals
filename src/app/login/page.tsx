@@ -52,14 +52,26 @@ export default function LoginPage() {
     if (loginType === "student") {
       const student = studentsData.find((s: { username: string; password: string }) => s.username === username && s.password === password);
       if (student) {
-        localStorage.setItem("loggedInStudent", JSON.stringify(student));
+        // Get school year from stored schools data
+        const storedSchools = localStorage.getItem("schoolsData");
+        const schools = storedSchools ? JSON.parse(storedSchools) : [];
+        const school = schools.find((s: { name: string; year: number }) => s.name === student.school);
+        const schoolYear = school ? school.year : new Date().getFullYear();
+        
+        localStorage.setItem("loggedInStudent", JSON.stringify({...student, schoolYear}));
         router.push("/student");
         return;
       }
     } else {
       const teacher = teachersData.find((t: { username: string; password: string }) => t.username === username && t.password === password);
       if (teacher) {
-        localStorage.setItem("loggedInTeacher", JSON.stringify(teacher));
+        // Get school year from stored schools data for teacher too
+        const storedSchools = localStorage.getItem("schoolsData");
+        const schools = storedSchools ? JSON.parse(storedSchools) : [];
+        const school = schools.find((s: { name: string; year: number }) => s.name === teacher.school);
+        const schoolYear = school ? school.year : new Date().getFullYear();
+        
+        localStorage.setItem("loggedInTeacher", JSON.stringify({...teacher, schoolYear}));
         router.push("/teacher");
         return;
       }

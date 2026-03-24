@@ -3,12 +3,23 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 
-const studentsData = [
-  { id: 1, name: "Alex Thompson", email: "a.thompson@oakridge.edu", grade: 11, school: "Oakridge Preparatory Academy", username: "alex.t", password: "Alex@123" },
-  { id: 2, name: "Emma Wilson", email: "e.wilson@oakridge.edu", grade: 10, school: "Oakridge Preparatory Academy", username: "emma.w", password: "Emma@123" },
-  { id: 3, name: "Michael Brown", email: "m.brown@westfield.edu", grade: 9, school: "Westfield Christian School", username: "michael.b", password: "Mike@123" },
-  { id: 4, name: "Sophia Lee", email: "s.lee@oakridge.edu", grade: 12, school: "Oakridge Preparatory Academy", username: "sophia.l", password: "Soph@123" },
-  { id: 5, name: "James Garcia", email: "j.garcia@riverside.edu", grade: 8, school: "Riverside Elementary", username: "james.g", password: "Jame@123" },
+interface StudentData {
+  id: number;
+  name: string;
+  email: string;
+  grade: number;
+  school: string;
+  username: string;
+  password: string;
+  schoolYear: number;
+}
+
+const studentsData: StudentData[] = [
+  { id: 1, name: "Alex Thompson", email: "a.thompson@oakridge.edu", grade: 11, school: "Oakridge Preparatory Academy", username: "alex.t", password: "Alex@123", schoolYear: 2026 },
+  { id: 2, name: "Emma Wilson", email: "e.wilson@oakridge.edu", grade: 10, school: "Oakridge Preparatory Academy", username: "emma.w", password: "Emma@123", schoolYear: 2026 },
+  { id: 3, name: "Michael Brown", email: "m.brown@westfield.edu", grade: 9, school: "Westfield Christian School", username: "michael.b", password: "Mike@123", schoolYear: 2026 },
+  { id: 4, name: "Sophia Lee", email: "s.lee@oakridge.edu", grade: 12, school: "Oakridge Preparatory Academy", username: "sophia.l", password: "Soph@123", schoolYear: 2026 },
+  { id: 5, name: "James Garcia", email: "j.garcia@riverside.edu", grade: 8, school: "Riverside Elementary", username: "james.g", password: "Jame@123", schoolYear: 2026 },
 ];
 
 interface Homework {
@@ -52,57 +63,57 @@ interface StudyMaterial {
 
 const homeworkByGrade: Record<number, Homework[]> = {
   8: [
-    { id: 1, title: "Math Worksheet Chapter 5", description: "Complete exercises 1-20 from Chapter 5", dueDate: "2024-03-25", grade: 8, fileUrl: "", fileType: "", subject: "Mathematics" },
-    { id: 2, title: "Science Project", description: "Submit your science fair project", dueDate: "2024-03-28", grade: 8, fileUrl: "", fileType: "", subject: "Science" },
+    { id: 1, title: "Math Worksheet Chapter 5", description: "Complete exercises 1-20 from Chapter 5", dueDate: "2026-03-25", grade: 8, fileUrl: "", fileType: "", subject: "Mathematics" },
+    { id: 2, title: "Science Project", description: "Submit your science fair project", dueDate: "2026-03-28", grade: 8, fileUrl: "", fileType: "", subject: "Science" },
   ],
   9: [
-    { id: 3, title: "Algebra Problem Set", description: "Complete problems 1-15 from Chapter 4", dueDate: "2024-03-25", grade: 9, fileUrl: "", fileType: "", subject: "Mathematics" },
-    { id: 4, title: "Physics Lab Report", description: "Write up the pendulum experiment", dueDate: "2024-03-27", grade: 9, fileUrl: "", fileType: "", subject: "Physics" },
+    { id: 3, title: "Algebra Problem Set", description: "Complete problems 1-15 from Chapter 4", dueDate: "2026-03-25", grade: 9, fileUrl: "", fileType: "", subject: "Mathematics" },
+    { id: 4, title: "Physics Lab Report", description: "Write up the pendulum experiment", dueDate: "2026-03-27", grade: 9, fileUrl: "", fileType: "", subject: "Physics" },
   ],
   10: [
-    { id: 5, title: "Calculus Problem Set #7", description: "Integration problems", dueDate: "2024-03-25", grade: 10, fileUrl: "", fileType: "", subject: "Mathematics" },
-    { id: 6, title: "Chemistry Lab Quiz", description: "Study for the lab quiz", dueDate: "2024-03-26", grade: 10, fileUrl: "", fileType: "", subject: "Chemistry" },
+    { id: 5, title: "Calculus Problem Set #7", description: "Integration problems", dueDate: "2026-03-25", grade: 10, fileUrl: "", fileType: "", subject: "Mathematics" },
+    { id: 6, title: "Chemistry Lab Quiz", description: "Study for the lab quiz", dueDate: "2026-03-26", grade: 10, fileUrl: "", fileType: "", subject: "Chemistry" },
   ],
   11: [
-    { id: 7, title: "Calculus Problem Set #7", description: "Advanced integration techniques", dueDate: "2024-03-25", grade: 11, fileUrl: "", fileType: "", subject: "Mathematics" },
-    { id: 8, title: "Physics Lab Report", description: "Write up the circuit experiment", dueDate: "2024-03-27", grade: 11, fileUrl: "", fileType: "", subject: "Physics" },
-    { id: 9, title: "Essay: Shakespeare Analysis", description: "Write 500 words on Hamlet", dueDate: "2024-03-28", grade: 11, fileUrl: "", fileType: "", subject: "English" },
+    { id: 7, title: "Calculus Problem Set #7", description: "Advanced integration techniques", dueDate: "2026-03-25", grade: 11, fileUrl: "", fileType: "", subject: "Mathematics" },
+    { id: 8, title: "Physics Lab Report", description: "Write up the circuit experiment", dueDate: "2026-03-27", grade: 11, fileUrl: "", fileType: "", subject: "Physics" },
+    { id: 9, title: "Essay: Shakespeare Analysis", description: "Write 500 words on Hamlet", dueDate: "2026-03-28", grade: 11, fileUrl: "", fileType: "", subject: "English" },
   ],
   12: [
-    { id: 10, title: "AP Calculus Practice Exam", description: "Complete practice exam", dueDate: "2024-03-22", grade: 12, fileUrl: "", fileType: "", subject: "Mathematics" },
-    { id: 11, title: "Physics Research Paper", description: "Submit research paper", dueDate: "2024-03-25", grade: 12, fileUrl: "", fileType: "", subject: "Physics" },
+    { id: 10, title: "AP Calculus Practice Exam", description: "Complete practice exam", dueDate: "2026-03-22", grade: 12, fileUrl: "", fileType: "", subject: "Mathematics" },
+    { id: 11, title: "Physics Research Paper", description: "Submit research paper", dueDate: "2026-03-25", grade: 12, fileUrl: "", fileType: "", subject: "Physics" },
   ],
 };
 
 const testsByGrade: Record<number, Test[]> = {
   8: [
-    { id: 1, title: "Mathematics Quiz", description: "Covers Chapter 5 topics", dueDate: "2024-03-28", grade: 8, questions: [
+    { id: 1, title: "Mathematics Quiz", description: "Covers Chapter 5 topics", dueDate: "2026-03-28", grade: 8, questions: [
       { id: 1, text: "What is 15 + 27?", type: "mcq", options: ["42", "41", "43", "40"], correctAnswer: "42" },
       { id: 2, text: "The square root of 144 is 12.", type: "truefalse", correctAnswer: "True" },
       { id: 3, text: "What is 8 × 7?", type: "mcq", options: ["54", "56", "58", "52"], correctAnswer: "56" },
     ], published: true, timeLimit: 15 },
   ],
   9: [
-    { id: 2, title: "Physics Quiz", description: "Covers motion and forces", dueDate: "2024-03-27", grade: 9, questions: [
+    { id: 2, title: "Physics Quiz", description: "Covers motion and forces", dueDate: "2026-03-27", grade: 9, questions: [
       { id: 1, text: "What is Newton's first law also known as?", type: "mcq", options: ["Law of Acceleration", "Law of Inertia", "Law of Action", "Law of Gravity"], correctAnswer: "Law of Inertia" },
       { id: 2, text: "Force equals mass times acceleration.", type: "truefalse", correctAnswer: "True" },
     ], published: true, timeLimit: 10 },
   ],
   10: [
-    { id: 3, title: "Chemistry Quiz", description: "Covers periodic table", dueDate: "2024-03-26", grade: 10, questions: [
+    { id: 3, title: "Chemistry Quiz", description: "Covers periodic table", dueDate: "2026-03-26", grade: 10, questions: [
       { id: 1, text: "What is the atomic number of Carbon?", type: "mcq", options: ["4", "6", "8", "12"], correctAnswer: "6" },
       { id: 2, text: "Noble gases are reactive.", type: "truefalse", correctAnswer: "False" },
     ], published: true, timeLimit: 10 },
   ],
   11: [
-    { id: 4, title: "Calculus Mid-term", description: "Covers derivatives and integrals", dueDate: "2024-03-30", grade: 11, questions: [
+    { id: 4, title: "Calculus Mid-term", description: "Covers derivatives and integrals", dueDate: "2026-03-30", grade: 11, questions: [
       { id: 1, text: "What is the derivative of x²?", type: "mcq", options: ["x", "2x", "2", "x²"], correctAnswer: "2x" },
       { id: 2, text: "The integral of 2x is x² + C.", type: "truefalse", correctAnswer: "True" },
       { id: 3, text: "What is d/dx(sin x)?", type: "mcq", options: ["cos x", "-cos x", "-sin x", "sin x"], correctAnswer: "cos x" },
     ], published: true, timeLimit: 20 },
   ],
   12: [
-    { id: 5, title: "AP Physics Practice", description: "Covers all AP topics", dueDate: "2024-03-25", grade: 12, questions: [
+    { id: 5, title: "AP Physics Practice", description: "Covers all AP topics", dueDate: "2026-03-25", grade: 12, questions: [
       { id: 1, text: "What is the speed of light?", type: "mcq", options: ["3×10⁶ m/s", "3×10⁸ m/s", "3×10⁷ m/s", "3×10⁹ m/s"], correctAnswer: "3×10⁸ m/s" },
     ], published: true, timeLimit: 15 },
   ],
@@ -110,26 +121,26 @@ const testsByGrade: Record<number, Test[]> = {
 
 const examTimetableByGrade: Record<number, { date: string; exam: string; time: string; venue: string; fileUrl?: string }[]> = {
   8: [
-    { date: "2024-04-15", exam: "Mathematics", time: "09:00 - 11:00", venue: "Hall A" },
-    { date: "2024-04-16", exam: "English", time: "09:00 - 11:00", venue: "Hall B" },
+    { date: "2026-04-15", exam: "Mathematics", time: "09:00 - 11:00", venue: "Hall A" },
+    { date: "2026-04-16", exam: "English", time: "09:00 - 11:00", venue: "Hall B" },
   ],
   9: [
-    { date: "2024-04-15", exam: "Mathematics", time: "09:00 - 11:00", venue: "Hall A" },
-    { date: "2024-04-16", exam: "Physics", time: "09:00 - 11:00", venue: "Lab 1" },
+    { date: "2026-04-15", exam: "Mathematics", time: "09:00 - 11:00", venue: "Hall A" },
+    { date: "2026-04-16", exam: "Physics", time: "09:00 - 11:00", venue: "Lab 1" },
   ],
   10: [
-    { date: "2024-04-15", exam: "Mathematics", time: "09:00 - 11:00", venue: "Hall A" },
-    { date: "2024-04-16", exam: "Chemistry", time: "09:00 - 11:00", venue: "Lab 2" },
+    { date: "2026-04-15", exam: "Mathematics", time: "09:00 - 11:00", venue: "Hall A" },
+    { date: "2026-04-16", exam: "Chemistry", time: "09:00 - 11:00", venue: "Lab 2" },
   ],
   11: [
-    { date: "2024-04-15", exam: "Mathematics", time: "09:00 - 12:00", venue: "Hall A" },
-    { date: "2024-04-16", exam: "Physics", time: "09:00 - 12:00", venue: "Lab 1" },
-    { date: "2024-04-17", exam: "English Literature", time: "09:00 - 11:30", venue: "Hall B" },
+    { date: "2026-04-15", exam: "Mathematics", time: "09:00 - 12:00", venue: "Hall A" },
+    { date: "2026-04-16", exam: "Physics", time: "09:00 - 12:00", venue: "Lab 1" },
+    { date: "2026-04-17", exam: "English Literature", time: "09:00 - 11:30", venue: "Hall B" },
   ],
   12: [
-    { date: "2024-04-15", exam: "AP Calculus", time: "08:00 - 11:00", venue: "Hall A" },
-    { date: "2024-04-16", exam: "AP Physics", time: "08:00 - 11:00", venue: "Lab 1" },
-    { date: "2024-04-17", exam: "AP Chemistry", time: "08:00 - 11:00", venue: "Lab 2" },
+    { date: "2026-04-15", exam: "AP Calculus", time: "08:00 - 11:00", venue: "Hall A" },
+    { date: "2026-04-16", exam: "AP Physics", time: "08:00 - 11:00", venue: "Lab 1" },
+    { date: "2026-04-17", exam: "AP Chemistry", time: "08:00 - 11:00", venue: "Lab 2" },
   ],
 };
 
@@ -347,7 +358,7 @@ export default function StudentPortal() {
             <div>
               <h2 className="text-xl font-semibold text-white">{loggedInStudent.name}</h2>
               <p className="text-blue-300">Grade {loggedInStudent.grade} • {loggedInStudent.school}</p>
-              <p className="text-slate-400 text-sm">Student ID: 2024-{loggedInStudent.id.toString().padStart(4, '0')}</p>
+              <p className="text-slate-400 text-sm">Student ID: {loggedInStudent.schoolYear}-{loggedInStudent.id.toString().padStart(4, '0')}</p>
             </div>
           </div>
         </div>
