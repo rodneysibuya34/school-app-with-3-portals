@@ -1,25 +1,14 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
-interface StudentData {
-  id: number;
-  name: string;
-  email: string;
-  grade: number;
-  school: string;
-  username: string;
-  password: string;
-  schoolYear: number;
-}
-
-const studentsData: StudentData[] = [
-  { id: 1, name: "Alex Thompson", email: "a.thompson@oakridge.edu", grade: 11, school: "Oakridge Preparatory Academy", username: "alex.t", password: "Alex@123", schoolYear: 2026 },
-  { id: 2, name: "Emma Wilson", email: "e.wilson@oakridge.edu", grade: 10, school: "Oakridge Preparatory Academy", username: "emma.w", password: "Emma@123", schoolYear: 2026 },
-  { id: 3, name: "Michael Brown", email: "m.brown@westfield.edu", grade: 9, school: "Westfield Christian School", username: "michael.b", password: "Mike@123", schoolYear: 2026 },
-  { id: 4, name: "Sophia Lee", email: "s.lee@oakridge.edu", grade: 12, school: "Oakridge Preparatory Academy", username: "sophia.l", password: "Soph@123", schoolYear: 2026 },
-  { id: 5, name: "James Garcia", email: "j.garcia@riverside.edu", grade: 8, school: "Riverside Elementary", username: "james.g", password: "Jame@123", schoolYear: 2026 },
+const studentsData = [
+  { id: 1, name: "Alex Thompson", email: "a.thompson@oakridge.edu", grade: 11, school: "Oakridge Preparatory Academy", username: "alex.t", password: "Alex@123" },
+  { id: 2, name: "Emma Wilson", email: "e.wilson@oakridge.edu", grade: 10, school: "Oakridge Preparatory Academy", username: "emma.w", password: "Emma@123" },
+  { id: 3, name: "Michael Brown", email: "m.brown@westfield.edu", grade: 9, school: "Westfield Christian School", username: "michael.b", password: "Mike@123" },
+  { id: 4, name: "Sophia Lee", email: "s.lee@oakridge.edu", grade: 12, school: "Oakridge Preparatory Academy", username: "sophia.l", password: "Soph@123" },
+  { id: 5, name: "James Garcia", email: "j.garcia@riverside.edu", grade: 8, school: "Riverside Elementary", username: "james.g", password: "Jame@123" },
 ];
 
 interface Homework {
@@ -64,126 +53,126 @@ interface StudyMaterial {
 
 const homeworkByGrade: Record<number, Homework[]> = {
   8: [
-    { id: 1, title: "Math Worksheet Chapter 5", description: "Complete exercises 1-20 from Chapter 5", dueDate: "2026-03-25", grade: 8, fileUrl: "", fileType: "", subject: "Mathematics" },
-    { id: 2, title: "Science Project", description: "Submit your science fair project", dueDate: "2026-03-28", grade: 8, fileUrl: "", fileType: "", subject: "Science" },
+    { id: 1, title: "Math Worksheet Chapter 5", description: "Complete exercises 1-20 from Chapter 5", dueDate: "2024-03-25", grade: 8, fileUrl: "", fileType: "", subject: "Mathematics" },
+    { id: 2, title: "Science Project", description: "Submit your science fair project", dueDate: "2024-03-28", grade: 8, fileUrl: "", fileType: "", subject: "Science" },
   ],
   9: [
-    { id: 3, title: "Algebra Problem Set", description: "Complete problems 1-15 from Chapter 4", dueDate: "2026-03-25", grade: 9, fileUrl: "", fileType: "", subject: "Mathematics" },
-    { id: 4, title: "Physics Lab Report", description: "Write up the pendulum experiment", dueDate: "2026-03-27", grade: 9, fileUrl: "", fileType: "", subject: "Physics" },
+    { id: 3, title: "Algebra Problem Set", description: "Complete problems 1-15 from Chapter 4", dueDate: "2024-03-25", grade: 9, fileUrl: "", fileType: "", subject: "Mathematics" },
+    { id: 4, title: "Physics Lab Report", description: "Write up the pendulum experiment", dueDate: "2024-03-27", grade: 9, fileUrl: "", fileType: "", subject: "Physics" },
   ],
   10: [
-    { id: 5, title: "Calculus Problem Set #7", description: "Integration problems", dueDate: "2026-03-25", grade: 10, fileUrl: "", fileType: "", subject: "Mathematics" },
-    { id: 6, title: "Chemistry Lab Quiz", description: "Study for the lab quiz", dueDate: "2026-03-26", grade: 10, fileUrl: "", fileType: "", subject: "Chemistry" },
+    { id: 5, title: "Calculus Problem Set #7", description: "Integration problems", dueDate: "2024-03-25", grade: 10, fileUrl: "", fileType: "", subject: "Mathematics" },
+    { id: 6, title: "Chemistry Lab Quiz", description: "Study for the lab quiz", dueDate: "2024-03-26", grade: 10, fileUrl: "", fileType: "", subject: "Chemistry" },
   ],
   11: [
-    { id: 7, title: "Calculus Problem Set #7", description: "Advanced integration techniques", dueDate: "2026-03-25", grade: 11, fileUrl: "", fileType: "", subject: "Mathematics" },
-    { id: 8, title: "Physics Lab Report", description: "Write up the circuit experiment", dueDate: "2026-03-27", grade: 11, fileUrl: "", fileType: "", subject: "Physics" },
-    { id: 9, title: "Essay: Shakespeare Analysis", description: "Write 500 words on Hamlet", dueDate: "2026-03-28", grade: 11, fileUrl: "", fileType: "", subject: "English" },
+    { id: 7, title: "Calculus Problem Set #7", description: "Advanced integration techniques", dueDate: "2024-03-25", grade: 11, fileUrl: "", fileType: "", subject: "Mathematics" },
+    { id: 8, title: "Physics Lab Report", description: "Write up the circuit experiment", dueDate: "2024-03-27", grade: 11, fileUrl: "", fileType: "", subject: "Physics" },
+    { id: 9, title: "Essay: Shakespeare Analysis", description: "Write 500 words on Hamlet", dueDate: "2024-03-28", grade: 11, fileUrl: "", fileType: "", subject: "English" },
   ],
   12: [
-    { id: 10, title: "AP Calculus Practice Exam", description: "Complete practice exam", dueDate: "2026-03-22", grade: 12, fileUrl: "", fileType: "", subject: "Mathematics" },
-    { id: 11, title: "Physics Research Paper", description: "Submit research paper", dueDate: "2026-03-25", grade: 12, fileUrl: "", fileType: "", subject: "Physics" },
+    { id: 10, title: "AP Calculus Practice Exam", description: "Complete practice exam", dueDate: "2024-03-22", grade: 12, fileUrl: "", fileType: "", subject: "Mathematics" },
+    { id: 11, title: "Physics Research Paper", description: "Submit research paper", dueDate: "2024-03-25", grade: 12, fileUrl: "", fileType: "", subject: "Physics" },
   ],
 };
 
 const testsByGrade: Record<number, Test[]> = {
   8: [
-    { id: 1, title: "Mathematics Quiz", description: "Covers Chapter 5 topics", dueDate: "2026-03-28", grade: 8, questions: [
+    { id: 1, title: "Mathematics Quiz", description: "Covers Chapter 5 topics", dueDate: "2024-03-28", grade: 8, questions: [
       { id: 1, text: "What is 15 + 27?", type: "mcq", options: ["42", "41", "43", "40"], correctAnswer: "42" },
       { id: 2, text: "The square root of 144 is 12.", type: "truefalse", correctAnswer: "True" },
       { id: 3, text: "What is 8 × 7?", type: "mcq", options: ["54", "56", "58", "52"], correctAnswer: "56" },
     ], published: true, timeLimit: 15 },
   ],
   9: [
-    { id: 2, title: "Physics Quiz", description: "Covers motion and forces", dueDate: "2026-03-27", grade: 9, questions: [
+    { id: 2, title: "Physics Quiz", description: "Covers motion and forces", dueDate: "2024-03-27", grade: 9, questions: [
       { id: 1, text: "What is Newton's first law also known as?", type: "mcq", options: ["Law of Acceleration", "Law of Inertia", "Law of Action", "Law of Gravity"], correctAnswer: "Law of Inertia" },
       { id: 2, text: "Force equals mass times acceleration.", type: "truefalse", correctAnswer: "True" },
     ], published: true, timeLimit: 10 },
   ],
   10: [
-    { id: 3, title: "Chemistry Quiz", description: "Covers periodic table", dueDate: "2026-03-26", grade: 10, questions: [
+    { id: 3, title: "Chemistry Quiz", description: "Covers periodic table", dueDate: "2024-03-26", grade: 10, questions: [
       { id: 1, text: "What is the atomic number of Carbon?", type: "mcq", options: ["4", "6", "8", "12"], correctAnswer: "6" },
       { id: 2, text: "Noble gases are reactive.", type: "truefalse", correctAnswer: "False" },
     ], published: true, timeLimit: 10 },
   ],
   11: [
-    { id: 4, title: "Calculus Mid-term", description: "Covers derivatives and integrals", dueDate: "2026-03-30", grade: 11, questions: [
+    { id: 4, title: "Calculus Mid-term", description: "Covers derivatives and integrals", dueDate: "2024-03-30", grade: 11, questions: [
       { id: 1, text: "What is the derivative of x²?", type: "mcq", options: ["x", "2x", "2", "x²"], correctAnswer: "2x" },
       { id: 2, text: "The integral of 2x is x² + C.", type: "truefalse", correctAnswer: "True" },
       { id: 3, text: "What is d/dx(sin x)?", type: "mcq", options: ["cos x", "-cos x", "-sin x", "sin x"], correctAnswer: "cos x" },
     ], published: true, timeLimit: 20 },
   ],
   12: [
-    { id: 5, title: "AP Physics Practice", description: "Covers all AP topics", dueDate: "2026-03-25", grade: 12, questions: [
+    { id: 5, title: "AP Physics Practice", description: "Covers all AP topics", dueDate: "2024-03-25", grade: 12, questions: [
       { id: 1, text: "What is the speed of light?", type: "mcq", options: ["3×10⁶ m/s", "3×10⁸ m/s", "3×10⁷ m/s", "3×10⁹ m/s"], correctAnswer: "3×10⁸ m/s" },
     ], published: true, timeLimit: 15 },
   ],
 };
 
-const examTimetableByGrade: Record<number, { date: string; exam: string; time: string; venue: string; fileUrl?: string }[]> = {
+const examTimetableByGrade: Record<number, { date: string; exam: string; time: string; venue: string; grade: number; fileUrl?: string }[]> = {
   8: [
-    { date: "2026-04-15", exam: "Mathematics", time: "09:00 - 11:00", venue: "Hall A" },
-    { date: "2026-04-16", exam: "English", time: "09:00 - 11:00", venue: "Hall B" },
+    { date: "2024-04-15", exam: "Mathematics", time: "09:00 - 11:00", venue: "Hall A", grade: 8 },
+    { date: "2024-04-16", exam: "English", time: "09:00 - 11:00", venue: "Hall B", grade: 8 },
   ],
   9: [
-    { date: "2026-04-15", exam: "Mathematics", time: "09:00 - 11:00", venue: "Hall A" },
-    { date: "2026-04-16", exam: "Physics", time: "09:00 - 11:00", venue: "Lab 1" },
+    { date: "2024-04-15", exam: "Mathematics", time: "09:00 - 11:00", venue: "Hall A", grade: 9 },
+    { date: "2024-04-16", exam: "Physics", time: "09:00 - 11:00", venue: "Lab 1", grade: 9 },
   ],
   10: [
-    { date: "2026-04-15", exam: "Mathematics", time: "09:00 - 11:00", venue: "Hall A" },
-    { date: "2026-04-16", exam: "Chemistry", time: "09:00 - 11:00", venue: "Lab 2" },
+    { date: "2024-04-15", exam: "Mathematics", time: "09:00 - 11:00", venue: "Hall A", grade: 10 },
+    { date: "2024-04-16", exam: "Chemistry", time: "09:00 - 11:00", venue: "Lab 2", grade: 10 },
   ],
   11: [
-    { date: "2026-04-15", exam: "Mathematics", time: "09:00 - 12:00", venue: "Hall A" },
-    { date: "2026-04-16", exam: "Physics", time: "09:00 - 12:00", venue: "Lab 1" },
-    { date: "2026-04-17", exam: "English Literature", time: "09:00 - 11:30", venue: "Hall B" },
+    { date: "2024-04-15", exam: "Mathematics", time: "09:00 - 12:00", venue: "Hall A", grade: 11 },
+    { date: "2024-04-16", exam: "Physics", time: "09:00 - 12:00", venue: "Lab 1", grade: 11 },
+    { date: "2024-04-17", exam: "English Literature", time: "09:00 - 11:30", venue: "Hall B", grade: 11 },
   ],
   12: [
-    { date: "2026-04-15", exam: "AP Calculus", time: "08:00 - 11:00", venue: "Hall A" },
-    { date: "2026-04-16", exam: "AP Physics", time: "08:00 - 11:00", venue: "Lab 1" },
-    { date: "2026-04-17", exam: "AP Chemistry", time: "08:00 - 11:00", venue: "Lab 2" },
+    { date: "2024-04-15", exam: "AP Calculus", time: "08:00 - 11:00", venue: "Hall A", grade: 12 },
+    { date: "2024-04-16", exam: "AP Physics", time: "08:00 - 11:00", venue: "Lab 1", grade: 12 },
+    { date: "2024-04-17", exam: "AP Chemistry", time: "08:00 - 11:00", venue: "Lab 2", grade: 12 },
   ],
 };
 
-const weeklyTimetableByGrade: Record<number, { day: string; time: string; subject: string }[]> = {
+const weeklyTimetableByGrade: Record<number, { day: string; time: string; subject: string; grade: number }[]> = {
   8: [
-    { day: "Monday", time: "08:00 - 09:00", subject: "Mathematics" },
-    { day: "Monday", time: "09:00 - 10:00", subject: "Science" },
-    { day: "Tuesday", time: "08:00 - 09:00", subject: "English" },
-    { day: "Wednesday", time: "08:00 - 09:00", subject: "Mathematics" },
-    { day: "Thursday", time: "09:00 - 10:00", subject: "History" },
-    { day: "Friday", time: "08:00 - 09:00", subject: "Science" },
+    { day: "Monday", time: "08:00 - 09:00", subject: "Mathematics", grade: 8 },
+    { day: "Monday", time: "09:00 - 10:00", subject: "Science", grade: 8 },
+    { day: "Tuesday", time: "08:00 - 09:00", subject: "English", grade: 8 },
+    { day: "Wednesday", time: "08:00 - 09:00", subject: "Mathematics", grade: 8 },
+    { day: "Thursday", time: "09:00 - 10:00", subject: "History", grade: 8 },
+    { day: "Friday", time: "08:00 - 09:00", subject: "Science", grade: 8 },
   ],
   9: [
-    { day: "Monday", time: "08:00 - 09:00", subject: "Mathematics" },
-    { day: "Monday", time: "10:00 - 11:00", subject: "Physics" },
-    { day: "Tuesday", time: "08:00 - 09:00", subject: "English" },
-    { day: "Wednesday", time: "09:00 - 10:00", subject: "Chemistry" },
-    { day: "Thursday", time: "08:00 - 09:00", subject: "Mathematics" },
-    { day: "Friday", time: "10:00 - 11:00", subject: "Physics" },
+    { day: "Monday", time: "08:00 - 09:00", subject: "Mathematics", grade: 9 },
+    { day: "Monday", time: "10:00 - 11:00", subject: "Physics", grade: 9 },
+    { day: "Tuesday", time: "08:00 - 09:00", subject: "English", grade: 9 },
+    { day: "Wednesday", time: "09:00 - 10:00", subject: "Chemistry", grade: 9 },
+    { day: "Thursday", time: "08:00 - 09:00", subject: "Mathematics", grade: 9 },
+    { day: "Friday", time: "10:00 - 11:00", subject: "Physics", grade: 9 },
   ],
   10: [
-    { day: "Monday", time: "08:00 - 09:00", subject: "Mathematics" },
-    { day: "Monday", time: "09:00 - 10:00", subject: "Chemistry" },
-    { day: "Tuesday", time: "08:00 - 09:00", subject: "English" },
-    { day: "Wednesday", time: "08:00 - 09:00", subject: "Physics" },
-    { day: "Thursday", time: "09:00 - 10:00", subject: "Chemistry" },
-    { day: "Friday", time: "08:00 - 09:00", subject: "Mathematics" },
+    { day: "Monday", time: "08:00 - 09:00", subject: "Mathematics", grade: 10 },
+    { day: "Monday", time: "09:00 - 10:00", subject: "Chemistry", grade: 10 },
+    { day: "Tuesday", time: "08:00 - 09:00", subject: "English", grade: 10 },
+    { day: "Wednesday", time: "08:00 - 09:00", subject: "Physics", grade: 10 },
+    { day: "Thursday", time: "09:00 - 10:00", subject: "Chemistry", grade: 10 },
+    { day: "Friday", time: "08:00 - 09:00", subject: "Mathematics", grade: 10 },
   ],
   11: [
-    { day: "Monday", time: "08:00 - 09:30", subject: "Mathematics" },
-    { day: "Monday", time: "10:00 - 11:30", subject: "Physics" },
-    { day: "Tuesday", time: "08:00 - 09:30", subject: "Chemistry" },
-    { day: "Wednesday", time: "08:00 - 09:30", subject: "Mathematics" },
-    { day: "Thursday", time: "09:00 - 10:30", subject: "English Literature" },
-    { day: "Friday", time: "08:00 - 09:30", subject: "Physics" },
+    { day: "Monday", time: "08:00 - 09:30", subject: "Mathematics", grade: 11 },
+    { day: "Monday", time: "10:00 - 11:30", subject: "Physics", grade: 11 },
+    { day: "Tuesday", time: "08:00 - 09:30", subject: "Chemistry", grade: 11 },
+    { day: "Wednesday", time: "08:00 - 09:30", subject: "Mathematics", grade: 11 },
+    { day: "Thursday", time: "09:00 - 10:30", subject: "English Literature", grade: 11 },
+    { day: "Friday", time: "08:00 - 09:30", subject: "Physics", grade: 11 },
   ],
   12: [
-    { day: "Monday", time: "08:00 - 10:00", subject: "AP Calculus" },
-    { day: "Tuesday", time: "08:00 - 10:00", subject: "AP Physics" },
-    { day: "Wednesday", time: "08:00 - 10:00", subject: "AP Chemistry" },
-    { day: "Thursday", time: "08:00 - 10:00", subject: "English Literature" },
-    { day: "Friday", time: "08:00 - 10:00", subject: "AP Calculus" },
+    { day: "Monday", time: "08:00 - 10:00", subject: "AP Calculus", grade: 12 },
+    { day: "Tuesday", time: "08:00 - 10:00", subject: "AP Physics", grade: 12 },
+    { day: "Wednesday", time: "08:00 - 10:00", subject: "AP Chemistry", grade: 12 },
+    { day: "Thursday", time: "08:00 - 10:00", subject: "English Literature", grade: 12 },
+    { day: "Friday", time: "08:00 - 10:00", subject: "AP Calculus", grade: 12 },
   ],
 };
 
@@ -210,36 +199,36 @@ const studyMaterialsByGrade: Record<number, StudyMaterial[]> = {
   ],
 };
 
-const coursesByGrade: Record<number, Array<{name: string, teacher: string, grade: string, progress: number, testScores: number[]}>> = {
+const coursesByGrade: Record<number, Array<{name: string, teacher: string, gradeLetter: string, progress: number, testScores: number[]}>> = {
   8: [
-    { name: "Mathematics", teacher: "Ms. Anna Williams", grade: "A", progress: 92, testScores: [88, 92, 95] },
-    { name: "Science", teacher: "Mrs. Emily Roberts", grade: "A-", progress: 88, testScores: [85, 88, 90] },
-    { name: "English", teacher: "Mr. David Park", grade: "A", progress: 94, testScores: [92, 94, 96] },
-    { name: "History", teacher: "Dr. Sarah Mitchell", grade: "B+", progress: 85, testScores: [82, 85, 88] },
+    { name: "Mathematics", teacher: "Ms. Anna Williams", gradeLetter: "A", progress: 92, testScores: [88, 92, 95] },
+    { name: "Science", teacher: "Mrs. Emily Roberts", gradeLetter: "A-", progress: 88, testScores: [85, 88, 90] },
+    { name: "English", teacher: "Mr. David Park", gradeLetter: "A", progress: 94, testScores: [92, 94, 96] },
+    { name: "History", teacher: "Dr. Sarah Mitchell", gradeLetter: "B+", progress: 85, testScores: [82, 85, 88] },
   ],
   9: [
-    { name: "Mathematics", teacher: "Mrs. Emily Roberts", grade: "B+", progress: 82, testScores: [78, 82, 85] },
-    { name: "Physics", teacher: "Dr. James Chen", grade: "B", progress: 78, testScores: [75, 78, 80] },
-    { name: "English", teacher: "Mr. David Park", grade: "A-", progress: 90, testScores: [88, 90, 92] },
-    { name: "Chemistry", teacher: "Mrs. Emily Roberts", grade: "B+", progress: 84, testScores: [82, 84, 86] },
+    { name: "Mathematics", teacher: "Mrs. Emily Roberts", gradeLetter: "B+", progress: 82, testScores: [78, 82, 85] },
+    { name: "Physics", teacher: "Dr. James Chen", gradeLetter: "B", progress: 78, testScores: [75, 78, 80] },
+    { name: "English", teacher: "Mr. David Park", gradeLetter: "A-", progress: 90, testScores: [88, 90, 92] },
+    { name: "Chemistry", teacher: "Mrs. Emily Roberts", gradeLetter: "B+", progress: 84, testScores: [82, 84, 86] },
   ],
   10: [
-    { name: "Mathematics", teacher: "Dr. Sarah Mitchell", grade: "A-", progress: 88, testScores: [85, 88, 90] },
-    { name: "Physics", teacher: "Dr. James Chen", grade: "A", progress: 92, testScores: [90, 92, 94] },
-    { name: "English", teacher: "Mr. David Park", grade: "A", progress: 95, testScores: [93, 95, 97] },
-    { name: "Chemistry", teacher: "Mrs. Emily Roberts", grade: "B+", progress: 86, testScores: [84, 86, 88] },
+    { name: "Mathematics", teacher: "Dr. Sarah Mitchell", gradeLetter: "A-", progress: 88, testScores: [85, 88, 90] },
+    { name: "Physics", teacher: "Dr. James Chen", gradeLetter: "A", progress: 92, testScores: [90, 92, 94] },
+    { name: "English", teacher: "Mr. David Park", gradeLetter: "A", progress: 95, testScores: [93, 95, 97] },
+    { name: "Chemistry", teacher: "Mrs. Emily Roberts", gradeLetter: "B+", progress: 86, testScores: [84, 86, 88] },
   ],
   11: [
-    { name: "Mathematics", teacher: "Dr. Sarah Mitchell", grade: "A", progress: 92, testScores: [90, 92, 94] },
-    { name: "Physics", teacher: "Dr. James Chen", grade: "A-", progress: 88, testScores: [86, 88, 90] },
-    { name: "Chemistry", teacher: "Mrs. Emily Roberts", grade: "B+", progress: 85, testScores: [83, 85, 87] },
-    { name: "English Literature", teacher: "Mr. David Park", grade: "A", progress: 94, testScores: [92, 94, 96] },
+    { name: "Mathematics", teacher: "Dr. Sarah Mitchell", gradeLetter: "A", progress: 92, testScores: [90, 92, 94] },
+    { name: "Physics", teacher: "Dr. James Chen", gradeLetter: "A-", progress: 88, testScores: [86, 88, 90] },
+    { name: "Chemistry", teacher: "Mrs. Emily Roberts", gradeLetter: "B+", progress: 85, testScores: [83, 85, 87] },
+    { name: "English Literature", teacher: "Mr. David Park", gradeLetter: "A", progress: 94, testScores: [92, 94, 96] },
   ],
   12: [
-    { name: "Advanced Mathematics", teacher: "Dr. Sarah Mitchell", grade: "A", progress: 95, testScores: [93, 95, 97] },
-    { name: "Advanced Physics", teacher: "Dr. James Chen", grade: "A", progress: 93, testScores: [91, 93, 95] },
-    { name: "Advanced Chemistry", teacher: "Mrs. Emily Roberts", grade: "A-", progress: 90, testScores: [88, 90, 92] },
-    { name: "English Literature", teacher: "Mr. David Park", grade: "A", progress: 96, testScores: [94, 96, 98] },
+    { name: "Advanced Mathematics", teacher: "Dr. Sarah Mitchell", gradeLetter: "A", progress: 95, testScores: [93, 95, 97] },
+    { name: "Advanced Physics", teacher: "Dr. James Chen", gradeLetter: "A", progress: 93, testScores: [91, 93, 95] },
+    { name: "Advanced Chemistry", teacher: "Mrs. Emily Roberts", gradeLetter: "A-", progress: 90, testScores: [88, 90, 92] },
+    { name: "English Literature", teacher: "Mr. David Park", gradeLetter: "A", progress: 96, testScores: [94, 96, 98] },
   ],
 };
 
@@ -256,7 +245,6 @@ const navItems = [
 export default function StudentPortal() {
   const router = useRouter();
   const [loggedInStudent, setLoggedInStudent] = useState<typeof studentsData[0] | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [activeTest, setActiveTest] = useState<Test | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -266,6 +254,13 @@ export default function StudentPortal() {
   const [timeLeft, setTimeLeft] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
+  const [homeworkList, setHomeworkList] = useState<Homework[]>([]);
+  const [testList, setTestList] = useState<Test[]>([]);
+  const [examTimetableList, setExamTimetableList] = useState<{ date: string; exam: string; time: string; venue: string; grade: number; fileUrl?: string }[]>([]);
+  const [weeklyTimetableList, setWeeklyTimetableList] = useState<{ day: string; time: string; subject: string; grade: number }[]>([]);
+  const [studyMaterialsList, setStudyMaterialsList] = useState<StudyMaterial[]>([]);
+  const [coursesList, setCoursesList] = useState<Array<{name: string, teacher: string, gradeLetter: string, progress: number, testScores: number[]}>>([]);
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const student = localStorage.getItem("loggedInStudent");
@@ -274,9 +269,7 @@ export default function StudentPortal() {
       return;
     }
     setLoggedInStudent(JSON.parse(student));
-    setIsLoading(false);
-    
-    // Load all data from localStorage (same keys as teacher portal)
+
     const storedHomework = localStorage.getItem("homeworkData");
     if (storedHomework) {
       setHomeworkList(JSON.parse(storedHomework));
@@ -303,41 +296,23 @@ export default function StudentPortal() {
     }
   }, [router]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("loggedInStudent");
-    router.push("/");
-  };
-
-  const handleSubmitTest = useCallback(() => {
-    if (!activeTest) return;
-    let correct = 0;
-    activeTest.questions.forEach((q) => {
-      if (answers[q.id] === q.correctAnswer) correct++;
-    });
-    setTestScore({ correct, total: activeTest.questions.length });
-    setTestSubmitted(true);
-    if (timerRef.current) clearTimeout(timerRef.current);
-  }, [activeTest, answers]);
-
   useEffect(() => {
-    if (!activeTest || testSubmitted || timeLeft <= 0) return;
-    
-    timerRef.current = setTimeout(() => {
-      setTimeLeft(prev => prev - 1);
-    }, 1000);
-
+    if (activeTest && timeLeft > 0 && !testSubmitted) {
+      timerRef.current = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+    } else if (activeTest && timeLeft === 0 && !testSubmitted) {
+      handleSubmitTest();
+    }
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
   }, [timeLeft, activeTest, testSubmitted]);
 
-  useEffect(() => {
-    if (activeTest && timeLeft === 0 && !testSubmitted) {
-      handleSubmitTest();
-    }
-  }, [timeLeft, activeTest, testSubmitted, handleSubmitTest]);
+  const handleLogout = () => {
+    localStorage.removeItem("loggedInStudent");
+    router.push("/");
+  };
 
-  if (isLoading || !loggedInStudent) {
+  if (!loggedInStudent) {
     return (
       <div className="min-h-screen bg-[#0F172A] flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
@@ -345,348 +320,32 @@ export default function StudentPortal() {
     );
   }
 
-  // Filter data by student's grade
-  const filteredHomework = homeworkList.filter(hw => hw.grade === loggedInStudent.grade);
-  const filteredTests = testList.filter(t => t.grade === loggedInStudent.grade);
-  const filteredExamTimetable = examTimetable.filter(et => et.grade === loggedInStudent.grade);
-  const filteredWeeklyTimetable = weeklyTimetable.filter(wt => wt.grade === loggedInStudent.grade);
-  const filteredStudyMaterials = studyMaterials.filter(sm => sm.grade === loggedInStudent.grade);
-  const filteredCourses = courses.filter(c => c.grade === loggedInStudent.grade);
+  const allHomework = homeworkList.length > 0 ? homeworkList : homeworkByGrade[loggedInStudent.grade as keyof typeof homeworkByGrade] || [];
+  const allTests = testList.length > 0 ? testList : testsByGrade[loggedInStudent.grade as keyof typeof testsByGrade] || [];
+  const allExamTimetable = examTimetableList.length > 0 ? examTimetableList : examTimetableByGrade[loggedInStudent.grade as keyof typeof examTimetableByGrade] || [];
+  const allWeeklyTimetable = weeklyTimetableList.length > 0 ? weeklyTimetableList : weeklyTimetableByGrade[loggedInStudent.grade as keyof typeof weeklyTimetableByGrade] || [];
+  const allStudyMaterials = studyMaterialsList.length > 0 ? studyMaterialsList : studyMaterialsByGrade[loggedInStudent.grade as keyof typeof studyMaterialsByGrade] || [];
+  const allCourses = coursesList.length > 0 ? coursesList : coursesByGrade[loggedInStudent.grade as keyof typeof coursesByGrade] || [];
 
-  const gpaValues: Record<string, string> = {
-    "A": "4.0", "A-": "3.7", "B+": "3.3", "B": "3.0", "B-": "2.7", "C+": "2.3", "C": "2.0"
-  };
-
-  const avgGrade = filteredCourses.length > 0 
-    ? filteredCourses.reduce((acc, c) => acc + (gpaValues[c.grade] ? parseFloat(gpaValues[c.grade]) : 0), 0) / filteredCourses.length
-    : 0;
-  const gpa = avgGrade.toFixed(1);
-
-  const getInitials = (name: string) => {
-    return name.split(" ").map(n => n[0]).join("").toUpperCase();
-  };
-
-  const startTest = (test: Test) => {
-    setActiveTest(test);
-    setCurrentQuestion(0);
-    setAnswers({});
-    setTestSubmitted(false);
-    setTestScore(null);
-    setTimeLeft(test.timeLimit * 60);
-  };
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const student = localStorage.getItem("loggedInStudent");
-    if (!student) {
-      router.push("/login");
-      return;
-    }
-    setLoggedInStudent(JSON.parse(student));
-    setIsLoading(false);
-    
-    // Load all data from localStorage
-    const storedHomework = localStorage.getItem("homeworkData");
-    if (storedHomework) {
-      setHomework(JSON.parse(storedHomework));
-    }
-    const storedTests = localStorage.getItem("testData");
-    if (storedTests) {
-      setTests(JSON.parse(storedTests));
-    }
-    const storedExamTimetable = localStorage.getItem("examTimetableData");
-    if (storedExamTimetable) {
-      setExamTimetables(JSON.parse(storedExamTimetable));
-    }
-    const storedWeeklyTimetable = localStorage.getItem("weeklyTimetableData");
-    if (storedWeeklyTimetable) {
-      setWeeklyTimetables(JSON.parse(storedWeeklyTimetable));
-    }
-    const storedStudyMaterials = localStorage.getItem("studyMaterialsData");
-    if (storedStudyMaterials) {
-      setStudyMaterialsList(JSON.parse(storedStudyMaterials));
-    }
-    const storedCourses = localStorage.getItem("coursesData");
-    if (storedCourses) {
-      setCoursesList(JSON.parse(storedCourses));
-    }
-  }, [router]);
-
-  const getInitials = (name: string) => {
-    return name.split(" ").map(n => n[0]).join("").toUpperCase();
-  };
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const student = localStorage.getItem("loggedInStudent");
-    if (!student) {
-      router.push("/login");
-      return;
-    }
-    setLoggedInStudent(JSON.parse(student));
-    setIsLoading(false);
-    
-    // Load all data from localStorage
-    const storedHomework = localStorage.getItem("homeworkData");
-    if (storedHomework) {
-      setHomework(JSON.parse(storedHomework));
-    }
-    const storedTests = localStorage.getItem("testData");
-    if (storedTests) {
-      setTests(JSON.parse(storedTests));
-    }
-    const storedExamTimetable = localStorage.getItem("examTimetableData");
-    if (storedExamTimetable) {
-      setExamTimetables(JSON.parse(storedExamTimetable));
-    }
-    const storedWeeklyTimetable = localStorage.getItem("weeklyTimetableData");
-    if (storedWeeklyTimetable) {
-      setWeeklyTimetables(JSON.parse(storedWeeklyTimetable));
-    }
-    const storedStudyMaterials = localStorage.getItem("studyMaterialsData");
-    if (storedStudyMaterials) {
-      setStudyMaterialsList(JSON.parse(storedStudyMaterials));
-    }
-    const storedCourses = localStorage.getItem("coursesData");
-    if (storedCourses) {
-      setCoursesList(JSON.parse(storedCourses));
-    }
-  }, [router]);
-
-  const getInitials = (name: string) => {
-    return name.split(" ").map(n => n[0]).join("").toUpperCase();
-  };
-  const [homework, setHomework] = useState<Homework[]>([]);
-  const [tests, setTests] = useState<Test[]>([]);
-  const [examTimetables, setExamTimetables] = useState<{ date: string; exam: string; time: string; venue: string; grade: number; fileUrl?: string }[]>([]);
-  const [weeklyTimetables, setWeeklyTimetables] = useState<{ day: string; time: string; subject: string; grade: number }[]>([]);
-  const [studyMaterialsList, setStudyMaterialsList] = useState<StudyMaterial[]>([]);
-  const [coursesList, setCoursesList] = useState<Array<{name: string, teacher: string, grade: string, progress: number, testScores: number[]}>>([]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const student = localStorage.getItem("loggedInStudent");
-    if (!student) {
-      router.push("/login");
-      return;
-    }
-    setLoggedInStudent(JSON.parse(student));
-    setIsLoading(false);
-    
-    // Load all data from localStorage
-    const storedHomework = localStorage.getItem("homeworkData");
-    if (storedHomework) {
-      setHomework(JSON.parse(storedHomework));
-    }
-    const storedTests = localStorage.getItem("testData");
-    if (storedTests) {
-      setTests(JSON.parse(storedTests));
-    }
-    const storedExamTimetable = localStorage.getItem("examTimetableData");
-    if (storedExamTimetable) {
-      setExamTimetables(JSON.parse(storedExamTimetable));
-    }
-    const storedWeeklyTimetable = localStorage.getItem("weeklyTimetableData");
-    if (storedWeeklyTimetable) {
-      setWeeklyTimetables(JSON.parse(storedWeeklyTimetable));
-    }
-    const storedStudyMaterials = localStorage.getItem("studyMaterialsData");
-    if (storedStudyMaterials) {
-      setStudyMaterialsList(JSON.parse(storedStudyMaterials));
-    }
-    const storedCourses = localStorage.getItem("coursesData");
-    if (storedCourses) {
-      setCoursesList(JSON.parse(storedCourses));
-    }
-  }, [router]);
-
-  const getInitials = (name: string) => {
-    return name.split(" ").map(n => n[0]).join("").toUpperCase();
-  };
-
-  const homeworkList = useMemo(() => {
-    return [...homework].filter(hw => hw.grade === (loggedInStudent?.grade ?? 0));
-  }, [homework, loggedInStudent?.grade]);
-
-  const testList = useMemo(() => {
-    return [...tests].filter(t => t.grade === (loggedInStudent?.grade ?? 0));
-  }, [tests, loggedInStudent?.grade]);
-
-  const examTimetable = useMemo(() => {
-    return [...examTimetables].filter(et => et.grade === (loggedInStudent?.grade ?? 0));
-  }, [examTimetables, loggedInStudent?.grade]);
-
-  const weeklyTimetable = useMemo(() => {
-    return [...weeklyTimetables].filter(wt => wt.grade === (loggedInStudent?.grade ?? 0));
-  }, [weeklyTimetables, loggedInStudent?.grade]);
-
-  const studyMaterials = useMemo(() => {
-    return [...studyMaterialsList].filter(sm => sm.grade === (loggedInStudent?.grade ?? 0));
-  }, [studyMaterialsList, loggedInStudent?.grade]);
-
-  const courses = useMemo(() => {
-    return [...coursesList].filter(c => c.grade === (loggedInStudent?.grade ?? 0));
-  }, [coursesList, loggedInStudent?.grade]);
-  const [homework, setHomework] = useState<Homework[]>([]);
-  const [tests, setTests] = useState<Test[]>([]);
-  const [examTimetables, setExamTimetables] = useState<{ date: string; exam: string; time: string; venue: string; grade: number; fileUrl?: string }[]>([]);
-  const [weeklyTimetables, setWeeklyTimetables] = useState<{ day: string; time: string; subject: string; grade: number }[]>([]);
-  const [studyMaterialsList, setStudyMaterialsList] = useState<StudyMaterial[]>([]);
-  const [coursesList, setCoursesList] = useState<Array<{name: string, teacher: string, grade: string, progress: number, testScores: number[]}>>([]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const student = localStorage.getItem("loggedInStudent");
-    if (!student) {
-      router.push("/login");
-      return;
-    }
-    setLoggedInStudent(JSON.parse(student));
-    setIsLoading(false);
-    
-    // Load all data from localStorage
-    const storedHomework = localStorage.getItem("homeworkData");
-    if (storedHomework) {
-      setHomework(JSON.parse(storedHomework));
-    }
-    const storedTests = localStorage.getItem("testData");
-    if (storedTests) {
-      setTests(JSON.parse(storedTests));
-    }
-    const storedExamTimetable = localStorage.getItem("examTimetableData");
-    if (storedExamTimetable) {
-      setExamTimetables(JSON.parse(storedExamTimetable));
-    }
-    const storedWeeklyTimetable = localStorage.getItem("weeklyTimetableData");
-    if (storedWeeklyTimetable) {
-      setWeeklyTimetables(JSON.parse(storedWeeklyTimetable));
-    }
-    const storedStudyMaterials = localStorage.getItem("studyMaterialsData");
-    if (storedStudyMaterials) {
-      setStudyMaterialsList(JSON.parse(storedStudyMaterials));
-    }
-    const storedCourses = localStorage.getItem("coursesData");
-    if (storedCourses) {
-      setCoursesList(JSON.parse(storedCourses));
-    }
-  }, [router]);
-
-  const getInitials = (name: string) => {
-    return name.split(" ").map(n => n[0]).join("").toUpperCase();
-  };
-
-  const homeworkList = [...homework].filter(hw => hw.grade === (loggedInStudent?.grade ?? 0));
-  const testList = [...tests].filter(t => t.grade === (loggedInStudent?.grade ?? 0));
-  const examTimetable = [...examTimetables].filter(et => et.grade === (loggedInStudent?.grade ?? 0));
-  const weeklyTimetable = [...weeklyTimetables].filter(wt => wt.grade === (loggedInStudent?.grade ?? 0));
-  const studyMaterials = [...studyMaterialsList].filter(sm => sm.grade === (loggedInStudent?.grade ?? 0));
-  const courses = [...coursesList].filter(c => c.grade === (loggedInStudent?.grade ?? 0));
-
-  const [homework, setHomework] = useState<Homework[]>([]);
-  const [tests, setTests] = useState<Test[]>([]);
-  const [examTimetables, setExamTimetables] = useState<{ date: string; exam: string; time: string; venue: string; grade: number; fileUrl?: string }[]>([]);
-  const [weeklyTimetables, setWeeklyTimetables] = useState<{ day: string; time: string; subject: string; grade: number }[]>([]);
-  const [studyMaterialsList, setStudyMaterialsList] = useState<StudyMaterial[]>([]);
-  const [coursesList, setCoursesList] = useState<Array<{name: string, teacher: string, grade: string, progress: number, testScores: number[]}>>([]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const student = localStorage.getItem("loggedInStudent");
-    if (!student) {
-      router.push("/login");
-      return;
-    }
-    setLoggedInStudent(JSON.parse(student));
-    setIsLoading(false);
-    
-    // Load all data from localStorage
-    const storedHomework = localStorage.getItem("homeworkData");
-    if (storedHomework) {
-      setHomework(JSON.parse(storedHomework));
-    }
-    const storedTests = localStorage.getItem("testData");
-    if (storedTests) {
-      setTests(JSON.parse(storedTests));
-    }
-    const storedExamTimetable = localStorage.getItem("examTimetableData");
-    if (storedExamTimetable) {
-      setExamTimetables(JSON.parse(storedExamTimetable));
-    }
-    const storedWeeklyTimetable = localStorage.getItem("weeklyTimetableData");
-    if (storedWeeklyTimetable) {
-      setWeeklyTimetables(JSON.parse(storedWeeklyTimetable));
-    }
-    const storedStudyMaterials = localStorage.getItem("studyMaterialsData");
-    if (storedStudyMaterials) {
-      setStudyMaterialsList(JSON.parse(storedStudyMaterials));
-    }
-    const storedCourses = localStorage.getItem("coursesData");
-    if (storedCourses) {
-      setCoursesList(JSON.parse(storedCourses));
-    }
-  }, [router]);
-
-  const handleLogout = () => {
-    localStorage.removeItem("loggedInStudent");
-    router.push("/");
-  };
-
-  const handleSubmitTest = useCallback(() => {
-    if (!activeTest) return;
-    let correct = 0;
-    activeTest.questions.forEach((q) => {
-      if (answers[q.id] === q.correctAnswer) correct++;
-    });
-    setTestScore({ correct, total: activeTest.questions.length });
-    setTestSubmitted(true);
-    if (timerRef.current) clearTimeout(timerRef.current);
-  }, [activeTest, answers]);
-
-  useEffect(() => {
-    if (!activeTest || testSubmitted || timeLeft <= 0) return;
-    
-    timerRef.current = setTimeout(() => {
-      setTimeLeft(prev => prev - 1);
-    }, 1000);
-
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
-  }, [timeLeft, activeTest, testSubmitted]);
-
-  useEffect(() => {
-    if (activeTest && timeLeft === 0 && !testSubmitted) {
-      handleSubmitTest();
-    }
-  }, [timeLeft, activeTest, testSubmitted, handleSubmitTest]);
-
-  if (isLoading || !loggedInStudent) {
-    return (
-      <div className="min-h-screen bg-[#0F172A] flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
-  }
+  const homework = allHomework.filter(hw => hw.grade === loggedInStudent.grade);
+  const tests = allTests.filter(t => t.grade === loggedInStudent.grade);
+  const examTimetable = allExamTimetable.filter(et => et.grade === loggedInStudent.grade);
+  const weeklyTimetable = allWeeklyTimetable.filter(wt => wt.grade === loggedInStudent.grade);
+  const studyMaterials = allStudyMaterials.filter(sm => sm.grade === loggedInStudent.grade);
+  const courses = allCourses.filter(c => c.gradeLetter);
 
   const gpaValues: Record<string, string> = {
     "A": "4.0", "A-": "3.7", "B+": "3.3", "B": "3.0", "B-": "2.7", "C+": "2.3", "C": "2.0"
   };
 
   const avgGrade = courses.length > 0 
-    ? courses.reduce((acc, c) => acc + (gpaValues[c.grade] ? parseFloat(gpaValues[c.grade]) : 0), 0) / courses.length
+    ? courses.reduce((acc, c) => acc + (gpaValues[c.gradeLetter] ? parseFloat(gpaValues[c.gradeLetter]) : 0), 0) / courses.length
     : 0;
   const gpa = avgGrade.toFixed(1);
 
   const getInitials = (name: string) => {
     return name.split(" ").map(n => n[0]).join("").toUpperCase();
   };
-
-  const homeworkList = [...homework].filter(hw => hw.grade === loggedInStudent.grade);
-  const testList = [...tests].filter(t => t.grade === loggedInStudent.grade);
-  const examTimetable = [...examTimetables].filter(et => et.grade === loggedInStudent.grade);
-  const weeklyTimetable = [...weeklyTimetables].filter(wt => wt.grade === loggedInStudent.grade);
-  const studyMaterials = [...studyMaterialsList].filter(sm => sm.grade === loggedInStudent.grade);
-  const courses = [...coursesList].filter(c => c.grade === loggedInStudent.grade);
 
   const startTest = (test: Test) => {
     setActiveTest(test);
@@ -695,6 +354,17 @@ export default function StudentPortal() {
     setTestSubmitted(false);
     setTestScore(null);
     setTimeLeft(test.timeLimit * 60);
+  };
+
+  const handleSubmitTest = () => {
+    if (!activeTest) return;
+    let correct = 0;
+    activeTest.questions.forEach((q) => {
+      if (answers[q.id] === q.correctAnswer) correct++;
+    });
+    setTestScore({ correct, total: activeTest.questions.length });
+    setTestSubmitted(true);
+    if (timerRef.current) clearTimeout(timerRef.current);
   };
 
   const renderDashboard = () => (
@@ -708,7 +378,7 @@ export default function StudentPortal() {
             <div>
               <h2 className="text-xl font-semibold text-white">{loggedInStudent.name}</h2>
               <p className="text-blue-300">Grade {loggedInStudent.grade} • {loggedInStudent.school}</p>
-              <p className="text-slate-400 text-sm">Student ID: {loggedInStudent.schoolYear}-{loggedInStudent.id.toString().padStart(4, '0')}</p>
+              <p className="text-slate-400 text-sm">Student ID: 2024-{loggedInStudent.id.toString().padStart(4, '0')}</p>
             </div>
           </div>
         </div>
@@ -758,8 +428,8 @@ export default function StudentPortal() {
               <div key={course.name} className="p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-white font-medium">{course.name}</h3>
-                  <span className="px-3 py-1 rounded-full text-sm font-medium" style={{ background: course.grade.startsWith('A') ? '#10B98120' : '#F59E0B20', color: course.grade.startsWith('A') ? '#10B981' : '#F59E0B' }}>
-                    {course.grade}
+                  <span className="px-3 py-1 rounded-full text-sm font-medium" style={{ background: course.gradeLetter.startsWith('A') ? '#10B98120' : '#F59E0B20', color: course.gradeLetter.startsWith('A') ? '#10B981' : '#F59E0B' }}>
+                    {course.gradeLetter}
                   </span>
                 </div>
                 <p className="text-slate-400 text-sm mb-3">{course.teacher}</p>
@@ -777,7 +447,7 @@ export default function StudentPortal() {
         <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
           <h2 className="text-xl font-semibold text-white mb-6 font-['Outfit']">Upcoming Homework</h2>
           <div className="space-y-3">
-            {homeworkList.slice(0, 4).map((hw) => (
+            {homework.slice(0, 4).map((hw) => (
               <div key={hw.id} className="p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-white font-medium">{hw.title}</h3>
@@ -805,7 +475,7 @@ export default function StudentPortal() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {homeworkList.map((hw) => (
+        {homework.map((hw) => (
           <div key={hw.id} className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all duration-300">
             <div className="flex items-start justify-between mb-4">
               <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
@@ -948,7 +618,7 @@ export default function StudentPortal() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {testList.map((test) => (
+          {tests.map((test) => (
             <div key={test.id} className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all duration-300">
               <div className="flex items-start justify-between mb-4">
                 <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center">
@@ -1124,7 +794,7 @@ export default function StudentPortal() {
                     <p className="text-slate-400 text-sm">{course.teacher}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-white font-semibold">{course.grade}</p>
+                    <p className="text-white font-semibold">{course.gradeLetter}</p>
                     <p className="text-slate-400 text-sm">{course.progress}%</p>
                   </div>
                 </div>

@@ -1,75 +1,59 @@
-# Active Context: EduHub School Portal
+# Active Context: Geleza Mzansi School Portal
 
 ## Current State
 
-**Project Status**: ✅ Complete
+**Project Status**: ✅ Complete with localStorage data sharing
 
-EduHub is a multi-portal school management system with 3 distinct portals for Students, Teachers, and Parents.
+Geleza Mzansi is a multi-portal school management system with 3 portals (Student, Teacher, Admin).
 
 ## Recently Completed
 
-- [x] Base Next.js 16 setup with App Router
-- [x] TypeScript configuration with strict mode
-- [x] Tailwind CSS 4 integration
-- [x] ESLint configuration
-- [x] Memory bank documentation
-- [x] Recipe system for common features
-- [x] Landing page with 3 portal selection cards
-- [x] Student portal with dashboard (courses, assignments, GPA, attendance)
-- [x] Teacher portal with dashboard (classes, submissions, announcements)
-- [x] Parent portal with dashboard (child progress, attendance, fees)
-- [x] Dark theme with glassmorphism UI
-- [x] Custom fonts (Outfit, DM Sans)
+- [x] Fixed student portal TypeScript errors (duplicate declarations)
+- [x] Added localStorage integration to student portal for reading teacher-created content
+- [x] Student portal now reads homework, tests, timetables, study materials, courses from localStorage
+- [x] Added grade-based filtering so students see content for their specific grade
+- [x] Fallback to default data when localStorage is empty
 
 ## Current Structure
 
 | File/Directory | Purpose | Status |
 |----------------|---------|--------|
 | `src/app/page.tsx` | Landing page with portal selection | ✅ |
-| `src/app/student/page.tsx` | Student portal dashboard | ✅ |
-| `src/app/teacher/page.tsx` | Teacher portal dashboard | ✅ |
-| `src/app/parent/page.tsx` | Parent portal dashboard | ✅ |
-| `src/app/layout.tsx` | Root layout with fonts | ✅ |
-| `src/app/globals.css` | Global styles & Tailwind | ✅ |
-| `SPEC.md` | Project specification | ✅ |
+| `src/app/student/page.tsx` | Student portal - READS from localStorage | ✅ Fixed |
+| `src/app/teacher/page.tsx` | Teacher portal - WRITES to localStorage | ✅ |
+| `src/app/admin/page.tsx` | Admin portal | ✅ |
+| `src/app/login/page.tsx` | Login page | ✅ |
 
-## Portal Features
+## Data Flow
 
-### Student Portal
-- GPA, attendance, credits display
-- Course list with grades and progress
-- Upcoming assignments with due dates
+Teacher portal saves to localStorage keys:
+- `homeworkData` - Homework assignments
+- `testData` - Online tests
+- `examTimetableData` - Exam schedules
+- `weeklyTimetableData` - Weekly schedule
+- `studyMaterialsData` - Study materials
+- `coursesData` - Course data
 
-### Teacher Portal
-- Total students, active classes, pending reviews
-- Class management with average grades
-- Recent submissions to review
-
-### Parent Portal
-- Child's academic overview (GPA, rank, credits)
-- Attendance summary by month
-- Fee status and payment tracking
+Student portal reads from same keys and filters by student's grade.
 
 ## Technical Details
 
 - **Theme**: Dark slate (#0F172A) with glassmorphism
-- **Portal Colors**:
-  - Student: Deep Navy (#1E3A5F)
-  - Teacher: Royal Purple (#7C3AED)
-  - Parent: Emerald Green (#059669)
+- **Portal Colors**: Student (blue), Teacher (purple), Admin (emerald)
 - **Fonts**: Outfit (headings), DM Sans (body)
 - **No TypeScript errors**: ✅
-- **No ESLint errors**: ✅
+- **ESLint**: 1 warning (student portal useEffect), 1 error (teacher portal - pre-existing)
 
 ## Session History
 
 | Date | Changes |
 |------|---------|
 | Initial | Template created with base setup |
-| Mar 20, 2026 | Implemented EduHub school portal with 3 portals |
+| Mar 20, 2026 | Implemented Geleza Mzansi school portal |
+| Mar 25, 2026 | Fixed student portal TypeScript errors, added localStorage integration |
 
 ## Pending Improvements
 
 - [ ] Add real backend/database integration
 - [ ] Add authentication system
-- [ ] Add more interactive features
+- [ ] Fix teacher portal lint error (pre-existing)
