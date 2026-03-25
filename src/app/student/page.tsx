@@ -265,12 +265,6 @@ export default function StudentPortal() {
   const [testScore, setTestScore] = useState<{ correct: number; total: number } | null>(null);
   const [timeLeft, setTimeLeft] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const [homework, setHomework] = useState<Homework[]>([]);
-  const [tests, setTests] = useState<Test[]>([]);
-  const [examTimetables, setExamTimetables] = useState<{ date: string; exam: string; time: string; venue: string; grade: number; fileUrl?: string }[]>([]);
-  const [weeklyTimetables, setWeeklyTimetables] = useState<{ day: string; time: string; subject: string; grade: number }[]>([]);
-  const [studyMaterialsList, setStudyMaterialsList] = useState<StudyMaterial[]>([]);
-  const [coursesList, setCoursesList] = useState<Array<{name: string, teacher: string, grade: string, progress: number, testScores: number[]}>>([]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -282,22 +276,22 @@ export default function StudentPortal() {
     setLoggedInStudent(JSON.parse(student));
     setIsLoading(false);
     
-    // Load all data from localStorage
+    // Load all data from localStorage (same keys as teacher portal)
     const storedHomework = localStorage.getItem("homeworkData");
     if (storedHomework) {
-      setHomework(JSON.parse(storedHomework));
+      setHomeworkList(JSON.parse(storedHomework));
     }
     const storedTests = localStorage.getItem("testData");
     if (storedTests) {
-      setTests(JSON.parse(storedTests));
+      setTestList(JSON.parse(storedTests));
     }
     const storedExamTimetable = localStorage.getItem("examTimetableData");
     if (storedExamTimetable) {
-      setExamTimetables(JSON.parse(storedExamTimetable));
+      setExamTimetableList(JSON.parse(storedExamTimetable));
     }
     const storedWeeklyTimetable = localStorage.getItem("weeklyTimetableData");
     if (storedWeeklyTimetable) {
-      setWeeklyTimetables(JSON.parse(storedWeeklyTimetable));
+      setWeeklyTimetableList(JSON.parse(storedWeeklyTimetable));
     }
     const storedStudyMaterials = localStorage.getItem("studyMaterialsData");
     if (storedStudyMaterials) {
@@ -309,8 +303,76 @@ export default function StudentPortal() {
     }
   }, [router]);
 
+  const handleLogout = () => {
+    localStorage.removeItem("loggedInStudent");
+    router.push("/");
+  };
+
+  const handleSubmitTest = useCallback(() => {
+    if (!activeTest) return;
+    let correct = 0;
+    activeTest.questions.forEach((q) => {
+      if (answers[q.id] === q.correctAnswer) correct++;
+    });
+    setTestScore({ correct, total: activeTest.questions.length });
+    setTestSubmitted(true);
+    if (timerRef.current) clearTimeout(timerRef.current);
+  }, [activeTest, answers]);
+
+  useEffect(() => {
+    if (!activeTest || testSubmitted || timeLeft <= 0) return;
+    
+    timerRef.current = setTimeout(() => {
+      setTimeLeft(prev => prev - 1);
+    }, 1000);
+
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [timeLeft, activeTest, testSubmitted]);
+
+  useEffect(() => {
+    if (activeTest && timeLeft === 0 && !testSubmitted) {
+      handleSubmitTest();
+    }
+  }, [timeLeft, activeTest, testSubmitted, handleSubmitTest]);
+
+  if (isLoading || !loggedInStudent) {
+    return (
+      <div className="min-h-screen bg-[#0F172A] flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  // Filter data by student's grade
+  const filteredHomework = homeworkList.filter(hw => hw.grade === loggedInStudent.grade);
+  const filteredTests = testList.filter(t => t.grade === loggedInStudent.grade);
+  const filteredExamTimetable = examTimetable.filter(et => et.grade === loggedInStudent.grade);
+  const filteredWeeklyTimetable = weeklyTimetable.filter(wt => wt.grade === loggedInStudent.grade);
+  const filteredStudyMaterials = studyMaterials.filter(sm => sm.grade === loggedInStudent.grade);
+  const filteredCourses = courses.filter(c => c.grade === loggedInStudent.grade);
+
+  const gpaValues: Record<string, string> = {
+    "A": "4.0", "A-": "3.7", "B+": "3.3", "B": "3.0", "B-": "2.7", "C+": "2.3", "C": "2.0"
+  };
+
+  const avgGrade = filteredCourses.length > 0 
+    ? filteredCourses.reduce((acc, c) => acc + (gpaValues[c.grade] ? parseFloat(gpaValues[c.grade]) : 0), 0) / filteredCourses.length
+    : 0;
+  const gpa = avgGrade.toFixed(1);
+
   const getInitials = (name: string) => {
     return name.split(" ").map(n => n[0]).join("").toUpperCase();
+  };
+
+  const startTest = (test: Test) => {
+    setActiveTest(test);
+    setCurrentQuestion(0);
+    setAnswers({});
+    setTestSubmitted(false);
+    setTestScore(null);
+    setTimeLeft(test.timeLimit * 60);
   };
 
   useEffect(() => {
