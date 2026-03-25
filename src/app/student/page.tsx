@@ -265,12 +265,10 @@ export default function StudentPortal() {
   const [testScore, setTestScore] = useState<{ correct: number; total: number } | null>(null);
   const [timeLeft, setTimeLeft] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  
-  // Data state
-  const [homeworkList, setHomeworkList] = useState<Homework[]>([]);
-  const [testList, setTestList] = useState<Test[]>([]);
-  const [examTimetableList, setExamTimetableList] = useState<{ date: string; exam: string; time: string; venue: string; grade: number; fileUrl?: string }[]>([]);
-  const [weeklyTimetableList, setWeeklyTimetableList] = useState<{ day: string; time: string; subject: string; grade: number }[]>([]);
+  const [homework, setHomework] = useState<Homework[]>([]);
+  const [tests, setTests] = useState<Test[]>([]);
+  const [examTimetables, setExamTimetables] = useState<{ date: string; exam: string; time: string; venue: string; grade: number; fileUrl?: string }[]>([]);
+  const [weeklyTimetables, setWeeklyTimetables] = useState<{ day: string; time: string; subject: string; grade: number }[]>([]);
   const [studyMaterialsList, setStudyMaterialsList] = useState<StudyMaterial[]>([]);
   const [coursesList, setCoursesList] = useState<Array<{name: string, teacher: string, grade: string, progress: number, testScores: number[]}>>([]);
 
@@ -287,19 +285,101 @@ export default function StudentPortal() {
     // Load all data from localStorage
     const storedHomework = localStorage.getItem("homeworkData");
     if (storedHomework) {
-      setHomeworkList(JSON.parse(storedHomework));
+      setHomework(JSON.parse(storedHomework));
     }
     const storedTests = localStorage.getItem("testData");
     if (storedTests) {
-      setTestList(JSON.parse(storedTests));
+      setTests(JSON.parse(storedTests));
     }
     const storedExamTimetable = localStorage.getItem("examTimetableData");
     if (storedExamTimetable) {
-      setExamTimetableList(JSON.parse(storedExamTimetable));
+      setExamTimetables(JSON.parse(storedExamTimetable));
     }
     const storedWeeklyTimetable = localStorage.getItem("weeklyTimetableData");
     if (storedWeeklyTimetable) {
-      setWeeklyTimetableList(JSON.parse(storedWeeklyTimetable));
+      setWeeklyTimetables(JSON.parse(storedWeeklyTimetable));
+    }
+    const storedStudyMaterials = localStorage.getItem("studyMaterialsData");
+    if (storedStudyMaterials) {
+      setStudyMaterialsList(JSON.parse(storedStudyMaterials));
+    }
+    const storedCourses = localStorage.getItem("coursesData");
+    if (storedCourses) {
+      setCoursesList(JSON.parse(storedCourses));
+    }
+  }, [router]);
+
+  const getInitials = (name: string) => {
+    return name.split(" ").map(n => n[0]).join("").toUpperCase();
+  };
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const student = localStorage.getItem("loggedInStudent");
+    if (!student) {
+      router.push("/login");
+      return;
+    }
+    setLoggedInStudent(JSON.parse(student));
+    setIsLoading(false);
+    
+    // Load all data from localStorage
+    const storedHomework = localStorage.getItem("homeworkData");
+    if (storedHomework) {
+      setHomework(JSON.parse(storedHomework));
+    }
+    const storedTests = localStorage.getItem("testData");
+    if (storedTests) {
+      setTests(JSON.parse(storedTests));
+    }
+    const storedExamTimetable = localStorage.getItem("examTimetableData");
+    if (storedExamTimetable) {
+      setExamTimetables(JSON.parse(storedExamTimetable));
+    }
+    const storedWeeklyTimetable = localStorage.getItem("weeklyTimetableData");
+    if (storedWeeklyTimetable) {
+      setWeeklyTimetables(JSON.parse(storedWeeklyTimetable));
+    }
+    const storedStudyMaterials = localStorage.getItem("studyMaterialsData");
+    if (storedStudyMaterials) {
+      setStudyMaterialsList(JSON.parse(storedStudyMaterials));
+    }
+    const storedCourses = localStorage.getItem("coursesData");
+    if (storedCourses) {
+      setCoursesList(JSON.parse(storedCourses));
+    }
+  }, [router]);
+
+  const getInitials = (name: string) => {
+    return name.split(" ").map(n => n[0]).join("").toUpperCase();
+  };
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const student = localStorage.getItem("loggedInStudent");
+    if (!student) {
+      router.push("/login");
+      return;
+    }
+    setLoggedInStudent(JSON.parse(student));
+    setIsLoading(false);
+    
+    // Load all data from localStorage
+    const storedHomework = localStorage.getItem("homeworkData");
+    if (storedHomework) {
+      setHomework(JSON.parse(storedHomework));
+    }
+    const storedTests = localStorage.getItem("testData");
+    if (storedTests) {
+      setTests(JSON.parse(storedTests));
+    }
+    const storedExamTimetable = localStorage.getItem("examTimetableData");
+    if (storedExamTimetable) {
+      setExamTimetables(JSON.parse(storedExamTimetable));
+    }
+    const storedWeeklyTimetable = localStorage.getItem("weeklyTimetableData");
+    if (storedWeeklyTimetable) {
+      setWeeklyTimetables(JSON.parse(storedWeeklyTimetable));
     }
     const storedStudyMaterials = localStorage.getItem("studyMaterialsData");
     if (storedStudyMaterials) {
