@@ -81,6 +81,7 @@ const navItems = [
   { icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6", label: "Dashboard" },
   { icon: "M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10", label: "Homework" },
   { icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01", label: "Tests" },
+  { icon: "M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z", label: "Students" },
   { icon: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z", label: "Exam Timetable" },
   { icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", label: "Weekly Timetable" },
   { icon: "M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z", label: "Announcements" },
@@ -824,6 +825,54 @@ export default function TeacherPortal() {
     </div>
   );
 
+  const renderStudents = () => {
+    const myStudents = studentsData.filter(s => s.school === loggedInTeacher?.school);
+    const gradeFilter = localStorage.getItem("teacherGradeFilter") || "";
+    const filteredStudents = gradeFilter ? myStudents.filter(s => s.grade === parseInt(gradeFilter)) : myStudents;
+    
+    return (
+      <div>
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-white font-['Outfit']">My Students</h1>
+            <p className="text-slate-400 mt-1">View and manage your students</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <select 
+              value={gradeFilter} 
+              onChange={(e) => { localStorage.setItem("teacherGradeFilter", e.target.value); setActiveTab("students"); }}
+              className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-500"
+            >
+              <option value="">All Grades</option>
+              {[8,9,10,11,12].map(g => <option key={g} value={g}>Grade {g}</option>)}
+            </select>
+            <span className="text-slate-400 text-sm">{filteredStudents.length} student(s)</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredStudents.map((student) => (
+            <div key={student.id} className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all duration-300">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold">
+                  {student.name.split(" ").map(n => n[0]).join("").toUpperCase()}
+                </div>
+                <div>
+                  <h3 className="text-white font-semibold">{student.name}</h3>
+                  <p className="text-slate-400 text-sm">Grade {student.grade}</p>
+                </div>
+              </div>
+              <div className="space-y-2 text-sm">
+                <p className="text-slate-400"><span className="text-slate-500">Email:</span> {student.email}</p>
+                <p className="text-slate-400"><span className="text-slate-500">Username:</span> {student.username}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   const renderAnnouncements = () => (
     <div>
       <div className="flex items-center justify-between mb-8">
@@ -974,6 +1023,7 @@ export default function TeacherPortal() {
         {activeTab === "dashboard" && renderDashboard()}
         {activeTab === "homework" && renderHomework()}
         {activeTab === "tests" && renderTests()}
+        {activeTab === "students" && renderStudents()}
         {activeTab === "exam timetable" && renderExamTimetable()}
         {activeTab === "weekly timetable" && renderWeeklyTimetable()}
         {activeTab === "announcements" && renderAnnouncements()}
