@@ -49,6 +49,7 @@ interface Homework {
   grade: number;
   fileUrl: string;
   fileType: string;
+  subject: string;
 }
 
 interface Test {
@@ -57,6 +58,7 @@ interface Test {
   description: string;
   dueDate: string;
   grade: number;
+  subject: string;
   questions: Question[];
   published: boolean;
 }
@@ -94,13 +96,13 @@ export default function TeacherPortal() {
   const [homeworkList, setHomeworkList] = useState<Homework[]>(() => {
     const stored = localStorage.getItem("homeworkData");
     return stored ? JSON.parse(stored) : [
-      { id: 1, title: "Algebra Practice Problems", description: "Complete exercises 1-20 from Chapter 5", dueDate: "2026-04-02", grade: 11, fileUrl: "", fileType: "application/pdf" },
-      { id: 2, title: "Geometry Proofs", description: "Submit proofs for theorems 1-5", dueDate: "2026-04-05", grade: 10, fileUrl: "", fileType: "application/pdf" },
+      { id: 1, title: "Algebra Practice Problems", description: "Complete exercises 1-20 from Chapter 5", dueDate: "2026-04-02", grade: 11, fileUrl: "", fileType: "application/pdf", subject: "Mathematics" },
+      { id: 2, title: "Geometry Proofs", description: "Submit proofs for theorems 1-5", dueDate: "2026-04-05", grade: 10, fileUrl: "", fileType: "application/pdf", subject: "Mathematics" },
     ];
   });
   const [testList, setTestList] = useState<Test[]>([
-    { id: 1, title: "Mid-term Exam", description: "Covers chapters 1-5", dueDate: "2026-04-15", grade: 11, questions: [], published: true },
-    { id: 2, title: "Quiz: Trigonometry", description: "Short quiz on basic trig functions", dueDate: "2026-04-10", grade: 10, questions: [], published: false },
+    { id: 1, title: "Mid-term Exam", description: "Covers chapters 1-5", dueDate: "2026-04-15", grade: 11, subject: "Mathematics", questions: [], published: true },
+    { id: 2, title: "Quiz: Trigonometry", description: "Short quiz on basic trig functions", dueDate: "2026-04-10", grade: 10, subject: "Mathematics", questions: [], published: false },
   ]);
   const [announcements, setAnnouncements] = useState<Announcement[]>([
     { id: 1, title: "Parent-Teacher Meeting", content: "Join us this Friday at 2 PM for the quarterly parent-teacher meeting.", date: "2026-03-26", priority: "important" },
@@ -111,9 +113,9 @@ export default function TeacherPortal() {
   const [showAnnouncementModal, setShowAnnouncementModal] = useState(false);
   const [showExamModal, setShowExamModal] = useState(false);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
-  const [newHomework, setNewHomework] = useState({ title: "", description: "", dueDate: "", grade: "" });
+  const [newHomework, setNewHomework] = useState({ title: "", description: "", dueDate: "", grade: "", subject: "" });
   const [homeworkFile, setHomeworkFile] = useState<{ name: string; data: string; type: string } | null>(null);
-  const [newTest, setNewTest] = useState({ title: "", description: "", dueDate: "", grade: "" });
+  const [newTest, setNewTest] = useState({ title: "", description: "", dueDate: "", grade: "", subject: "" });
   const [newAnnouncement, setNewAnnouncement] = useState<{ title: string; content: string; priority: "normal" | "important" | "urgent" }>({ title: "", content: "", priority: "normal" });
   const [testQuestions, setTestQuestions] = useState<Question[]>([]);
   const [showQuestionModal, setShowQuestionModal] = useState(false);
@@ -207,19 +209,20 @@ export default function TeacherPortal() {
   };
 
   const handleAddHomework = () => {
-    if (newHomework.title && newHomework.dueDate && newHomework.grade) {
+    if (newHomework.title && newHomework.dueDate && newHomework.grade && newHomework.subject) {
       const hw: Homework = {
         id: Date.now(),
         title: newHomework.title,
         description: newHomework.description,
         dueDate: newHomework.dueDate,
         grade: parseInt(newHomework.grade),
+        subject: newHomework.subject,
         fileUrl: homeworkFile?.data || "",
         fileType: homeworkFile?.type || "unknown"
       };
       setHomeworkList([...homeworkList, hw]);
       localStorage.setItem("homeworkData", JSON.stringify([...homeworkList, hw]));
-      setNewHomework({ title: "", description: "", dueDate: "", grade: "" });
+      setNewHomework({ title: "", description: "", dueDate: "", grade: "", subject: "" });
       setHomeworkFile(null);
       setShowHomeworkModal(false);
     }
@@ -227,24 +230,25 @@ export default function TeacherPortal() {
 
   const handleCloseHomeworkModal = () => {
     setShowHomeworkModal(false);
-    setNewHomework({ title: "", description: "", dueDate: "", grade: "" });
+    setNewHomework({ title: "", description: "", dueDate: "", grade: "", subject: "" });
     setHomeworkFile(null);
   };
 
     const handleAddTest = () => {
-      if (newTest.title && newTest.dueDate && newTest.grade) {
+      if (newTest.title && newTest.dueDate && newTest.grade && newTest.subject) {
         const test: Test = {
           id: Date.now(),
           title: newTest.title,
           description: newTest.description,
           dueDate: newTest.dueDate,
           grade: parseInt(newTest.grade),
+          subject: newTest.subject,
           questions: [],
           published: false
         };
         setTestList([...testList, test]);
         localStorage.setItem("testData", JSON.stringify([...testList, test]));
-        setNewTest({ title: "", description: "", dueDate: "", grade: "" });
+        setNewTest({ title: "", description: "", dueDate: "", grade: "", subject: "" });
         setShowTestModal(false);
       }
     };
@@ -468,9 +472,35 @@ export default function TeacherPortal() {
                   <label className="block text-sm text-slate-400 mb-2">Grade</label>
                   <select value={newHomework.grade} onChange={(e) => setNewHomework({...newHomework, grade: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-500">
                     <option value="">Select Grade</option>
-                    {[8,9,10,11,12].map(g => <option key={g} value={g}>Grade {g}</option>)}
+                    {[4,5,6,7,8,9,10,11,12].map(g => <option key={g} value={g}>Grade {g}</option>)}
                   </select>
                 </div>
+              </div>
+              <div>
+                <label className="block text-sm text-slate-400 mb-2">Subject</label>
+                <select value={newHomework.subject} onChange={(e) => setNewHomework({...newHomework, subject: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-500">
+                  <option value="">Select Subject</option>
+                  <option value="Mathematics">Mathematics</option>
+                  <option value="Mathematical Literacy">Mathematical Literacy</option>
+                  <option value="Physical Sciences">Physical Sciences</option>
+                  <option value="Life Sciences">Life Sciences</option>
+                  <option value="English Home Language">English Home Language</option>
+                  <option value="Afrikaans First Add">Afrikaans First Add</option>
+                  <option value="Geography">Geography</option>
+                  <option value="History">History</option>
+                  <option value="Natural Sciences">Natural Sciences</option>
+                  <option value="Social Sciences">Social Sciences</option>
+                  <option value="EMS">EMS</option>
+                  <option value="Technology">Technology</option>
+                  <option value="Business Studies">Business Studies</option>
+                  <option value="Accounting">Accounting</option>
+                  <option value="Economics">Economics</option>
+                  <option value="Information Technology">Information Technology</option>
+                  <option value="Consumer Studies">Consumer Studies</option>
+                  <option value="Religious Studies">Religious Studies</option>
+                  <option value="Xitsonga">Xitsonga</option>
+                  <option value="Life Skills">Life Skills</option>
+                </select>
               </div>
               <div>
                 <label className="block text-sm text-slate-400 mb-2">Upload File (PDF/Image)</label>
@@ -579,9 +609,35 @@ export default function TeacherPortal() {
                   <label className="block text-sm text-slate-400 mb-2">Grade</label>
                   <select value={newTest.grade} onChange={(e) => setNewTest({...newTest, grade: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-500">
                     <option value="">Select Grade</option>
-                    {[8,9,10,11,12].map(g => <option key={g} value={g}>Grade {g}</option>)}
+                    {[4,5,6,7,8,9,10,11,12].map(g => <option key={g} value={g}>Grade {g}</option>)}
                   </select>
                 </div>
+              </div>
+              <div>
+                <label className="block text-sm text-slate-400 mb-2">Subject</label>
+                <select value={newTest.subject} onChange={(e) => setNewTest({...newTest, subject: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-500">
+                  <option value="">Select Subject</option>
+                  <option value="Mathematics">Mathematics</option>
+                  <option value="Mathematical Literacy">Mathematical Literacy</option>
+                  <option value="Physical Sciences">Physical Sciences</option>
+                  <option value="Life Sciences">Life Sciences</option>
+                  <option value="English Home Language">English Home Language</option>
+                  <option value="Afrikaans First Add">Afrikaans First Add</option>
+                  <option value="Geography">Geography</option>
+                  <option value="History">History</option>
+                  <option value="Natural Sciences">Natural Sciences</option>
+                  <option value="Social Sciences">Social Sciences</option>
+                  <option value="EMS">EMS</option>
+                  <option value="Technology">Technology</option>
+                  <option value="Business Studies">Business Studies</option>
+                  <option value="Accounting">Accounting</option>
+                  <option value="Economics">Economics</option>
+                  <option value="Information Technology">Information Technology</option>
+                  <option value="Consumer Studies">Consumer Studies</option>
+                  <option value="Religious Studies">Religious Studies</option>
+                  <option value="Xitsonga">Xitsonga</option>
+                  <option value="Life Skills">Life Skills</option>
+                </select>
               </div>
             </div>
             <div className="flex gap-3 mt-6">
@@ -810,7 +866,7 @@ export default function TeacherPortal() {
                 <label className="block text-sm text-slate-400 mb-2">Grade</label>
                 <select value={newSchedule.grade} onChange={(e) => setNewSchedule({...newSchedule, grade: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-500">
                   <option value="">Select Grade</option>
-                  {[8,9,10,11,12].map(g => <option key={g} value={g}>Grade {g}</option>)}
+                  {[4,5,6,7,8,9,10,11,12].map(g => <option key={g} value={g}>Grade {g}</option>)}
                 </select>
               </div>
               <div>
@@ -861,7 +917,7 @@ export default function TeacherPortal() {
               className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-500"
             >
               <option value="">All Grades</option>
-              {[8,9,10,11,12].map(g => <option key={g} value={g}>Grade {g}</option>)}
+              {[4,5,6,7,8,9,10,11,12].map(g => <option key={g} value={g}>Grade {g}</option>)}
             </select>
             <span className="text-slate-400 text-sm">{filteredStudents.length} student(s)</span>
           </div>

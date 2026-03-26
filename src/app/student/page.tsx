@@ -8,7 +8,9 @@ const studentsData = [
   { id: 2, name: "Emma Wilson", email: "e.wilson@oakridge.edu", grade: 10, school: "Oakridge Preparatory Academy", username: "emma.w", password: "Emma@123", schoolYear: 2026, subjects: ["Mathematics", "Physical Sciences", "English Home Language", "Life Sciences", "Geography"] },
   { id: 3, name: "Michael Brown", email: "m.brown@westfield.edu", grade: 9, school: "Westfield Christian School", username: "michael.b", password: "Mike@123", schoolYear: 2026, subjects: [] },
   { id: 4, name: "Sophia Lee", email: "s.lee@oakridge.edu", grade: 12, school: "Oakridge Preparatory Academy", username: "sophia.l", password: "Soph@123", schoolYear: 2026, subjects: ["Mathematics", "Physical Sciences", "English Home Language", "Accounting", "Geography"] },
-  { id: 5, name: "James Garcia", email: "j.garcia@riverside.edu", grade: 8, school: "Riverside Elementary", username: "james.g", password: "Jame@123", schoolYear: 2026, subjects: [] },
+  { id: 5, name: "James Garcia", email: "j.garcia@riverside.edu", grade: 7, school: "Riverside Elementary", username: "james.g", password: "Jame@123", schoolYear: 2026, subjects: [] },
+  { id: 6, name: "Lina Naidoo", email: "lina.n@riverside.edu", grade: 5, school: "Riverside Elementary", username: "lina.n", password: "Lina@123", schoolYear: 2026, subjects: [] },
+  { id: 7, name: "Thabo Mbeki", email: "thabo.m@westfield.edu", grade: 4, school: "Westfield Christian School", username: "thabo.m", password: "Thab@123", schoolYear: 2026, subjects: [] },
 ];
 
 interface StudentData {
@@ -57,6 +59,30 @@ interface StudyMaterial {
 }
 
 const homeworkByGrade: Record<number, Homework[]> = {
+  4: [
+    { id: 1, title: "English Spelling", description: "Learn spelling words for Friday", dueDate: "2026-04-03", grade: 4, fileUrl: "", fileType: "", subject: "English Home Language" },
+    { id: 2, title: "Mathematics Worksheet", description: "Complete addition and subtraction exercises", dueDate: "2026-04-02", grade: 4, fileUrl: "", fileType: "", subject: "Mathematics" },
+    { id: 3, title: "Life Skills Project", description: "Draw your family tree", dueDate: "2026-04-07", grade: 4, fileUrl: "", fileType: "", subject: "Life Skills" },
+    { id: 4, title: "Natural Sciences Activity", description: "Collect 5 different leaves from outside", dueDate: "2026-04-04", grade: 4, fileUrl: "", fileType: "", subject: "Natural Sciences" },
+  ],
+  5: [
+    { id: 5, title: "Mathematics Workbook", description: "Pages 20-25 on fractions", dueDate: "2026-04-02", grade: 5, fileUrl: "", fileType: "", subject: "Mathematics" },
+    { id: 6, title: "English Comprehension", description: "Read the story and answer questions", dueDate: "2026-04-04", grade: 5, fileUrl: "", fileType: "", subject: "English Home Language" },
+    { id: 7, title: "Social Sciences Project", description: "Draw a map of South Africa", dueDate: "2026-04-06", grade: 5, fileUrl: "", fileType: "", subject: "Social Sciences" },
+    { id: 8, title: "Afrikaans Vocabulary", description: "Learn 10 new words", dueDate: "2026-04-03", grade: 5, fileUrl: "", fileType: "", subject: "Afrikaans First Add" },
+  ],
+  6: [
+    { id: 9, title: "Mathematics Problem Solving", description: "Word problems on decimals", dueDate: "2026-04-02", grade: 6, fileUrl: "", fileType: "", subject: "Mathematics" },
+    { id: 10, title: "English Essay", description: "Write about your favourite holiday", dueDate: "2026-04-05", grade: 6, fileUrl: "", fileType: "", subject: "English Home Language" },
+    { id: 11, title: "Natural Sciences Experiment", description: "Record temperature changes through the day", dueDate: "2026-04-07", grade: 6, fileUrl: "", fileType: "", subject: "Natural Sciences" },
+    { id: 12, title: "Geography Map Work", description: "Label the provinces of South Africa", dueDate: "2026-04-04", grade: 6, fileUrl: "", fileType: "", subject: "Social Sciences" },
+  ],
+  7: [
+    { id: 13, title: "Mathematics Algebra", description: "Solve simple equations", dueDate: "2026-04-02", grade: 7, fileUrl: "", fileType: "", subject: "Mathematics" },
+    { id: 14, title: "English Reading Comprehension", description: "Read the passage and answer questions", dueDate: "2026-04-04", grade: 7, fileUrl: "", fileType: "", subject: "English Home Language" },
+    { id: 15, title: "Natural Sciences Project", description: "Research the water cycle", dueDate: "2026-04-06", grade: 7, fileUrl: "", fileType: "", subject: "Natural Sciences" },
+    { id: 16, title: "History Assignment", description: "Write about a famous South African leader", dueDate: "2026-04-08", grade: 7, fileUrl: "", fileType: "", subject: "Social Sciences" },
+  ],
   8: [
     { id: 1, title: "Algebra Exercises", description: "Complete exercises 1-20 from Chapter 4", dueDate: "2026-04-02", grade: 8, fileUrl: "", fileType: "", subject: "Mathematics" },
     { id: 2, title: "Natural Sciences Project", description: "Research renewable energy sources", dueDate: "2026-04-05", grade: 8, fileUrl: "", fileType: "", subject: "Natural Sciences" },
@@ -94,6 +120,22 @@ const homeworkByGrade: Record<number, Homework[]> = {
 };
 
 const testsByGrade: Record<number, Test[]> = {
+  4: [
+    { id: 1, title: "Mathematics Test", description: "Addition, subtraction, multiplication", dueDate: "2026-04-10", grade: 4, subject: "Mathematics", questions: [], published: true, timeLimit: 45 },
+    { id: 2, title: "English Test", description: "Spelling and reading comprehension", dueDate: "2026-04-12", grade: 4, subject: "English Home Language", questions: [], published: true, timeLimit: 45 },
+  ],
+  5: [
+    { id: 3, title: "Mathematics Test", description: "Fractions and data handling", dueDate: "2026-04-11", grade: 5, subject: "Mathematics", questions: [], published: true, timeLimit: 45 },
+    { id: 4, title: "Natural Sciences Test", description: "Living things and habitats", dueDate: "2026-04-13", grade: 5, subject: "Natural Sciences", questions: [], published: true, timeLimit: 45 },
+  ],
+  6: [
+    { id: 5, title: "Mathematics Test", description: "Decimals and percentages", dueDate: "2026-04-10", grade: 6, subject: "Mathematics", questions: [], published: true, timeLimit: 45 },
+    { id: 6, title: "English Test", description: "Grammar and punctuation", dueDate: "2026-04-12", grade: 6, subject: "English Home Language", questions: [], published: true, timeLimit: 45 },
+  ],
+  7: [
+    { id: 7, title: "Mathematics Test", description: "Integers and basic algebra", dueDate: "2026-04-11", grade: 7, subject: "Mathematics", questions: [], published: true, timeLimit: 45 },
+    { id: 8, title: "Natural Sciences Test", description: "Matter and energy", dueDate: "2026-04-14", grade: 7, subject: "Natural Sciences", questions: [], published: true, timeLimit: 45 },
+  ],
   8: [
     { id: 1, title: "Mathematics Test", description: "Covers Algebra and Geometry", dueDate: "2026-04-10", grade: 8, subject: "Mathematics", questions: [], published: true, timeLimit: 60 },
     { id: 2, title: "Natural Sciences Test", description: "Chemistry and Physics basics", dueDate: "2026-04-12", grade: 8, subject: "Natural Sciences", questions: [], published: true, timeLimit: 45 },
@@ -117,6 +159,34 @@ const testsByGrade: Record<number, Test[]> = {
 };
 
 const examTimetableByGrade: Record<number, { date: string; exam: string; time: string; venue: string }[]> = {
+  4: [
+    { date: "2026-06-15", exam: "Mathematics", time: "09:00 - 10:30", venue: "Room 4A" },
+    { date: "2026-06-16", exam: "English Home Language", time: "09:00 - 10:30", venue: "Room 4A" },
+    { date: "2026-06-17", exam: "Afrikaans First Add", time: "09:00 - 10:30", venue: "Room 4A" },
+    { date: "2026-06-18", exam: "Natural Sciences", time: "09:00 - 10:00", venue: "Room 4A" },
+    { date: "2026-06-19", exam: "Life Skills", time: "09:00 - 10:00", venue: "Room 4A" },
+  ],
+  5: [
+    { date: "2026-06-15", exam: "Mathematics", time: "09:00 - 10:30", venue: "Room 5A" },
+    { date: "2026-06-16", exam: "English Home Language", time: "09:00 - 10:30", venue: "Room 5A" },
+    { date: "2026-06-17", exam: "Afrikaans First Add", time: "09:00 - 10:30", venue: "Room 5A" },
+    { date: "2026-06-18", exam: "Natural Sciences", time: "09:00 - 10:00", venue: "Room 5A" },
+    { date: "2026-06-19", exam: "Social Sciences", time: "09:00 - 10:00", venue: "Room 5A" },
+  ],
+  6: [
+    { date: "2026-06-15", exam: "Mathematics", time: "09:00 - 11:00", venue: "Room 6A" },
+    { date: "2026-06-16", exam: "English Home Language", time: "09:00 - 11:00", venue: "Room 6A" },
+    { date: "2026-06-17", exam: "Afrikaans First Add", time: "09:00 - 10:30", venue: "Room 6A" },
+    { date: "2026-06-18", exam: "Natural Sciences", time: "09:00 - 10:30", venue: "Room 6A" },
+    { date: "2026-06-19", exam: "Social Sciences", time: "09:00 - 10:30", venue: "Room 6A" },
+  ],
+  7: [
+    { date: "2026-06-15", exam: "Mathematics", time: "09:00 - 11:00", venue: "Room 7A" },
+    { date: "2026-06-16", exam: "English Home Language", time: "09:00 - 11:00", venue: "Room 7A" },
+    { date: "2026-06-17", exam: "Afrikaans First Add", time: "09:00 - 10:30", venue: "Room 7A" },
+    { date: "2026-06-18", exam: "Natural Sciences", time: "09:00 - 11:00", venue: "Lab 1" },
+    { date: "2026-06-19", exam: "Social Sciences", time: "09:00 - 10:30", venue: "Room 7A" },
+  ],
   8: [
     { date: "2026-06-15", exam: "Mathematics", time: "09:00 - 11:00", venue: "Hall A" },
     { date: "2026-06-16", exam: "English Home Language", time: "09:00 - 11:00", venue: "Hall B" },
@@ -149,6 +219,58 @@ const examTimetableByGrade: Record<number, { date: string; exam: string; time: s
 };
 
 const weeklyTimetableByGrade: Record<number, { day: string; time: string; subject: string }[]> = {
+  4: [
+    { day: "Monday", time: "08:00 - 08:45", subject: "Mathematics" },
+    { day: "Monday", time: "08:45 - 09:30", subject: "English Home Language" },
+    { day: "Monday", time: "10:00 - 10:45", subject: "Afrikaans First Add" },
+    { day: "Tuesday", time: "08:00 - 08:45", subject: "English Home Language" },
+    { day: "Tuesday", time: "08:45 - 09:30", subject: "Mathematics" },
+    { day: "Wednesday", time: "08:00 - 08:45", subject: "Natural Sciences" },
+    { day: "Wednesday", time: "08:45 - 09:30", subject: "Mathematics" },
+    { day: "Thursday", time: "08:00 - 08:45", subject: "Social Sciences" },
+    { day: "Thursday", time: "08:45 - 09:30", subject: "Life Skills" },
+    { day: "Friday", time: "08:00 - 08:45", subject: "Mathematics" },
+    { day: "Friday", time: "08:45 - 09:30", subject: "English Home Language" },
+  ],
+  5: [
+    { day: "Monday", time: "08:00 - 08:45", subject: "English Home Language" },
+    { day: "Monday", time: "08:45 - 09:30", subject: "Mathematics" },
+    { day: "Monday", time: "10:00 - 10:45", subject: "Afrikaans First Add" },
+    { day: "Tuesday", time: "08:00 - 08:45", subject: "Mathematics" },
+    { day: "Tuesday", time: "08:45 - 09:30", subject: "Natural Sciences" },
+    { day: "Wednesday", time: "08:00 - 08:45", subject: "Social Sciences" },
+    { day: "Wednesday", time: "08:45 - 09:30", subject: "Mathematics" },
+    { day: "Thursday", time: "08:00 - 08:45", subject: "English Home Language" },
+    { day: "Thursday", time: "08:45 - 09:30", subject: "Life Skills" },
+    { day: "Friday", time: "08:00 - 08:45", subject: "Mathematics" },
+    { day: "Friday", time: "08:45 - 09:30", subject: "English Home Language" },
+  ],
+  6: [
+    { day: "Monday", time: "08:00 - 09:00", subject: "Mathematics" },
+    { day: "Monday", time: "09:00 - 10:00", subject: "English Home Language" },
+    { day: "Monday", time: "10:30 - 11:15", subject: "Afrikaans First Add" },
+    { day: "Tuesday", time: "08:00 - 09:00", subject: "English Home Language" },
+    { day: "Tuesday", time: "09:00 - 10:00", subject: "Mathematics" },
+    { day: "Wednesday", time: "08:00 - 09:00", subject: "Natural Sciences" },
+    { day: "Wednesday", time: "09:00 - 10:00", subject: "Social Sciences" },
+    { day: "Thursday", time: "08:00 - 09:00", subject: "Mathematics" },
+    { day: "Thursday", time: "09:00 - 10:00", subject: "Life Skills" },
+    { day: "Friday", time: "08:00 - 09:00", subject: "English Home Language" },
+    { day: "Friday", time: "09:00 - 10:00", subject: "Mathematics" },
+  ],
+  7: [
+    { day: "Monday", time: "08:00 - 09:00", subject: "Mathematics" },
+    { day: "Monday", time: "09:00 - 10:00", subject: "English Home Language" },
+    { day: "Monday", time: "10:30 - 11:15", subject: "Afrikaans First Add" },
+    { day: "Tuesday", time: "08:00 - 09:00", subject: "Natural Sciences" },
+    { day: "Tuesday", time: "09:00 - 10:00", subject: "Mathematics" },
+    { day: "Wednesday", time: "08:00 - 09:00", subject: "Social Sciences" },
+    { day: "Wednesday", time: "09:00 - 10:00", subject: "English Home Language" },
+    { day: "Thursday", time: "08:00 - 09:00", subject: "Mathematics" },
+    { day: "Thursday", time: "09:00 - 10:00", subject: "Natural Sciences" },
+    { day: "Friday", time: "08:00 - 09:00", subject: "English Home Language" },
+    { day: "Friday", time: "09:00 - 10:00", subject: "Life Skills" },
+  ],
   8: [
     { day: "Monday", time: "08:00 - 09:00", subject: "Mathematics" },
     { day: "Monday", time: "09:00 - 10:00", subject: "English Home Language" },
@@ -215,6 +337,26 @@ const weeklyTimetableByGrade: Record<number, { day: string; time: string; subjec
 };
 
 const studyMaterialsByGrade: Record<number, StudyMaterial[]> = {
+  4: [
+    { id: 1, title: "Mathematics Basics", subject: "Mathematics", description: "Basic operations and number sense", fileUrl: "", fileType: "application/pdf", grade: 4 },
+    { id: 2, title: "English Phonics", subject: "English Home Language", description: "Phonics and spelling rules", fileUrl: "", fileType: "application/pdf", grade: 4 },
+    { id: 3, title: "South Africa Fact Sheet", subject: "Social Sciences", description: "Facts about our country", fileUrl: "", fileType: "application/pdf", grade: 4 },
+  ],
+  5: [
+    { id: 4, title: "Fractions Guide", subject: "Mathematics", description: "Understanding fractions", fileUrl: "", fileType: "application/pdf", grade: 5 },
+    { id: 5, title: "Reading Strategies", subject: "English Home Language", description: "Comprehension techniques", fileUrl: "", fileType: "application/pdf", grade: 5 },
+    { id: 6, title: "Natural Sciences Notes", subject: "Natural Sciences", description: "Living and non-living things", fileUrl: "", fileType: "application/pdf", grade: 5 },
+  ],
+  6: [
+    { id: 7, title: "Decimals and Percentages", subject: "Mathematics", description: "Working with decimals", fileUrl: "", fileType: "application/pdf", grade: 6 },
+    { id: 8, title: "Writing Toolkit", subject: "English Home Language", description: "Essay writing tips", fileUrl: "", fileType: "application/pdf", grade: 6 },
+    { id: 9, title: "South African Provinces", subject: "Social Sciences", description: "Map of our provinces", fileUrl: "", fileType: "application/pdf", grade: 6 },
+  ],
+  7: [
+    { id: 10, title: "Integers and Algebra", subject: "Mathematics", description: "Introduction to algebra", fileUrl: "", fileType: "application/pdf", grade: 7 },
+    { id: 11, title: "Grammar Handbook", subject: "English Home Language", description: "Punctuation and grammar", fileUrl: "", fileType: "application/pdf", grade: 7 },
+    { id: 12, title: "Matter and Materials", subject: "Natural Sciences", description: "States of matter", fileUrl: "", fileType: "application/pdf", grade: 7 },
+  ],
   8: [
     { id: 1, title: "Mathematics Basics", subject: "Mathematics", description: "Basic math formulas and concepts", fileUrl: "", fileType: "application/pdf", grade: 8 },
     { id: 2, title: "Natural Sciences Guide", subject: "Natural Sciences", description: "Physics and Chemistry fundamentals", fileUrl: "", fileType: "application/pdf", grade: 8 },
@@ -238,6 +380,38 @@ const studyMaterialsByGrade: Record<number, StudyMaterial[]> = {
 };
 
 const coursesByGrade: Record<number, { name: string; teacher: string; grade: string; progress: number }[]> = {
+  4: [
+    { name: "Mathematics", teacher: "Ms. Sarah Jones", grade: "A", progress: 92 },
+    { name: "English Home Language", teacher: "Mrs. Amy Miller", grade: "A-", progress: 88 },
+    { name: "Afrikaans First Add", teacher: "Mnr. Pieter van der Merwe", grade: "B+", progress: 85 },
+    { name: "Natural Sciences", teacher: "Mr. David Park", grade: "A", progress: 90 },
+    { name: "Social Sciences", teacher: "Ms. Lisa Johnson", grade: "A-", progress: 89 },
+    { name: "Life Skills", teacher: "Mrs. Karen Brown", grade: "A", progress: 94 },
+  ],
+  5: [
+    { name: "Mathematics", teacher: "Ms. Sarah Jones", grade: "A-", progress: 90 },
+    { name: "English Home Language", teacher: "Mrs. Amy Miller", grade: "A", progress: 92 },
+    { name: "Afrikaans First Add", teacher: "Mnr. Pieter van der Merwe", grade: "B+", progress: 84 },
+    { name: "Natural Sciences", teacher: "Mr. David Park", grade: "A-", progress: 88 },
+    { name: "Social Sciences", teacher: "Ms. Lisa Johnson", grade: "B+", progress: 86 },
+    { name: "Life Skills", teacher: "Mrs. Karen Brown", grade: "A", progress: 91 },
+  ],
+  6: [
+    { name: "Mathematics", teacher: "Mrs. Emily Roberts", grade: "A", progress: 94 },
+    { name: "English Home Language", teacher: "Ms. Lisa Johnson", grade: "A-", progress: 90 },
+    { name: "Afrikaans First Add", teacher: "Mnr. Pieter van der Merwe", grade: "A-", progress: 88 },
+    { name: "Natural Sciences", teacher: "Mr. David Park", grade: "A", progress: 92 },
+    { name: "Social Sciences", teacher: "Mrs. Karen Brown", grade: "B+", progress: 85 },
+    { name: "Life Skills", teacher: "Ms. Anna Williams", grade: "A", progress: 93 },
+  ],
+  7: [
+    { name: "Mathematics", teacher: "Mrs. Emily Roberts", grade: "A-", progress: 88 },
+    { name: "English Home Language", teacher: "Ms. Lisa Johnson", grade: "A", progress: 91 },
+    { name: "Afrikaans First Add", teacher: "Mnr. Pieter van der Merwe", grade: "B+", progress: 84 },
+    { name: "Natural Sciences", teacher: "Dr. James Chen", grade: "A-", progress: 87 },
+    { name: "Social Sciences", teacher: "Mrs. Karen Brown", grade: "A-", progress: 89 },
+    { name: "Life Skills", teacher: "Ms. Anna Williams", grade: "A", progress: 92 },
+  ],
   8: [
     { name: "Mathematics", teacher: "Ms. Anna Williams", grade: "A", progress: 92 },
     { name: "Natural Sciences", teacher: "Mr. David Park", grade: "A-", progress: 88 },
@@ -377,7 +551,7 @@ export default function StudentPortal() {
   const allCourses = coursesList.length > 0 ? coursesList : coursesByGrade[loggedInStudent.grade] || [];
 
   const isSubjectSpecific = (subject: string) => {
-    const electiveSubjects = ["Mathematics", "Physical Sciences", "Life Sciences", "Geography", "History", "Business Studies", "Accounting", "Economics", "Information Technology", "Mathematical Literacy", "Consumer Studies"];
+    const electiveSubjects = ["Mathematics", "Physical Sciences", "Life Sciences", "Geography", "History", "Business Studies", "Accounting", "Economics", "Information Technology", "Mathematical Literacy", "Consumer Studies", "Religious Studies", "Xitsonga"];
     return electiveSubjects.includes(subject);
   };
 
@@ -635,7 +809,7 @@ export default function StudentPortal() {
   const grade10Subjects = [
     "Mathematics", "Mathematical Literacy", "Physical Sciences", "Life Sciences",
     "Geography", "History", "Business Studies", "Economics", "Information Technology",
-    "English Home Language", "Afrikaans First Add"
+    "English Home Language", "Afrikaans First Add", "Religious Studies", "Xitsonga", "Accounting"
   ];
 
   const handleSubjectToggle = (subject: string) => {
