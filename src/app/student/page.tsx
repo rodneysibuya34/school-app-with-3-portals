@@ -470,6 +470,7 @@ export default function StudentPortal() {
   const [testScore, setTestScore] = useState<{ correct: number; total: number } | null>(null);
   const [timeLeft, setTimeLeft] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const [paymentWarning, setPaymentWarning] = useState<{ school: string; daysLeft: number } | null>(null);
 
   const [homeworkList, setHomeworkList] = useState<Homework[]>([]);
   const [testList, setTestList] = useState<Test[]>([]);
@@ -512,6 +513,24 @@ export default function StudentPortal() {
 
     const storedCourses = localStorage.getItem("coursesData");
     if (storedCourses) setCoursesList(JSON.parse(storedCourses));
+
+    const storedSchools = localStorage.getItem("schoolsData");
+    if (storedSchools && parsedStudent.school) {
+      const schools = JSON.parse(storedSchools);
+      const mySchool = schools.find((s: { name: string; expiryDate: string }) => s.name === parsedStudent.school);
+      if (mySchool) {
+        const expiry = new Date(mySchool.expiryDate);
+        const now = new Date();
+        const daysLeft = Math.ceil((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        if (daysLeft <= 7 && daysLeft > 0) {
+          setPaymentWarning({ school: mySchool.name, daysLeft });
+        } else if (daysLeft <= 0) {
+          alert("Your school's subscription has expired. Please contact your administrator.");
+          localStorage.removeItem("loggedInStudent");
+          router.push("/");
+        }
+      }
+    }
   }, [router]);
 
   const saveSubjects = (subjects: string[]) => {
@@ -1007,6 +1026,22 @@ export default function StudentPortal() {
       </aside>
 
       <main className="flex-1 p-8 overflow-y-auto">
+        {paymentWarning && (
+          <div className="mb-6 p-4 rounded-xl bg-orange-500/20 border border-orange-500/30 flex items-center gap-3">
+            <svg className="w-6 h-6 text-orange-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div className="flex-1">
+              <p className="text-orange-300 font-medium">Payment Reminder</p>
+              <p className="text-orange-200 text-sm">Your school&apos;s subscription expires in {paymentWarning.daysLeft} days. Please settle payment within 7 days to avoid access revocation.</p>
+            </div>
+            <button onClick={() => setPaymentWarning(null)} className="text-orange-400 hover:text-orange-300">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        )}
         <h1 className="text-3xl font-bold text-white mb-6">{navItems.find(n => n.label.toLowerCase() === activeTab)?.label || 'Dashboard'}</h1>
         {activeTab === "dashboard" && renderDashboard()}
         {activeTab === "homework" && renderHomework()}
