@@ -662,7 +662,7 @@ export default function AdminPortal() {
                   <input type="text" value={formData.location} onChange={(e) => setFormData({...formData, location: e.target.value})} placeholder="Location" className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white" />
                   <input type="text" value={formData.schoolContact} onChange={(e) => setFormData({...formData, schoolContact: e.target.value})} placeholder="Contact (phone/email)" className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white" />
                   <input type="text" value={formData.schoolAddress} onChange={(e) => setFormData({...formData, schoolAddress: e.target.value})} placeholder="School Address" className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white" />
-                  <select value={formData.type} onChange={(e) => setFormData({...formData, type: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white">
+                  <select value={formData.type} onChange={(e) => setFormData({...formData, type: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white">
                     <option value="Primary">Primary School</option>
                     <option value="High School">High School</option>
                   </select>
@@ -674,7 +674,7 @@ export default function AdminPortal() {
                 <>
                   <input type="text" value={formData.teacherName} onChange={(e) => setFormData({...formData, teacherName: e.target.value})} placeholder="Teacher Name" className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white" />
                   <input type="email" value={formData.teacherEmail} onChange={(e) => setFormData({...formData, teacherEmail: e.target.value})} placeholder="Email (optional)" className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white" />
-                  <select value={formData.teacherSchool} onChange={(e) => setFormData({...formData, teacherSchool: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white">
+                  <select value={formData.teacherSchool} onChange={(e) => setFormData({...formData, teacherSchool: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white">
                     <option value="">Select School</option>
                     {schools.map(s => <option key={s.id} value={s.name}>{s.name}</option>)}
                   </select>
@@ -686,7 +686,7 @@ export default function AdminPortal() {
                   <input type="text" value={formData.studentName} onChange={(e) => setFormData({...formData, studentName: e.target.value})} placeholder="Student Name" className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white" />
                   <input type="email" value={formData.studentEmail} onChange={(e) => setFormData({...formData, studentEmail: e.target.value})} placeholder="Email (optional)" className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white" />
                   <input type="number" value={formData.studentGrade} onChange={(e) => setFormData({...formData, studentGrade: e.target.value})} placeholder="Grade (4-12)" className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white" />
-                  <select value={formData.studentSchool} onChange={(e) => setFormData({...formData, studentSchool: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white">
+                  <select value={formData.studentSchool} onChange={(e) => setFormData({...formData, studentSchool: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white">
                     <option value="">Select School</option>
                     {schools.map(s => <option key={s.id} value={s.name}>{s.name}</option>)}
                   </select>
