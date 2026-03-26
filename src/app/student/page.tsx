@@ -44,51 +44,165 @@ interface StudyMaterial {
 }
 
 const homeworkByGrade: Record<number, Homework[]> = {
-  8: [{ id: 1, title: "Math Worksheet Chapter 5", description: "Complete exercises 1-20", dueDate: "2026-03-25", grade: 8, fileUrl: "", fileType: "", subject: "Mathematics" }],
-  9: [{ id: 2, title: "Algebra Problem Set", description: "Complete problems 1-15", dueDate: "2026-03-25", grade: 9, fileUrl: "", fileType: "", subject: "Mathematics" }],
-  10: [{ id: 3, title: "Calculus Problem Set #7", description: "Integration problems", dueDate: "2026-03-25", grade: 10, fileUrl: "", fileType: "", subject: "Mathematics" }],
-  11: [{ id: 4, title: "Calculus Problem Set #7", description: "Advanced integration techniques", dueDate: "2026-03-25", grade: 11, fileUrl: "", fileType: "", subject: "Mathematics" }],
-  12: [{ id: 5, title: "AP Calculus Practice Exam", description: "Complete practice exam", dueDate: "2026-03-22", grade: 12, fileUrl: "", fileType: "", subject: "Mathematics" }],
+  8: [
+    { id: 1, title: "Algebra Exercises", description: "Complete exercises 1-20 from Chapter 4", dueDate: "2026-04-02", grade: 8, fileUrl: "", fileType: "", subject: "Mathematics" },
+    { id: 2, title: "Natural Sciences Project", description: "Research renewable energy sources", dueDate: "2026-04-05", grade: 8, fileUrl: "", fileType: "", subject: "Natural Sciences" },
+  ],
+  9: [
+    { id: 3, title: "Economic Management Sciences", description: "Complete budget exercise", dueDate: "2026-04-02", grade: 9, fileUrl: "", fileType: "", subject: "EMS" },
+    { id: 4, title: "Geography Map Work", description: "Complete the topographic map exercise", dueDate: "2026-04-04", grade: 9, fileUrl: "", fileType: "", subject: "Geography" },
+  ],
+  10: [
+    { id: 5, title: "Physics Practical", description: "Write up the pendulum experiment", dueDate: "2026-04-03", grade: 10, fileUrl: "", fileType: "", subject: "Physical Sciences" },
+    { id: 6, title: "Life Sciences Essay", description: "Write about cell division", dueDate: "2026-04-06", grade: 10, fileUrl: "", fileType: "", subject: "Life Sciences" },
+  ],
+  11: [
+    { id: 7, title: "Mathematics Functions", description: "Complete exercise on inverse functions", dueDate: "2026-04-02", grade: 11, fileUrl: "", fileType: "", subject: "Mathematics" },
+    { id: 8, title: "Accounting Transactions", description: "Record the transactions in the general journal", dueDate: "2026-04-04", grade: 11, fileUrl: "", fileType: "", subject: "Accounting" },
+    { id: 9, title: "History Source Analysis", description: "Analyze the provided primary source", dueDate: "2026-04-07", grade: 11, fileUrl: "", fileType: "", subject: "History" },
+  ],
+  12: [
+    { id: 10, title: "Mathematics Paper 1 Prep", description: "Practice past exam papers", dueDate: "2026-04-02", grade: 12, fileUrl: "", fileType: "", subject: "Mathematics" },
+    { id: 11, title: "Physical Sciences Experiment", description: "Conduct the titration experiment", dueDate: "2026-04-05", grade: 12, fileUrl: "", fileType: "", subject: "Physical Sciences" },
+    { id: 12, title: "Business Studies Case Study", description: "Analyse the case study and answer questions", dueDate: "2026-04-08", grade: 12, fileUrl: "", fileType: "", subject: "Business Studies" },
+  ],
 };
 
 const testsByGrade: Record<number, Test[]> = {
-  8: [{ id: 1, title: "Mathematics Quiz", description: "Covers Chapter 5 topics", dueDate: "2026-03-28", grade: 8, questions: [], published: true, timeLimit: 15 }],
-  9: [{ id: 2, title: "Physics Quiz", description: "Covers motion and forces", dueDate: "2026-03-27", grade: 9, questions: [], published: true, timeLimit: 10 }],
-  10: [{ id: 3, title: "Chemistry Quiz", description: "Covers periodic table", dueDate: "2026-03-26", grade: 10, questions: [], published: true, timeLimit: 10 }],
-  11: [{ id: 4, title: "Calculus Mid-term", description: "Covers derivatives and integrals", dueDate: "2026-03-30", grade: 11, questions: [], published: true, timeLimit: 20 }],
-  12: [{ id: 5, title: "AP Physics Practice", description: "Covers all AP topics", dueDate: "2026-03-25", grade: 12, questions: [], published: true, timeLimit: 15 }],
+  8: [{ id: 1, title: "Mathematics Test", description: "Covers Algebra and Geometry", dueDate: "2026-04-10", grade: 8, questions: [], published: true, timeLimit: 60 }],
+  9: [{ id: 2, title: "Geography Test", description: "Map work and climate", dueDate: "2026-04-12", grade: 9, questions: [], published: true, timeLimit: 45 }],
+  10: [{ id: 3, title: "Physical Sciences Test", description: "Newton's Laws and matter", dueDate: "2026-04-11", grade: 10, questions: [], published: true, timeLimit: 60 }],
+  11: [{ id: 4, title: "Mathematics Test", description: "Functions and calculus", dueDate: "2026-04-14", grade: 11, questions: [], published: true, timeLimit: 90 }],
+  12: [{ id: 5, title: "Final Exam Preparation", description: "Covers all topics", dueDate: "2026-04-15", grade: 12, questions: [], published: true, timeLimit: 120 }],
 };
 
 const examTimetableByGrade: Record<number, { date: string; exam: string; time: string; venue: string }[]> = {
-  8: [{ date: "2026-04-15", exam: "Mathematics", time: "09:00 - 11:00", venue: "Hall A" }],
-  9: [{ date: "2026-04-15", exam: "Mathematics", time: "09:00 - 11:00", venue: "Hall A" }],
-  10: [{ date: "2026-04-15", exam: "Mathematics", time: "09:00 - 11:00", venue: "Hall A" }],
-  11: [{ date: "2026-04-15", exam: "Mathematics", time: "09:00 - 12:00", venue: "Hall A" }],
-  12: [{ date: "2026-04-15", exam: "AP Calculus", time: "08:00 - 11:00", venue: "Hall A" }],
+  8: [
+    { date: "2026-06-15", exam: "Mathematics", time: "09:00 - 11:00", venue: "Hall A" },
+    { date: "2026-06-16", exam: "English Home Language", time: "09:00 - 11:00", venue: "Hall B" },
+  ],
+  9: [
+    { date: "2026-06-15", exam: "Mathematics", time: "09:00 - 11:00", venue: "Hall A" },
+    { date: "2026-06-16", exam: "Natural Sciences", time: "09:00 - 11:00", venue: "Lab 1" },
+  ],
+  10: [
+    { date: "2026-06-15", exam: "Mathematics", time: "09:00 - 11:00", venue: "Hall A" },
+    { date: "2026-06-16", exam: "Physical Sciences", time: "09:00 - 11:00", venue: "Lab 1" },
+    { date: "2026-06-17", exam: "Life Sciences", time: "09:00 - 11:00", venue: "Hall B" },
+  ],
+  11: [
+    { date: "2026-06-15", exam: "Mathematics", time: "09:00 - 12:00", venue: "Hall A" },
+    { date: "2026-06-16", exam: "Physical Sciences", time: "09:00 - 12:00", venue: "Lab 1" },
+    { date: "2026-06-17", exam: "English Home Language", time: "09:00 - 11:30", venue: "Hall B" },
+    { date: "2026-06-18", exam: "Life Sciences", time: "09:00 - 11:00", venue: "Hall A" },
+  ],
+  12: [
+    { date: "2026-06-15", exam: "Mathematics", time: "08:00 - 11:00", venue: "Hall A" },
+    { date: "2026-06-16", exam: "Physical Sciences", time: "08:00 - 11:00", venue: "Lab 1" },
+    { date: "2026-06-17", exam: "English Home Language", time: "08:00 - 11:00", venue: "Hall B" },
+    { date: "2026-06-18", exam: "Accounting/Business Studies", time: "08:00 - 11:00", venue: "Hall A" },
+    { date: "2026-06-19", exam: "Geography/History", time: "08:00 - 11:00", venue: "Hall B" },
+  ],
 };
 
 const weeklyTimetableByGrade: Record<number, { day: string; time: string; subject: string }[]> = {
-  8: [{ day: "Monday", time: "08:00 - 09:00", subject: "Mathematics" }],
-  9: [{ day: "Monday", time: "08:00 - 09:00", subject: "Mathematics" }],
-  10: [{ day: "Monday", time: "08:00 - 09:00", subject: "Mathematics" }],
-  11: [{ day: "Monday", time: "08:00 - 09:30", subject: "Mathematics" }],
-  12: [{ day: "Monday", time: "08:00 - 10:00", subject: "AP Calculus" }],
+  8: [
+    { day: "Monday", time: "08:00 - 09:00", subject: "Mathematics" },
+    { day: "Monday", time: "09:00 - 10:00", subject: "Natural Sciences" },
+    { day: "Tuesday", time: "08:00 - 09:00", subject: "English Home Language" },
+    { day: "Wednesday", time: "08:00 - 09:00", subject: "Mathematics" },
+    { day: "Thursday", time: "09:00 - 10:00", subject: "Geography" },
+    { day: "Friday", time: "08:00 - 09:00", subject: "History" },
+  ],
+  9: [
+    { day: "Monday", time: "08:00 - 09:00", subject: "Mathematics" },
+    { day: "Monday", time: "10:00 - 11:00", subject: "Natural Sciences" },
+    { day: "Tuesday", time: "08:00 - 09:00", subject: "English Home Language" },
+    { day: "Wednesday", time: "09:00 - 10:00", subject: "Technology" },
+    { day: "Thursday", time: "08:00 - 09:00", subject: "Mathematics" },
+    { day: "Friday", time: "10:00 - 11:00", subject: "Geography" },
+  ],
+  10: [
+    { day: "Monday", time: "08:00 - 09:00", subject: "Mathematics" },
+    { day: "Monday", time: "09:00 - 10:00", subject: "Physical Sciences" },
+    { day: "Tuesday", time: "08:00 - 09:00", subject: "English Home Language" },
+    { day: "Wednesday", time: "08:00 - 09:00", subject: "Life Sciences" },
+    { day: "Thursday", time: "09:00 - 10:00", subject: "Geography" },
+    { day: "Friday", time: "08:00 - 09:00", subject: "Mathematics" },
+  ],
+  11: [
+    { day: "Monday", time: "08:00 - 09:30", subject: "Mathematics" },
+    { day: "Monday", time: "10:00 - 11:30", subject: "Physical Sciences" },
+    { day: "Tuesday", time: "08:00 - 09:30", subject: "English Home Language" },
+    { day: "Wednesday", time: "08:00 - 09:30", subject: "Life Sciences" },
+    { day: "Thursday", time: "09:00 - 10:30", subject: "Afrikaans First Add" },
+    { day: "Friday", time: "08:00 - 09:30", subject: "History" },
+  ],
+  12: [
+    { day: "Monday", time: "08:00 - 10:00", subject: "Mathematics" },
+    { day: "Tuesday", time: "08:00 - 10:00", subject: "Physical Sciences" },
+    { day: "Wednesday", time: "08:00 - 10:00", subject: "English Home Language" },
+    { day: "Thursday", time: "08:00 - 10:00", subject: "Accounting" },
+    { day: "Friday", time: "08:00 - 10:00", subject: "Geography" },
+  ],
 };
 
 const studyMaterialsByGrade: Record<number, StudyMaterial[]> = {
-  8: [{ id: 1, title: "Math Basics Guide", subject: "Mathematics", description: "Basic math formulas", fileUrl: "", fileType: "pdf", grade: 8 }],
-  9: [{ id: 2, title: "Algebra Cheat Sheet", subject: "Mathematics", description: "Key algebra formulas", fileUrl: "", fileType: "pdf", grade: 9 }],
-  10: [{ id: 3, title: "Trigonometry Notes", subject: "Mathematics", description: "Complete trig guide", fileUrl: "", fileType: "pdf", grade: 10 }],
-  11: [{ id: 4, title: "Calculus Quick Reference", subject: "Mathematics", description: "Derivatives and integrals", fileUrl: "", fileType: "pdf", grade: 11 }],
-  12: [{ id: 5, title: "AP Calculus Review", subject: "Mathematics", description: "Full AP review guide", fileUrl: "", fileType: "pdf", grade: 12 }],
+  8: [
+    { id: 1, title: "Mathematics Basics", subject: "Mathematics", description: "Basic math formulas and concepts", fileUrl: "", fileType: "application/pdf", grade: 8 },
+    { id: 2, title: "Natural Sciences Guide", subject: "Natural Sciences", description: "Physics and Chemistry fundamentals", fileUrl: "", fileType: "application/pdf", grade: 8 },
+  ],
+  9: [
+    { id: 3, title: "Algebra Workbook", subject: "Mathematics", description: "Algebra exercises and answers", fileUrl: "", fileType: "application/pdf", grade: 9 },
+    { id: 4, title: "Geography Map Skills", subject: "Geography", description: "Map reading and interpretation", fileUrl: "", fileType: "application/pdf", grade: 9 },
+  ],
+  10: [
+    { id: 5, title: "Trigonometry Notes", subject: "Mathematics", description: "Complete trig formulas", fileUrl: "", fileType: "application/pdf", grade: 10 },
+    { id: 6, title: "Physics Formula Sheet", subject: "Physical Sciences", description: "Mechanics and waves formulas", fileUrl: "", fileType: "application/pdf", grade: 10 },
+  ],
+  11: [
+    { id: 7, title: "Calculus Quick Reference", subject: "Mathematics", description: "Derivatives and integrals", fileUrl: "", fileType: "application/pdf", grade: 11 },
+    { id: 8, title: "Chemistry Periodic Table", subject: "Physical Sciences", description: "Full periodic table with properties", fileUrl: "", fileType: "application/pdf", grade: 11 },
+  ],
+  12: [
+    { id: 9, title: "Mathematics Paper 1 Checklist", subject: "Mathematics", description: "All topics for final exam", fileUrl: "", fileType: "application/pdf", grade: 12 },
+    { id: 10, title: "Physics Past Papers", subject: "Physical Sciences", description: "Grade 12 practice papers", fileUrl: "", fileType: "application/pdf", grade: 12 },
+  ],
 };
 
 const coursesByGrade: Record<number, { name: string; teacher: string; grade: string; progress: number }[]> = {
-  8: [{ name: "Mathematics", teacher: "Ms. Anna Williams", grade: "A", progress: 92 }],
-  9: [{ name: "Mathematics", teacher: "Mrs. Emily Roberts", grade: "B+", progress: 82 }],
-  10: [{ name: "Mathematics", teacher: "Dr. Sarah Mitchell", grade: "A-", progress: 88 }],
-  11: [{ name: "Mathematics", teacher: "Dr. Sarah Mitchell", grade: "A", progress: 92 }],
-  12: [{ name: "Advanced Mathematics", teacher: "Dr. Sarah Mitchell", grade: "A", progress: 95 }],
+  8: [
+    { name: "Mathematics", teacher: "Ms. Anna Williams", grade: "A", progress: 92 },
+    { name: "Natural Sciences", teacher: "Mr. David Park", grade: "A-", progress: 88 },
+    { name: "English Home Language", teacher: "Mrs. Emily Roberts", grade: "A", progress: 94 },
+    { name: "Geography", teacher: "Dr. James Chen", grade: "B+", progress: 85 },
+  ],
+  9: [
+    { name: "Mathematics", teacher: "Mrs. Emily Roberts", grade: "B+", progress: 82 },
+    { name: "Natural Sciences", teacher: "Mr. David Park", grade: "B", progress: 78 },
+    { name: "English Home Language", teacher: "Dr. Sarah Mitchell", grade: "A-", progress: 90 },
+    { name: "Geography", teacher: "Dr. James Chen", grade: "B+", progress: 84 },
+  ],
+  10: [
+    { name: "Mathematics", teacher: "Dr. Sarah Mitchell", grade: "A-", progress: 88 },
+    { name: "Physical Sciences", teacher: "Dr. James Chen", grade: "A", progress: 92 },
+    { name: "English Home Language", teacher: "Mrs. Emily Roberts", grade: "A", progress: 95 },
+    { name: "Life Sciences", teacher: "Mr. David Park", grade: "B+", progress: 86 },
+  ],
+  11: [
+    { name: "Mathematics", teacher: "Dr. Sarah Mitchell", grade: "A", progress: 92 },
+    { name: "Physical Sciences", teacher: "Dr. James Chen", grade: "A-", progress: 88 },
+    { name: "English Home Language", teacher: "Mrs. Emily Roberts", grade: "A", progress: 94 },
+    { name: "Life Sciences", teacher: "Mr. David Park", grade: "B+", progress: 85 },
+    { name: "History", teacher: "Ms. Anna Williams", grade: "A-", progress: 89 },
+  ],
+  12: [
+    { name: "Mathematics", teacher: "Dr. Sarah Mitchell", grade: "A", progress: 95 },
+    { name: "Physical Sciences", teacher: "Dr. James Chen", grade: "A", progress: 93 },
+    { name: "English Home Language", teacher: "Mrs. Emily Roberts", grade: "A-", progress: 90 },
+    { name: "Accounting", teacher: "Ms. Anna Williams", grade: "A", progress: 96 },
+    { name: "Geography", teacher: "Mr. David Park", grade: "B+", progress: 87 },
+  ],
 };
 
 const navItems = [
@@ -208,12 +322,17 @@ export default function StudentPortal() {
     if (timerRef.current) clearTimeout(timerRef.current);
   };
 
-  const handleDownload = (fileUrl: string, fileName: string) => {
-    if (fileUrl) {
+  const handleDownload = (fileUrl: string, fileName: string, fileType: string = 'application/pdf') => {
+    if (fileUrl && fileUrl.startsWith('data:')) {
       const link = document.createElement('a');
       link.href = fileUrl;
-      link.download = fileName || 'download';
+      const ext = fileType.split('/')[1] || 'pdf';
+      link.download = `${fileName}.${ext}`;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
+    } else if (fileUrl) {
+      window.open(fileUrl, '_blank');
     } else {
       alert('No file available for download');
     }
@@ -285,7 +404,7 @@ export default function StudentPortal() {
             <p className="text-slate-400 text-sm mb-4">{hw.description}</p>
             <div className="flex justify-between text-sm">
               <span className="text-slate-500">Due: {hw.dueDate}</span>
-              <button onClick={() => handleDownload(hw.fileUrl, hw.title)} className="text-blue-400 hover:text-blue-300">Download</button>
+              <button onClick={() => handleDownload(hw.fileUrl, hw.title, hw.fileType)} className="text-blue-400 hover:text-blue-300">Download</button>
             </div>
           </div>
         ))}
@@ -388,7 +507,7 @@ export default function StudentPortal() {
           <div key={material.id} className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
             <h3 className="text-lg font-semibold text-white mb-2">{material.title}</h3>
             <p className="text-slate-400 text-sm mb-4">{material.description}</p>
-            <button onClick={() => handleDownload(material.fileUrl, material.title)} className="text-purple-400 hover:text-purple-300 flex items-center gap-2">
+            <button onClick={() => handleDownload(material.fileUrl, material.title, material.fileType)} className="text-purple-400 hover:text-purple-300 flex items-center gap-2">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
               Download
             </button>

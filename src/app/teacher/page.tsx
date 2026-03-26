@@ -94,17 +94,17 @@ export default function TeacherPortal() {
   const [homeworkList, setHomeworkList] = useState<Homework[]>(() => {
     const stored = localStorage.getItem("homeworkData");
     return stored ? JSON.parse(stored) : [
-      { id: 1, title: "Algebra Practice Problems", description: "Complete exercises 1-20 from Chapter 5", dueDate: "2026-03-25", grade: 11, fileUrl: "/homework/algebra.pdf", fileType: "pdf" },
-      { id: 2, title: "Geometry Proofs", description: "Submit proofs for theorems 1-5", dueDate: "2026-03-28", grade: 10, fileUrl: "/homework/geometry.pdf", fileType: "pdf" },
+      { id: 1, title: "Algebra Practice Problems", description: "Complete exercises 1-20 from Chapter 5", dueDate: "2026-04-02", grade: 11, fileUrl: "", fileType: "application/pdf" },
+      { id: 2, title: "Geometry Proofs", description: "Submit proofs for theorems 1-5", dueDate: "2026-04-05", grade: 10, fileUrl: "", fileType: "application/pdf" },
     ];
   });
   const [testList, setTestList] = useState<Test[]>([
-    { id: 1, title: "Mid-term Exam", description: "Covers chapters 1-5", dueDate: "2024-04-15", grade: 11, questions: [], published: true },
-    { id: 2, title: "Quiz: Trigonometry", description: "Short quiz on basic trig functions", dueDate: "2024-04-10", grade: 10, questions: [], published: false },
+    { id: 1, title: "Mid-term Exam", description: "Covers chapters 1-5", dueDate: "2026-04-15", grade: 11, questions: [], published: true },
+    { id: 2, title: "Quiz: Trigonometry", description: "Short quiz on basic trig functions", dueDate: "2026-04-10", grade: 10, questions: [], published: false },
   ]);
   const [announcements, setAnnouncements] = useState<Announcement[]>([
-    { id: 1, title: "Parent-Teacher Meeting", content: "Join us this Friday at 2 PM for the quarterly parent-teacher meeting.", date: "2024-03-20", priority: "important" },
-    { id: 2, title: "Exam Preparation", content: "Please ensure all students complete practice papers before the mid-term.", date: "2024-03-18", priority: "normal" },
+    { id: 1, title: "Parent-Teacher Meeting", content: "Join us this Friday at 2 PM for the quarterly parent-teacher meeting.", date: "2026-03-26", priority: "important" },
+    { id: 2, title: "Exam Preparation", content: "Please ensure all students complete practice papers before the mid-term.", date: "2026-03-24", priority: "normal" },
   ]);
   const [showHomeworkModal, setShowHomeworkModal] = useState(false);
   const [showTestModal, setShowTestModal] = useState(false);
@@ -120,14 +120,17 @@ export default function TeacherPortal() {
   const [currentTestId, setCurrentTestId] = useState<number | null>(null);
   const [newQuestion, setNewQuestion] = useState({ text: "", type: "mcq" as "mcq" | "truefalse", options: ["", "", "", ""], correctAnswer: "" });
   const [examTimetable, setExamTimetable] = useState<{ date: string; exam: string; time: string; venue: string; fileUrl?: string; fileType?: string }[]>([
-    { date: "2024-04-15", exam: "Mathematics Paper 1", time: "09:00 - 11:00", venue: "Hall A" },
-    { date: "2024-04-16", exam: "English Literature", time: "09:00 - 11:30", venue: "Hall B" },
+    { date: "2026-06-15", exam: "Mathematics Paper 1", time: "09:00 - 11:00", venue: "Hall A" },
+    { date: "2026-06-16", exam: "English Home Language", time: "09:00 - 11:30", venue: "Hall B" },
+    { date: "2026-06-17", exam: "Physical Sciences", time: "09:00 - 11:00", venue: "Lab 1" },
   ]);
   const [weeklyTimetable, setWeeklyTimetable] = useState<{ day: string; time: string; subject: string; grade: number; fileUrl?: string; fileType?: string }[]>([
     { day: "Monday", time: "08:00 - 09:00", subject: "Mathematics", grade: 11 },
-    { day: "Monday", time: "09:00 - 10:00", subject: "Mathematics", grade: 10 },
-    { day: "Tuesday", time: "08:00 - 09:00", subject: "Mathematics", grade: 11 },
-    { day: "Wednesday", time: "10:00 - 11:00", subject: "Mathematics", grade: 12 },
+    { day: "Monday", time: "09:00 - 10:00", subject: "Physical Sciences", grade: 11 },
+    { day: "Tuesday", time: "08:00 - 09:00", subject: "English Home Language", grade: 11 },
+    { day: "Wednesday", time: "08:00 - 09:00", subject: "Life Sciences", grade: 11 },
+    { day: "Thursday", time: "09:00 - 10:00", subject: "Geography", grade: 11 },
+    { day: "Friday", time: "08:00 - 09:00", subject: "History", grade: 11 },
   ]);
   const [newExam, setNewExam] = useState({ date: "", exam: "", time: "", venue: "" });
   const [examFile, setExamFile] = useState<{ name: string; data: string; type: string } | null>(null);
@@ -172,6 +175,20 @@ export default function TeacherPortal() {
   const handleLogout = () => {
     localStorage.removeItem("loggedInTeacher");
     router.push("/");
+  };
+
+  const handleDownload = (fileUrl: string, fileName: string, fileType: string) => {
+    if (fileUrl && fileUrl.startsWith('data:')) {
+      const link = document.createElement('a');
+      link.href = fileUrl;
+      const ext = fileType.split('/')[1] || 'pdf';
+      link.download = `${fileName}.${ext}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else if (fileUrl) {
+      window.open(fileUrl, '_blank');
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -418,9 +435,9 @@ export default function TeacherPortal() {
             <div className="flex items-center justify-between text-sm">
               <span className="text-slate-500">Due: {hw.dueDate}</span>
               {hw.fileUrl ? (
-                <a href={hw.fileUrl} target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:text-purple-300">
-                  {hw.fileType.startsWith('image/') ? 'View Image' : 'View/Download'}
-                </a>
+                <button onClick={() => handleDownload(hw.fileUrl, hw.title, hw.fileType)} className="text-purple-400 hover:text-purple-300">
+                  {hw.fileType.startsWith('image/') ? 'View/Download' : 'Download'}
+                </button>
               ) : (
                 <span className="text-slate-500">No file</span>
               )}
