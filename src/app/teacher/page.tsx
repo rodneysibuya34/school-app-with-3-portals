@@ -100,14 +100,20 @@ export default function TeacherPortal() {
       { id: 2, title: "Geometry Proofs", description: "Submit proofs for theorems 1-5", dueDate: "2026-04-05", grade: 10, fileUrl: "", fileType: "application/pdf", subject: "Mathematics" },
     ];
   });
-  const [testList, setTestList] = useState<Test[]>([
-    { id: 1, title: "Mid-term Exam", description: "Covers chapters 1-5", dueDate: "2026-04-15", grade: 11, subject: "Mathematics", questions: [], published: true },
-    { id: 2, title: "Quiz: Trigonometry", description: "Short quiz on basic trig functions", dueDate: "2026-04-10", grade: 10, subject: "Mathematics", questions: [], published: false },
-  ]);
-  const [announcements, setAnnouncements] = useState<Announcement[]>([
-    { id: 1, title: "Parent-Teacher Meeting", content: "Join us this Friday at 2 PM for the quarterly parent-teacher meeting.", date: "2026-03-26", priority: "important" },
-    { id: 2, title: "Exam Preparation", content: "Please ensure all students complete practice papers before the mid-term.", date: "2026-03-24", priority: "normal" },
-  ]);
+  const [testList, setTestList] = useState<Test[]>(() => {
+    const stored = localStorage.getItem("testData");
+    return stored ? JSON.parse(stored) : [
+      { id: 1, title: "Mid-term Exam", description: "Covers chapters 1-5", dueDate: "2026-04-15", grade: 11, subject: "Mathematics", questions: [], published: true },
+      { id: 2, title: "Quiz: Trigonometry", description: "Short quiz on basic trig functions", dueDate: "2026-04-10", grade: 10, subject: "Mathematics", questions: [], published: false },
+    ];
+  });
+  const [announcements, setAnnouncements] = useState<Announcement[]>(() => {
+    const stored = localStorage.getItem("announcementData");
+    return stored ? JSON.parse(stored) : [
+      { id: 1, title: "Parent-Teacher Meeting", content: "Join us this Friday at 2 PM for the quarterly parent-teacher meeting.", date: "2026-03-26", priority: "important" },
+      { id: 2, title: "Exam Preparation", content: "Please ensure all students complete practice papers before the mid-term.", date: "2026-03-24", priority: "normal" },
+    ];
+  });
   const [showHomeworkModal, setShowHomeworkModal] = useState(false);
   const [showTestModal, setShowTestModal] = useState(false);
   const [showAnnouncementModal, setShowAnnouncementModal] = useState(false);
@@ -149,30 +155,6 @@ export default function TeacherPortal() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoggedInTeacher(JSON.parse(teacher));
   }, [router]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const storedHomework = localStorage.getItem("homeworkData");
-    if (storedHomework) {
-      setHomeworkList(JSON.parse(storedHomework));
-    }
-    const storedTests = localStorage.getItem("testData");
-    if (storedTests) {
-      setTestList(JSON.parse(storedTests));
-    }
-    const storedAnnouncements = localStorage.getItem("announcementData");
-    if (storedAnnouncements) {
-      setAnnouncements(JSON.parse(storedAnnouncements));
-    }
-    const storedExamTimetable = localStorage.getItem("examTimetableData");
-    if (storedExamTimetable) {
-      setExamTimetable(JSON.parse(storedExamTimetable));
-    }
-    const storedWeeklyTimetable = localStorage.getItem("weeklyTimetableData");
-    if (storedWeeklyTimetable) {
-      setWeeklyTimetable(JSON.parse(storedWeeklyTimetable));
-    }
-  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("loggedInTeacher");
