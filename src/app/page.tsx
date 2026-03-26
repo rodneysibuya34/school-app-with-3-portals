@@ -104,6 +104,10 @@ export default function Home() {
       </main>
 
       <footer className="relative z-10 px-8 py-6 text-center text-slate-500 text-sm">
+        <div className="flex justify-center gap-6 mb-2">
+          <a href="/terms" className="hover:text-slate-400 transition-colors">Terms & Conditions</a>
+          <a href="/privacy" className="hover:text-slate-400 transition-colors">Privacy Policy</a>
+        </div>
         <p>Enzokuhle Holdings - Established 2026</p>
       </footer>
     </div>
