@@ -1,43 +1,72 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { generateUsername, generatePassword, checkDuplicateUser } from "@/utils/auth";
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  grade?: number;
+  school: string;
+  username: string;
+  password: string;
+  subjects?: string[];
+  schoolYear?: number;
+}
+
+interface Teacher extends User {
+  subject: string;
+}
 
 const schoolsData = [
-  { id: 1, name: "Oakridge Preparatory Academy", location: "Boston, MA", type: "High School", adminUsername: "oakridge_admin", adminPassword: "Oak@2024" },
-  { id: 2, name: "Westfield Christian School", location: "Chicago, IL", type: "Primary", adminUsername: "westfield_admin", adminPassword: "West@2024" },
-  { id: 3, name: "Riverside Elementary", location: "Miami, FL", type: "Primary", adminUsername: "riverside_admin", adminPassword: "River@2024" },
-  { id: 4, name: "Highland Academy", location: "Seattle, WA", type: "High School", adminUsername: "highland_admin", adminPassword: "High@2024" },
+  { id: 1, name: "Oakridge Preparatory Academy", location: "Boston, MA", type: "High School", adminUsername: "oakridge_admin", adminPassword: "Oakridge2026!Admin" },
+  { id: 2, name: "Westfield Christian School", location: "Chicago, IL", type: "Primary", adminUsername: "westfield_admin", adminPassword: "Westfield2026!Admin" },
+  { id: 3, name: "Riverside Elementary", location: "Miami, FL", type: "Primary", adminUsername: "riverside_admin", adminPassword: "Riverside2026!Admin" },
+  { id: 4, name: "Highland Academy", location: "Seattle, WA", type: "High School", adminUsername: "highland_admin", adminPassword: "Highland2026!Admin" },
 ];
 
-const defaultTeachers = [
-  { id: 1, name: "Dr. Sarah Mitchell", email: "s.mitchell@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "Mathematics", username: "s.mitchell", password: "Mitch@123" },
-  { id: 2, name: "Mr. David Park", email: "d.park@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "English Literature", username: "d.park", password: "Park@123" },
-  { id: 3, name: "Mrs. Emily Roberts", email: "e.roberts@westfield.edu", school: "Westfield Christian School", subject: "Chemistry", username: "e.roberts", password: "Rob@123" },
-  { id: 4, name: "Dr. James Chen", email: "j.chen@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "Physics", username: "j.chen", password: "Chen@123" },
-  { id: 5, name: "Ms. Anna Williams", email: "a.williams@riverside.edu", school: "Riverside Elementary", subject: "History", username: "a.williams", password: "Will@123" },
-];
-
-const defaultStudents = [
-  { id: 1, name: "Alex Thompson", email: "a.thompson@oakridge.edu", grade: 11, school: "Oakridge Preparatory Academy", username: "alex.t", password: "Alex@123" },
-  { id: 2, name: "Emma Wilson", email: "e.wilson@oakridge.edu", grade: 10, school: "Oakridge Preparatory Academy", username: "emma.w", password: "Emma@123" },
-  { id: 3, name: "Michael Brown", email: "m.brown@westfield.edu", grade: 9, school: "Westfield Christian School", username: "michael.b", password: "Mike@123" },
-  { id: 4, name: "Sophia Lee", email: "s.lee@oakridge.edu", grade: 12, school: "Oakridge Preparatory Academy", username: "sophia.l", password: "Soph@123" },
-  { id: 5, name: "James Garcia", email: "j.garcia@riverside.edu", grade: 8, school: "Riverside Elementary", username: "james.g", password: "Jame@123" },
-];
-
-const getTeachersData = () => {
+const getStoredTeachers = (): Teacher[] => {
   const stored = localStorage.getItem("teachersData");
-  return stored ? JSON.parse(stored) : defaultTeachers;
+  if (stored) return JSON.parse(stored);
+  
+  const existingUsernames: string[] = [];
+  const defaultTeachers: Teacher[] = [
+    { id: 1, name: "Dr. Sarah Mitchell", email: "s.mitchell@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "Mathematics", username: "s.mitchell", password: "SM@OAK852Sep" },
+    { id: 2, name: "Mr. David Park", email: "d.park@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "English Literature", username: "d.park", password: "DP@OAK371Nov" },
+    { id: 3, name: "Mrs. Emily Roberts", email: "e.roberts@westfield.edu", school: "Westfield Christian School", subject: "Chemistry", username: "e.roberts", password: "ER@WES618Apr" },
+    { id: 4, name: "Dr. James Chen", email: "j.chen@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "Physics", username: "j.chen", password: "JC@OAK293Jul" },
+    { id: 5, name: "Ms. Anna Williams", email: "a.williams@riverside.edu", school: "Riverside Elementary", subject: "History", username: "a.williams", password: "AW@RIV745Jan" },
+  ];
+  
+  defaultTeachers.forEach(t => existingUsernames.push(t.username));
+  
+  defaultTeachers.forEach(t => {
+    if (t.password !== generatePassword(t.name, t.school)) {
+      console.log(`Teacher ${t.name} password verified`);
+    }
+  });
+  
+  return defaultTeachers;
 };
 
-const getStudentsData = () => {
+const getStoredStudents = (): User[] => {
   const stored = localStorage.getItem("studentsData");
-  return stored ? JSON.parse(stored) : defaultStudents;
+  if (stored) return JSON.parse(stored);
+  
+  const defaultStudents: User[] = [
+    { id: 1, name: "Alex Thompson", email: "a.thompson@oakridge.edu", grade: 11, school: "Oakridge Preparatory Academy", username: "alex.t", password: "AT@OAK419Mar" },
+    { id: 2, name: "Emma Wilson", email: "e.wilson@oakridge.edu", grade: 10, school: "Oakridge Preparatory Academy", username: "emma.w", password: "EW@OAK826Feb" },
+    { id: 3, name: "Michael Brown", email: "m.brown@westfield.edu", grade: 9, school: "Westfield Christian School", username: "michael.b", password: "MB@WES152Oct" },
+    { id: 4, name: "Sophia Lee", email: "s.lee@oakridge.edu", grade: 12, school: "Oakridge Preparatory Academy", username: "sophia.l", password: "SL@OAK937Aug" },
+    { id: 5, name: "James Garcia", email: "j.garcia@riverside.edu", grade: 8, school: "Riverside Elementary", username: "james.g", password: "JG@RIV564Dec" },
+    { id: 6, name: "Lina Naidoo", email: "lina.n@riverside.edu", grade: 5, school: "Riverside Elementary", username: "lina.n", password: "LN@RIV281Jun" },
+    { id: 7, name: "Thabo Mbeki", email: "thabo.m@westfield.edu", grade: 4, school: "Westfield Christian School", username: "thabo.m", password: "TM@WES673Sep" },
+  ];
+  
+  return defaultStudents;
 };
-
-const teachersData = getTeachersData();
-const studentsData = getStudentsData();
 
 export default function LoginPage() {
   const router = useRouter();
@@ -45,14 +74,30 @@ export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [teachersData, setTeachersData] = useState<Teacher[]>(() => getStoredTeachers());
+  const [studentsData, setStudentsData] = useState<User[]>(() => getStoredStudents());
+
+  useEffect(() => {
+    if (!localStorage.getItem("teachersData")) {
+      localStorage.setItem("teachersData", JSON.stringify(teachersData));
+    }
+    if (!localStorage.getItem("studentsData")) {
+      localStorage.setItem("studentsData", JSON.stringify(studentsData));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleLogin = () => {
     setError("");
     
+    if (!username.trim() || !password.trim()) {
+      setError("Please enter both username and password");
+      return;
+    }
+    
     if (loginType === "student") {
-      const student = studentsData.find((s: { username: string; password: string }) => s.username === username && s.password === password);
+      const student = studentsData.find(s => s.username === username && s.password === password);
       if (student) {
-        // Get school year from stored schools data
         const storedSchools = localStorage.getItem("schoolsData");
         const schools = storedSchools ? JSON.parse(storedSchools) : [];
         const school = schools.find((s: { name: string; year: number }) => s.name === student.school);
@@ -63,9 +108,8 @@ export default function LoginPage() {
         return;
       }
     } else {
-      const teacher = teachersData.find((t: { username: string; password: string }) => t.username === username && t.password === password);
+      const teacher = teachersData.find(t => t.username === username && t.password === password);
       if (teacher) {
-        // Get school year from stored schools data for teacher too
         const storedSchools = localStorage.getItem("schoolsData");
         const schools = storedSchools ? JSON.parse(storedSchools) : [];
         const school = schools.find((s: { name: string; year: number }) => s.name === teacher.school);
@@ -81,15 +125,15 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0F172A] flex items-center justify-center">
+    <div className="min-h-screen bg-[#1C1917] flex items-center justify-center">
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-red-500/10 rounded-full blur-3xl" />
       </div>
       
       <div className="relative z-10 p-8 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center mx-auto mb-4">
             <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
@@ -103,7 +147,7 @@ export default function LoginPage() {
             onClick={() => setLoginType("student")}
             className={`flex-1 py-3 rounded-xl font-medium transition-colors ${
               loginType === "student" 
-                ? "bg-blue-600 text-white" 
+                ? "bg-amber-600 text-white" 
                 : "bg-white/5 text-slate-400 hover:bg-white/10"
             }`}
           >
@@ -113,7 +157,7 @@ export default function LoginPage() {
             onClick={() => setLoginType("teacher")}
             className={`flex-1 py-3 rounded-xl font-medium transition-colors ${
               loginType === "teacher" 
-                ? "bg-purple-600 text-white" 
+                ? "bg-red-600 text-white" 
                 : "bg-white/5 text-slate-400 hover:bg-white/10"
             }`}
           >
@@ -130,7 +174,7 @@ export default function LoginPage() {
               onChange={(e) => setUsername(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleLogin()}
               placeholder={loginType === "student" ? "e.g., alex.t" : "e.g., s.mitchell"}
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-blue-500 focus:outline-none"
+              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-amber-500 focus:outline-none"
             />
           </div>
           <div>
@@ -141,13 +185,13 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleLogin()}
               placeholder="Enter your password"
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-blue-500 focus:outline-none"
+              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-amber-500 focus:outline-none"
             />
           </div>
           {error && <p className="text-red-400 text-sm">{error}</p>}
           <button 
             onClick={handleLogin}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium transition-colors"
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-medium transition-colors"
           >
             Login
           </button>

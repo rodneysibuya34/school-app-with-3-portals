@@ -1,9 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-const ADMIN_PASSWORD = "Admin.manager@123.com";
+const ADMIN_PASSWORD = "Admin.manager@2026!Geleza";
+
+function genUsername(name: string, existing: string[]): string {
+  const parts = name.toLowerCase().split(" ");
+  let base = parts.length >= 2 ? parts[0][0] + "." + parts[parts.length - 1] : parts[0].substring(0, 6);
+  let username = base;
+  let counter = 1;
+  while (existing.includes(username)) { username = base + counter; counter++; }
+  return username;
+}
+
+function genPassword(name: string, school: string): string {
+  const parts = name.split(" ");
+  const first = parts[0][0].toUpperCase();
+  const last = parts[parts.length - 1][0].toUpperCase();
+  const schoolCode = school.split(" ")[0].toUpperCase().substring(0, 3);
+  const random = Math.floor(Math.random() * 900) + 100;
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  return `${first}${last}@${schoolCode}${random}${months[new Date().getMonth()]}`;
+}
 
 const navItems = [
   { icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6", label: "Dashboard", href: "/admin" },
@@ -15,26 +34,26 @@ const navItems = [
 ];
 
 const initialSchools: School[] = [
-  { id: 1, name: "Oakridge Preparatory Academy", location: "Boston, MA", students: 892, teachers: 48, status: "Active", type: "High School", adminUsername: "oakridge_admin", adminPassword: "Oak@2024", year: 2026 },
-  { id: 2, name: "Westfield Christian School", location: "Chicago, IL", students: 456, teachers: 28, status: "Active", type: "Primary", adminUsername: "westfield_admin", adminPassword: "West@2024", year: 2026 },
-  { id: 3, name: "Riverside Elementary", location: "Miami, FL", students: 324, teachers: 22, status: "Active", type: "Primary", adminUsername: "riverside_admin", adminPassword: "River@2024", year: 2026 },
-  { id: 4, name: "Highland Academy", location: "Seattle, WA", students: 678, teachers: 35, status: "Trial", type: "High School", adminUsername: "highland_admin", adminPassword: "High@2024", year: 2026 },
+  { id: 1, name: "Oakridge Preparatory Academy", location: "Boston, MA", students: 892, teachers: 48, status: "Active", type: "High School", adminUsername: "oakridge_admin", adminPassword: "Oakridge2026!Admin", year: 2026 },
+  { id: 2, name: "Westfield Christian School", location: "Chicago, IL", students: 456, teachers: 28, status: "Active", type: "Primary", adminUsername: "westfield_admin", adminPassword: "Westfield2026!Admin", year: 2026 },
+  { id: 3, name: "Riverside Elementary", location: "Miami, FL", students: 324, teachers: 22, status: "Active", type: "Primary", adminUsername: "riverside_admin", adminPassword: "Riverside2026!Admin", year: 2026 },
+  { id: 4, name: "Highland Academy", location: "Seattle, WA", students: 678, teachers: 35, status: "Trial", type: "High School", adminUsername: "highland_admin", adminPassword: "Highland2026!Admin", year: 2026 },
 ];
 
 const initialTeachers = [
-  { id: 1, name: "Dr. Sarah Mitchell", email: "s.mitchell@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "Mathematics", status: "Active", username: "s.mitchell", password: "Mitch@123" },
-  { id: 2, name: "Mr. David Park", email: "d.park@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "English Literature", status: "Active", username: "d.park", password: "Park@123" },
-  { id: 3, name: "Mrs. Emily Roberts", email: "e.roberts@westfield.edu", school: "Westfield Christian School", subject: "Chemistry", status: "Active", username: "e.roberts", password: "Rob@123" },
-  { id: 4, name: "Dr. James Chen", email: "j.chen@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "Physics", status: "Active", username: "j.chen", password: "Chen@123" },
-  { id: 5, name: "Ms. Anna Williams", email: "a.williams@riverside.edu", school: "Riverside Elementary", subject: "History", status: "Pending", username: "a.williams", password: "Will@123" },
+  { id: 1, name: "Dr. Sarah Mitchell", email: "s.mitchell@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "Mathematics", status: "Active", username: "s.mitchell", password: "SM@OAK852Sep" },
+  { id: 2, name: "Mr. David Park", email: "d.park@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "English Literature", status: "Active", username: "d.park", password: "DP@OAK371Nov" },
+  { id: 3, name: "Mrs. Emily Roberts", email: "e.roberts@westfield.edu", school: "Westfield Christian School", subject: "Chemistry", status: "Active", username: "e.roberts", password: "ER@WES618Apr" },
+  { id: 4, name: "Dr. James Chen", email: "j.chen@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "Physics", status: "Active", username: "j.chen", password: "JC@OAK293Jul" },
+  { id: 5, name: "Ms. Anna Williams", email: "a.williams@riverside.edu", school: "Riverside Elementary", subject: "History", status: "Pending", username: "a.williams", password: "AW@RIV745Jan" },
 ];
 
 const initialStudents = [
-  { id: 1, name: "Alex Thompson", email: "a.thompson@oakridge.edu", grade: 11, school: "Oakridge Preparatory Academy", status: "Active", username: "alex.t", password: "Alex@123" },
-  { id: 2, name: "Emma Wilson", email: "e.wilson@oakridge.edu", grade: 10, school: "Oakridge Preparatory Academy", status: "Active", username: "emma.w", password: "Emma@123" },
-  { id: 3, name: "Michael Brown", email: "m.brown@westfield.edu", grade: 9, school: "Westfield Christian School", status: "Active", username: "michael.b", password: "Mike@123" },
-  { id: 4, name: "Sophia Lee", email: "s.lee@oakridge.edu", grade: 12, school: "Oakridge Preparatory Academy", status: "Active", username: "sophia.l", password: "Soph@123" },
-  { id: 5, name: "James Garcia", email: "j.garcia@riverside.edu", grade: 8, school: "Riverside Elementary", status: "Inactive", username: "james.g", password: "Jame@123" },
+  { id: 1, name: "Alex Thompson", email: "a.thompson@oakridge.edu", grade: 11, school: "Oakridge Preparatory Academy", status: "Active", username: "alex.t", password: "AT@OAK419Mar" },
+  { id: 2, name: "Emma Wilson", email: "e.wilson@oakridge.edu", grade: 10, school: "Oakridge Preparatory Academy", status: "Active", username: "emma.w", password: "EW@OAK826Feb" },
+  { id: 3, name: "Michael Brown", email: "m.brown@westfield.edu", grade: 9, school: "Westfield Christian School", status: "Active", username: "michael.b", password: "MB@WES152Oct" },
+  { id: 4, name: "Sophia Lee", email: "s.lee@oakridge.edu", grade: 12, school: "Oakridge Preparatory Academy", status: "Active", username: "sophia.l", password: "SL@OAK937Aug" },
+  { id: 5, name: "James Garcia", email: "j.garcia@riverside.edu", grade: 8, school: "Riverside Elementary", status: "Inactive", username: "james.g", password: "JG@RIV564Dec" },
 ];
 
 const initialSubscriptions = [
@@ -174,21 +193,6 @@ Are you sure you want to proceed?`);
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
-  const generateUsername = (name: string, school: string, count: number) => {
-    const namePart = name.toLowerCase().replace(/\s+/g, '.').split('.')[0];
-    const schoolPrefix = school.split(' ')[0].toLowerCase().substring(0, 3);
-    return `${schoolPrefix}.${namePart}${count.toString().padStart(3, '0')}`;
-  };
-
-  const generatePassword = (count: number) => {
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    let password = "";
-    for (let i = 0; i < 8; i++) {
-      password += chars.charAt((count + i) % chars.length);
-    }
-    return password + "@123";
-  };
-
   const handleSubmit = (type: ModalType) => {
     const startDate = getStartDate();
     const renewalDate = getRenewalDate();
@@ -199,7 +203,7 @@ Are you sure you want to proceed?`);
         return;
       }
       const schoolUsername = formData.name.split(' ')[0].toLowerCase() + "_admin";
-      const schoolPassword = generatePassword(schools.length + 1);
+      const schoolPassword = genPassword(formData.name, formData.name);
       
       const newSchool: School = {
         id: schools.length + 1,
@@ -232,8 +236,9 @@ Are you sure you want to proceed?`);
         alert("Please fill in Name, School, and Subject");
         return;
       }
-      const teacherUsername = generateUsername(formData.teacherName, formData.teacherSchool, teachers.length + 1);
-      const teacherPassword = generatePassword(teachers.length + 1);
+      const existingUsernames = teachers.map(t => t.username);
+      const teacherUsername = genUsername(formData.teacherName, existingUsernames);
+      const teacherPassword = genPassword(formData.teacherName, formData.teacherSchool);
       const newTeacher = {
         id: teachers.length + 1,
         name: formData.teacherName,
@@ -268,8 +273,9 @@ Are you sure you want to proceed?`);
         alert("Please fill in Name, Grade, and School");
         return;
       }
-      const studentUsername = generateUsername(formData.studentName, formData.studentSchool, students.length + 1);
-      const studentPassword = generatePassword(students.length + 1);
+      const existingStudentUsernames = students.map(s => s.username);
+      const studentUsername = genUsername(formData.studentName, existingStudentUsernames);
+      const studentPassword = genPassword(formData.studentName, formData.studentSchool);
       const newStudent = {
         id: students.length + 1,
         name: formData.studentName,
