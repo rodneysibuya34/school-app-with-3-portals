@@ -388,7 +388,7 @@ export default function TeacherPortal() {
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         {stats.map((stat) => (
-          <div key={stat.label} className="p-6 rounded-2xl bg-stone-800 backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all duration-300">
+          <div key={stat.label} className="p-6 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all duration-300">
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: `${stat.color}20` }}>
                 <svg className="w-6 h-6" style={{ color: stat.color }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -403,11 +403,11 @@ export default function TeacherPortal() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="p-6 rounded-2xl bg-stone-800 backdrop-blur-xl border border-white/10">
+        <div className="p-6 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/10">
           <h2 className="text-xl font-semibold text-white mb-6 font-['Outfit']">My Students ({loggedInTeacher.school})</h2>
           <div className="space-y-3">
             {schoolStudents.map((student) => (
-              <div key={student.id} className="p-4 rounded-xl bg-stone-800 hover:bg-white/10 transition-colors">
+              <div key={student.id} className="p-4 rounded-xl bg-white/10 hover:bg-white/10 transition-colors">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-sm font-medium">
@@ -425,11 +425,11 @@ export default function TeacherPortal() {
           </div>
         </div>
 
-        <div className="p-6 rounded-2xl bg-stone-800 backdrop-blur-xl border border-white/10">
+        <div className="p-6 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/10">
           <h2 className="text-xl font-semibold text-white mb-6 font-['Outfit']">School Staff</h2>
           <div className="space-y-3">
             {schoolTeachers.map((teacher) => (
-              <div key={teacher.id} className="p-4 rounded-xl bg-stone-800 hover:bg-white/10 transition-colors">
+              <div key={teacher.id} className="p-4 rounded-xl bg-white/10 hover:bg-white/10 transition-colors">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white text-sm font-medium">
                     {getInitials(teacher.name)}
@@ -487,7 +487,7 @@ export default function TeacherPortal() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {homeworkList.map((hw) => (
-          <div key={hw.id} className="p-6 rounded-2xl bg-stone-800 backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all duration-300">
+          <div key={hw.id} className="p-6 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all duration-300">
             <div className="flex items-start justify-between mb-4">
               <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
                 <svg className="w-6 h-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -519,20 +519,20 @@ export default function TeacherPortal() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm text-slate-400 mb-2">Title</label>
-                <input type="text" value={newHomework.title} onChange={(e) => setNewHomework({...newHomework, title: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white focus:outline-none focus:border-purple-500" placeholder="Homework title" />
+                <input type="text" value={newHomework.title} onChange={(e) => setNewHomework({...newHomework, title: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white focus:outline-none focus:border-purple-500" placeholder="Homework title" />
               </div>
               <div>
                 <label className="block text-sm text-slate-400 mb-2">Description</label>
-                <textarea value={newHomework.description} onChange={(e) => setNewHomework({...newHomework, description: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white focus:outline-none focus:border-purple-500" rows={3} placeholder="Homework description" />
+                <textarea value={newHomework.description} onChange={(e) => setNewHomework({...newHomework, description: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white focus:outline-none focus:border-purple-500" rows={3} placeholder="Homework description" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm text-slate-400 mb-2">Due Date</label>
-                  <input type="date" value={newHomework.dueDate} onChange={(e) => setNewHomework({...newHomework, dueDate: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white focus:outline-none focus:border-purple-500" />
+                  <input type="date" value={newHomework.dueDate} onChange={(e) => setNewHomework({...newHomework, dueDate: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white focus:outline-none focus:border-purple-500" />
                 </div>
                 <div>
                   <label className="block text-sm text-slate-400 mb-2">Grade</label>
-                  <select value={newHomework.grade} onChange={(e) => setNewHomework({...newHomework, grade: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white focus:outline-none focus:border-purple-500">
+                  <select value={newHomework.grade} onChange={(e) => setNewHomework({...newHomework, grade: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white focus:outline-none focus:border-purple-500">
                     <option value="">Select Grade</option>
                     {[4,5,6,7,8,9,10,11,12].map(g => <option key={g} value={g}>Grade {g}</option>)}
                   </select>
@@ -540,7 +540,7 @@ export default function TeacherPortal() {
               </div>
               <div>
                 <label className="block text-sm text-slate-400 mb-2">Subject</label>
-                <select value={newHomework.subject} onChange={(e) => setNewHomework({...newHomework, subject: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white focus:outline-none focus:border-purple-500">
+                <select value={newHomework.subject} onChange={(e) => setNewHomework({...newHomework, subject: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white focus:outline-none focus:border-purple-500">
                   <option value="">Select Subject</option>
                   <option value="Mathematics">Mathematics</option>
                   <option value="Mathematical Literacy">Mathematical Literacy</option>
@@ -622,7 +622,7 @@ export default function TeacherPortal() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         {testList.map((test) => (
-          <div key={test.id} className="p-6 rounded-2xl bg-stone-800 backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all duration-300">
+          <div key={test.id} className="p-6 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all duration-300">
             <div className="flex items-start justify-between mb-4">
               <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center">
                 <svg className="w-6 h-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -656,20 +656,20 @@ export default function TeacherPortal() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm text-slate-400 mb-2">Test Title</label>
-                <input type="text" value={newTest.title} onChange={(e) => setNewTest({...newTest, title: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white focus:outline-none focus:border-purple-500" placeholder="Test title" />
+                <input type="text" value={newTest.title} onChange={(e) => setNewTest({...newTest, title: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white focus:outline-none focus:border-purple-500" placeholder="Test title" />
               </div>
               <div>
                 <label className="block text-sm text-slate-400 mb-2">Description</label>
-                <textarea value={newTest.description} onChange={(e) => setNewTest({...newTest, description: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white focus:outline-none focus:border-purple-500" rows={3} placeholder="Test description" />
+                <textarea value={newTest.description} onChange={(e) => setNewTest({...newTest, description: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white focus:outline-none focus:border-purple-500" rows={3} placeholder="Test description" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm text-slate-400 mb-2">Due Date</label>
-                  <input type="date" value={newTest.dueDate} onChange={(e) => setNewTest({...newTest, dueDate: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white focus:outline-none focus:border-purple-500" />
+                  <input type="date" value={newTest.dueDate} onChange={(e) => setNewTest({...newTest, dueDate: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white focus:outline-none focus:border-purple-500" />
                 </div>
                 <div>
                   <label className="block text-sm text-slate-400 mb-2">Grade</label>
-                  <select value={newTest.grade} onChange={(e) => setNewTest({...newTest, grade: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white focus:outline-none focus:border-purple-500">
+                  <select value={newTest.grade} onChange={(e) => setNewTest({...newTest, grade: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white focus:outline-none focus:border-purple-500">
                     <option value="">Select Grade</option>
                     {[4,5,6,7,8,9,10,11,12].map(g => <option key={g} value={g}>Grade {g}</option>)}
                   </select>
@@ -677,7 +677,7 @@ export default function TeacherPortal() {
               </div>
               <div>
                 <label className="block text-sm text-slate-400 mb-2">Subject</label>
-                <select value={newTest.subject} onChange={(e) => setNewTest({...newTest, subject: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white focus:outline-none focus:border-purple-500">
+                <select value={newTest.subject} onChange={(e) => setNewTest({...newTest, subject: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white focus:outline-none focus:border-purple-500">
                   <option value="">Select Subject</option>
                   <option value="Mathematics">Mathematics</option>
                   <option value="Mathematical Literacy">Mathematical Literacy</option>
@@ -738,7 +738,7 @@ export default function TeacherPortal() {
                     max="100"
                     value={bulkQuestionCount}
                     onChange={(e) => setBulkQuestionCount(parseInt(e.target.value) || 1)}
-                    className="w-20 px-3 py-2 rounded-lg bg-stone-800 border border-white/10 text-white focus:outline-none focus:border-purple-500"
+                    className="w-20 px-3 py-2 rounded-lg bg-white/10 border border-white/10 text-white focus:outline-none focus:border-purple-500"
                   />
                   <button 
                     onClick={() => {
@@ -783,7 +783,7 @@ export default function TeacherPortal() {
                   </div>
 
                   {bulkQuestions.map((q, idx) => (
-                    <div key={q.id} className="p-4 bg-stone-800 rounded-xl border border-white/10">
+                    <div key={q.id} className="p-4 bg-white/10 rounded-xl border border-white/10">
                       <div className="flex justify-between items-start mb-3">
                         <span className="text-purple-400 font-medium">Question {idx + 1}</span>
                         <button 
@@ -804,7 +804,7 @@ export default function TeacherPortal() {
                               updated[idx] = { ...q, type: e.target.value as "mcq" | "truefalse", correctAnswer: "" };
                               setBulkQuestions(updated);
                             }}
-                            className="w-full px-3 py-2 rounded-lg bg-stone-800 border border-white/10 text-white text-sm"
+                            className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/10 text-white text-sm"
                           >
                             <option value="mcq">Multiple Choice (MCQ)</option>
                             <option value="truefalse">True/False</option>
@@ -820,7 +820,7 @@ export default function TeacherPortal() {
                               updated[idx] = { ...q, text: e.target.value };
                               setBulkQuestions(updated);
                             }}
-                            className="w-full px-3 py-2 rounded-lg bg-stone-800 border border-white/10 text-white text-sm"
+                            className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/10 text-white text-sm"
                             rows={2}
                             placeholder="Enter your question"
                           />
@@ -852,7 +852,7 @@ export default function TeacherPortal() {
                                     updated[idx] = { ...q, options: newOpts };
                                     setBulkQuestions(updated);
                                   }}
-                                  className="flex-1 px-3 py-2 rounded-lg bg-stone-800 border border-white/10 text-white text-sm"
+                                  className="flex-1 px-3 py-2 rounded-lg bg-white/10 border border-white/10 text-white text-sm"
                                   placeholder={`Option ${optIdx + 1}`}
                                 />
                               </div>
@@ -933,7 +933,7 @@ export default function TeacherPortal() {
         </button>
       </div>
 
-      <div className="p-6 rounded-2xl bg-stone-800 backdrop-blur-xl border border-white/10">
+      <div className="p-6 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/10">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -948,7 +948,7 @@ export default function TeacherPortal() {
             </thead>
             <tbody>
               {examTimetable.map((exam, idx) => (
-                <tr key={idx} className="border-b border-white/5 hover:bg-stone-800">
+                <tr key={idx} className="border-b border-white/5 hover:bg-white/10">
                   <td className="py-4 px-4 text-white">{exam.date}</td>
                   <td className="py-4 px-4 text-white font-medium">{exam.exam}</td>
                   <td className="py-4 px-4 text-slate-300">{exam.time}</td>
@@ -977,21 +977,21 @@ export default function TeacherPortal() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm text-slate-400 mb-2">Exam Name</label>
-                <input type="text" value={newExam.exam} onChange={(e) => setNewExam({...newExam, exam: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white focus:outline-none focus:border-purple-500" placeholder="e.g., Mathematics Paper 1" />
+                <input type="text" value={newExam.exam} onChange={(e) => setNewExam({...newExam, exam: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white focus:outline-none focus:border-purple-500" placeholder="e.g., Mathematics Paper 1" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm text-slate-400 mb-2">Date</label>
-                  <input type="date" value={newExam.date} onChange={(e) => setNewExam({...newExam, date: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white focus:outline-none focus:border-purple-500" />
+                  <input type="date" value={newExam.date} onChange={(e) => setNewExam({...newExam, date: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white focus:outline-none focus:border-purple-500" />
                 </div>
                 <div>
                   <label className="block text-sm text-slate-400 mb-2">Time</label>
-                  <input type="text" value={newExam.time} onChange={(e) => setNewExam({...newExam, time: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white focus:outline-none focus:border-purple-500" placeholder="09:00 - 11:00" />
+                  <input type="text" value={newExam.time} onChange={(e) => setNewExam({...newExam, time: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white focus:outline-none focus:border-purple-500" placeholder="09:00 - 11:00" />
                 </div>
               </div>
               <div>
                 <label className="block text-sm text-slate-400 mb-2">Venue</label>
-                <input type="text" value={newExam.venue} onChange={(e) => setNewExam({...newExam, venue: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white focus:outline-none focus:border-purple-500" placeholder="e.g., Hall A" />
+                <input type="text" value={newExam.venue} onChange={(e) => setNewExam({...newExam, venue: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white focus:outline-none focus:border-purple-500" placeholder="e.g., Hall A" />
               </div>
               <div>
                 <label className="block text-sm text-slate-400 mb-2">Upload Timetable (Optional)</label>
@@ -1039,11 +1039,11 @@ export default function TeacherPortal() {
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
         {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map((day) => (
-          <div key={day} className="p-4 rounded-2xl bg-stone-800 backdrop-blur-xl border border-white/10">
+          <div key={day} className="p-4 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/10">
             <h3 className="text-lg font-semibold text-white mb-4 text-center pb-2 border-b border-white/10">{day}</h3>
             <div className="space-y-2">
               {weeklyTimetable.filter(t => t.day === day).map((t, idx) => (
-                <div key={idx} className="p-3 rounded-xl bg-stone-800 hover:bg-white/10 transition-colors group">
+                <div key={idx} className="p-3 rounded-xl bg-white/10 hover:bg-white/10 transition-colors group">
                   <p className="text-white text-sm font-medium">{t.subject}</p>
                   <p className="text-slate-400 text-xs">Grade {t.grade} • {t.time}</p>
                   {t.fileUrl && (
@@ -1067,21 +1067,21 @@ export default function TeacherPortal() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm text-slate-400 mb-2">Day</label>
-                <select value={newSchedule.day} onChange={(e) => setNewSchedule({...newSchedule, day: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white focus:outline-none focus:border-purple-500">
+                <select value={newSchedule.day} onChange={(e) => setNewSchedule({...newSchedule, day: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white focus:outline-none focus:border-purple-500">
                   {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map(d => <option key={d} value={d}>{d}</option>)}
                 </select>
               </div>
               <div>
                 <label className="block text-sm text-slate-400 mb-2">Time</label>
-                <input type="text" value={newSchedule.time} onChange={(e) => setNewSchedule({...newSchedule, time: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white focus:outline-none focus:border-purple-500" placeholder="08:00 - 09:00" />
+                <input type="text" value={newSchedule.time} onChange={(e) => setNewSchedule({...newSchedule, time: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white focus:outline-none focus:border-purple-500" placeholder="08:00 - 09:00" />
               </div>
               <div>
                 <label className="block text-sm text-slate-400 mb-2">Subject</label>
-                <input type="text" value={newSchedule.subject} onChange={(e) => setNewSchedule({...newSchedule, subject: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white focus:outline-none focus:border-purple-500" placeholder="e.g., Mathematics" />
+                <input type="text" value={newSchedule.subject} onChange={(e) => setNewSchedule({...newSchedule, subject: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white focus:outline-none focus:border-purple-500" placeholder="e.g., Mathematics" />
               </div>
               <div>
                 <label className="block text-sm text-slate-400 mb-2">Grade</label>
-                <select value={newSchedule.grade} onChange={(e) => setNewSchedule({...newSchedule, grade: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white focus:outline-none focus:border-purple-500">
+                <select value={newSchedule.grade} onChange={(e) => setNewSchedule({...newSchedule, grade: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white focus:outline-none focus:border-purple-500">
                   <option value="">Select Grade</option>
                   {[4,5,6,7,8,9,10,11,12].map(g => <option key={g} value={g}>Grade {g}</option>)}
                 </select>
@@ -1131,7 +1131,7 @@ export default function TeacherPortal() {
             <select 
               value={gradeFilter} 
               onChange={(e) => { localStorage.setItem("teacherGradeFilter", e.target.value); setActiveTab("students"); }}
-              className="px-4 py-2 rounded-xl bg-stone-800 border border-white/10 text-white focus:outline-none focus:border-purple-500"
+              className="px-4 py-2 rounded-xl bg-white/10 border border-white/10 text-white focus:outline-none focus:border-purple-500"
             >
               <option value="">All Grades</option>
               {[4,5,6,7,8,9,10,11,12].map(g => <option key={g} value={g}>Grade {g}</option>)}
@@ -1142,7 +1142,7 @@ export default function TeacherPortal() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredStudents.map((student) => (
-            <div key={student.id} className="p-6 rounded-2xl bg-stone-800 backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all duration-300">
+            <div key={student.id} className="p-6 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all duration-300">
               <div className="flex items-center gap-4 mb-4">
                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold">
                   {student.name.split(" ").map(n => n[0]).join("").toUpperCase()}
@@ -1183,7 +1183,7 @@ export default function TeacherPortal() {
           <div key={ann.id} className={`p-6 rounded-2xl border transition-all duration-300 ${
             ann.priority === "urgent" ? "bg-red-500/10 border-red-500/30" :
             ann.priority === "important" ? "bg-yellow-500/10 border-yellow-500/30" :
-            "bg-stone-800 border-white/10"
+            "bg-white/10 border-white/10"
           }`}>
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-3">
@@ -1210,15 +1210,15 @@ export default function TeacherPortal() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm text-slate-400 mb-2">Title</label>
-                <input type="text" value={newAnnouncement.title} onChange={(e) => setNewAnnouncement({...newAnnouncement, title: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white focus:outline-none focus:border-purple-500" placeholder="Announcement title" />
+                <input type="text" value={newAnnouncement.title} onChange={(e) => setNewAnnouncement({...newAnnouncement, title: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white focus:outline-none focus:border-purple-500" placeholder="Announcement title" />
               </div>
               <div>
                 <label className="block text-sm text-slate-400 mb-2">Content</label>
-                <textarea value={newAnnouncement.content} onChange={(e) => setNewAnnouncement({...newAnnouncement, content: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white focus:outline-none focus:border-purple-500" rows={4} placeholder="Announcement content" />
+                <textarea value={newAnnouncement.content} onChange={(e) => setNewAnnouncement({...newAnnouncement, content: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white focus:outline-none focus:border-purple-500" rows={4} placeholder="Announcement content" />
               </div>
               <div>
                 <label className="block text-sm text-slate-400 mb-2">Priority</label>
-                <select value={newAnnouncement.priority} onChange={(e) => setNewAnnouncement({...newAnnouncement, priority: e.target.value as "normal" | "important" | "urgent"})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white focus:outline-none focus:border-purple-500">
+                <select value={newAnnouncement.priority} onChange={(e) => setNewAnnouncement({...newAnnouncement, priority: e.target.value as "normal" | "important" | "urgent"})} className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white focus:outline-none focus:border-purple-500">
                   <option value="normal">Normal</option>
                   <option value="important">Important</option>
                   <option value="urgent">Urgent</option>
@@ -1289,7 +1289,7 @@ export default function TeacherPortal() {
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
                 activeTab === item.label.toLowerCase()
                   ? "bg-purple-500/20 text-purple-400 border-l-2 border-purple-400"
-                  : "text-slate-400 hover:text-white hover:bg-stone-800"
+                  : "text-slate-400 hover:text-white hover:bg-white/10"
               }`}
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
