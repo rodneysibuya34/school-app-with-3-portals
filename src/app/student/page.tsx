@@ -4,12 +4,24 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 const studentsData = [
-  { id: 1, name: "Alex Thompson", email: "a.thompson@oakridge.edu", grade: 11, school: "Oakridge Preparatory Academy", username: "alex.t", password: "Alex@123", schoolYear: 2026 },
-  { id: 2, name: "Emma Wilson", email: "e.wilson@oakridge.edu", grade: 10, school: "Oakridge Preparatory Academy", username: "emma.w", password: "Emma@123", schoolYear: 2026 },
-  { id: 3, name: "Michael Brown", email: "m.brown@westfield.edu", grade: 9, school: "Westfield Christian School", username: "michael.b", password: "Mike@123", schoolYear: 2026 },
-  { id: 4, name: "Sophia Lee", email: "s.lee@oakridge.edu", grade: 12, school: "Oakridge Preparatory Academy", username: "sophia.l", password: "Soph@123", schoolYear: 2026 },
-  { id: 5, name: "James Garcia", email: "j.garcia@riverside.edu", grade: 8, school: "Riverside Elementary", username: "james.g", password: "Jame@123", schoolYear: 2026 },
+  { id: 1, name: "Alex Thompson", email: "a.thompson@oakridge.edu", grade: 11, school: "Oakridge Preparatory Academy", username: "alex.t", password: "Alex@123", schoolYear: 2026, subjects: ["Mathematics", "Physical Sciences", "English Home Language", "Life Sciences", "Geography"] },
+  { id: 2, name: "Emma Wilson", email: "e.wilson@oakridge.edu", grade: 10, school: "Oakridge Preparatory Academy", username: "emma.w", password: "Emma@123", schoolYear: 2026, subjects: ["Mathematics", "Physical Sciences", "English Home Language", "Life Sciences", "Geography"] },
+  { id: 3, name: "Michael Brown", email: "m.brown@westfield.edu", grade: 9, school: "Westfield Christian School", username: "michael.b", password: "Mike@123", schoolYear: 2026, subjects: [] },
+  { id: 4, name: "Sophia Lee", email: "s.lee@oakridge.edu", grade: 12, school: "Oakridge Preparatory Academy", username: "sophia.l", password: "Soph@123", schoolYear: 2026, subjects: ["Mathematics", "Physical Sciences", "English Home Language", "Accounting", "Geography"] },
+  { id: 5, name: "James Garcia", email: "j.garcia@riverside.edu", grade: 8, school: "Riverside Elementary", username: "james.g", password: "Jame@123", schoolYear: 2026, subjects: [] },
 ];
+
+interface StudentData {
+  id: number;
+  name: string;
+  email: string;
+  grade: number;
+  school: string;
+  username: string;
+  password: string;
+  schoolYear: number;
+  subjects: string[];
+}
 
 interface Homework {
   id: number;
@@ -28,6 +40,7 @@ interface Test {
   description: string;
   dueDate: string;
   grade: number;
+  subject: string;
   questions: { id: number; text: string; type: string; options?: string[]; correctAnswer: string }[];
   published: boolean;
   timeLimit: number;
@@ -47,103 +60,157 @@ const homeworkByGrade: Record<number, Homework[]> = {
   8: [
     { id: 1, title: "Algebra Exercises", description: "Complete exercises 1-20 from Chapter 4", dueDate: "2026-04-02", grade: 8, fileUrl: "", fileType: "", subject: "Mathematics" },
     { id: 2, title: "Natural Sciences Project", description: "Research renewable energy sources", dueDate: "2026-04-05", grade: 8, fileUrl: "", fileType: "", subject: "Natural Sciences" },
+    { id: 3, title: "Geography Map Work", description: "Complete the topographic map exercise", dueDate: "2026-04-03", grade: 8, fileUrl: "", fileType: "", subject: "Geography" },
+    { id: 4, title: "History Essay", description: "Write about the Anglo-Zulu War", dueDate: "2026-04-07", grade: 8, fileUrl: "", fileType: "", subject: "History" },
   ],
   9: [
-    { id: 3, title: "Economic Management Sciences", description: "Complete budget exercise", dueDate: "2026-04-02", grade: 9, fileUrl: "", fileType: "", subject: "EMS" },
-    { id: 4, title: "Geography Map Work", description: "Complete the topographic map exercise", dueDate: "2026-04-04", grade: 9, fileUrl: "", fileType: "", subject: "Geography" },
+    { id: 5, title: "Economic Management Sciences", description: "Complete budget exercise", dueDate: "2026-04-02", grade: 9, fileUrl: "", fileType: "", subject: "EMS" },
+    { id: 6, title: "Geography Map Work", description: "Complete the topographic map exercise", dueDate: "2026-04-04", grade: 9, fileUrl: "", fileType: "", subject: "Geography" },
+    { id: 7, title: "Natural Sciences Experiment", description: "Write up the chemistry experiment", dueDate: "2026-04-06", grade: 9, fileUrl: "", fileType: "", subject: "Natural Sciences" },
+    { id: 8, title: "Technology Project", description: "Design a sustainable house", dueDate: "2026-04-08", grade: 9, fileUrl: "", fileType: "", subject: "Technology" },
   ],
   10: [
-    { id: 5, title: "Physics Practical", description: "Write up the pendulum experiment", dueDate: "2026-04-03", grade: 10, fileUrl: "", fileType: "", subject: "Physical Sciences" },
-    { id: 6, title: "Life Sciences Essay", description: "Write about cell division", dueDate: "2026-04-06", grade: 10, fileUrl: "", fileType: "", subject: "Life Sciences" },
+    { id: 9, title: "Physics Practical", description: "Write up the pendulum experiment", dueDate: "2026-04-03", grade: 10, fileUrl: "", fileType: "", subject: "Physical Sciences" },
+    { id: 10, title: "Life Sciences Essay", description: "Write about cell division", dueDate: "2026-04-06", grade: 10, fileUrl: "", fileType: "", subject: "Life Sciences" },
+    { id: 11, title: "Mathematical Literacy", description: "Complete the data handling exercise", dueDate: "2026-04-02", grade: 10, fileUrl: "", fileType: "", subject: "Mathematical Literacy" },
+    { id: 12, title: "Business Studies", description: "Analyze the case study", dueDate: "2026-04-05", grade: 10, fileUrl: "", fileType: "", subject: "Business Studies" },
+    { id: 13, title: "History Source Analysis", description: "Analyze the provided primary source", dueDate: "2026-04-07", grade: 10, fileUrl: "", fileType: "", subject: "History" },
+    { id: 14, title: "Geography Fieldwork", description: "Complete the urbanisation fieldwork", dueDate: "2026-04-09", grade: 10, fileUrl: "", fileType: "", subject: "Geography" },
   ],
   11: [
-    { id: 7, title: "Mathematics Functions", description: "Complete exercise on inverse functions", dueDate: "2026-04-02", grade: 11, fileUrl: "", fileType: "", subject: "Mathematics" },
-    { id: 8, title: "Accounting Transactions", description: "Record the transactions in the general journal", dueDate: "2026-04-04", grade: 11, fileUrl: "", fileType: "", subject: "Accounting" },
-    { id: 9, title: "History Source Analysis", description: "Analyze the provided primary source", dueDate: "2026-04-07", grade: 11, fileUrl: "", fileType: "", subject: "History" },
+    { id: 15, title: "Mathematics Functions", description: "Complete exercise on inverse functions", dueDate: "2026-04-02", grade: 11, fileUrl: "", fileType: "", subject: "Mathematics" },
+    { id: 16, title: "Accounting Transactions", description: "Record the transactions in the general journal", dueDate: "2026-04-04", grade: 11, fileUrl: "", fileType: "", subject: "Accounting" },
+    { id: 17, title: "History Source Analysis", description: "Analyze the provided primary source", dueDate: "2026-04-07", grade: 11, fileUrl: "", fileType: "", subject: "History" },
+    { id: 18, title: "Economics Essay", description: "Write about supply and demand", dueDate: "2026-04-03", grade: 11, fileUrl: "", fileType: "", subject: "Economics" },
+    { id: 19, title: "Information Technology Project", description: "Create a database system", dueDate: "2026-04-08", grade: 11, fileUrl: "", fileType: "", subject: "Information Technology" },
   ],
   12: [
-    { id: 10, title: "Mathematics Paper 1 Prep", description: "Practice past exam papers", dueDate: "2026-04-02", grade: 12, fileUrl: "", fileType: "", subject: "Mathematics" },
-    { id: 11, title: "Physical Sciences Experiment", description: "Conduct the titration experiment", dueDate: "2026-04-05", grade: 12, fileUrl: "", fileType: "", subject: "Physical Sciences" },
-    { id: 12, title: "Business Studies Case Study", description: "Analyse the case study and answer questions", dueDate: "2026-04-08", grade: 12, fileUrl: "", fileType: "", subject: "Business Studies" },
+    { id: 20, title: "Mathematics Paper 1 Prep", description: "Practice past exam papers", dueDate: "2026-04-02", grade: 12, fileUrl: "", fileType: "", subject: "Mathematics" },
+    { id: 21, title: "Physical Sciences Experiment", description: "Conduct the titration experiment", dueDate: "2026-04-05", grade: 12, fileUrl: "", fileType: "", subject: "Physical Sciences" },
+    { id: 22, title: "Business Studies Case Study", description: "Analyse the case study and answer questions", dueDate: "2026-04-08", grade: 12, fileUrl: "", fileType: "", subject: "Business Studies" },
+    { id: 23, title: "Geography Fieldwork Report", description: "Complete the rural settlement fieldwork", dueDate: "2026-04-10", grade: 12, fileUrl: "", fileType: "", subject: "Geography" },
+    { id: 24, title: "Consumer Studies Practical", description: "Plan a balanced meal on a budget", dueDate: "2026-04-06", grade: 12, fileUrl: "", fileType: "", subject: "Consumer Studies" },
   ],
 };
 
 const testsByGrade: Record<number, Test[]> = {
-  8: [{ id: 1, title: "Mathematics Test", description: "Covers Algebra and Geometry", dueDate: "2026-04-10", grade: 8, questions: [], published: true, timeLimit: 60 }],
-  9: [{ id: 2, title: "Geography Test", description: "Map work and climate", dueDate: "2026-04-12", grade: 9, questions: [], published: true, timeLimit: 45 }],
-  10: [{ id: 3, title: "Physical Sciences Test", description: "Newton's Laws and matter", dueDate: "2026-04-11", grade: 10, questions: [], published: true, timeLimit: 60 }],
-  11: [{ id: 4, title: "Mathematics Test", description: "Functions and calculus", dueDate: "2026-04-14", grade: 11, questions: [], published: true, timeLimit: 90 }],
-  12: [{ id: 5, title: "Final Exam Preparation", description: "Covers all topics", dueDate: "2026-04-15", grade: 12, questions: [], published: true, timeLimit: 120 }],
+  8: [
+    { id: 1, title: "Mathematics Test", description: "Covers Algebra and Geometry", dueDate: "2026-04-10", grade: 8, subject: "Mathematics", questions: [], published: true, timeLimit: 60 },
+    { id: 2, title: "Natural Sciences Test", description: "Chemistry and Physics basics", dueDate: "2026-04-12", grade: 8, subject: "Natural Sciences", questions: [], published: true, timeLimit: 45 },
+  ],
+  9: [
+    { id: 3, title: "Geography Test", description: "Map work and climate", dueDate: "2026-04-12", grade: 9, subject: "Geography", questions: [], published: true, timeLimit: 45 },
+    { id: 4, title: "EMS Test", description: "Financial literacy and business", dueDate: "2026-04-11", grade: 9, subject: "EMS", questions: [], published: true, timeLimit: 45 },
+  ],
+  10: [
+    { id: 5, title: "Physical Sciences Test", description: "Newton's Laws and matter", dueDate: "2026-04-11", grade: 10, subject: "Physical Sciences", questions: [], published: true, timeLimit: 60 },
+    { id: 6, title: "Life Sciences Test", description: "Cells and photosynthesis", dueDate: "2026-04-13", grade: 10, subject: "Life Sciences", questions: [], published: true, timeLimit: 60 },
+    { id: 7, title: "Mathematical Literacy Test", description: "Data handling and measurement", dueDate: "2026-04-14", grade: 10, subject: "Mathematical Literacy", questions: [], published: true, timeLimit: 60 },
+  ],
+  11: [
+    { id: 8, title: "Mathematics Test", description: "Functions and calculus", dueDate: "2026-04-14", grade: 11, subject: "Mathematics", questions: [], published: true, timeLimit: 90 },
+    { id: 9, title: "Accounting Test", description: "Financial statements", dueDate: "2026-04-15", grade: 11, subject: "Accounting", questions: [], published: true, timeLimit: 60 },
+  ],
+  12: [
+    { id: 10, title: "Final Exam Preparation", description: "Covers all topics", dueDate: "2026-04-15", grade: 12, subject: "Mathematics", questions: [], published: true, timeLimit: 120 },
+  ],
 };
 
 const examTimetableByGrade: Record<number, { date: string; exam: string; time: string; venue: string }[]> = {
   8: [
     { date: "2026-06-15", exam: "Mathematics", time: "09:00 - 11:00", venue: "Hall A" },
     { date: "2026-06-16", exam: "English Home Language", time: "09:00 - 11:00", venue: "Hall B" },
+    { date: "2026-06-17", exam: "Natural Sciences", time: "09:00 - 11:00", venue: "Lab 1" },
   ],
   9: [
     { date: "2026-06-15", exam: "Mathematics", time: "09:00 - 11:00", venue: "Hall A" },
-    { date: "2026-06-16", exam: "Natural Sciences", time: "09:00 - 11:00", venue: "Lab 1" },
+    { date: "2026-06-16", exam: "English Home Language", time: "09:00 - 11:00", venue: "Hall B" },
+    { date: "2026-06-17", exam: "EMS", time: "09:00 - 11:00", venue: "Hall C" },
   ],
   10: [
-    { date: "2026-06-15", exam: "Mathematics", time: "09:00 - 11:00", venue: "Hall A" },
-    { date: "2026-06-16", exam: "Physical Sciences", time: "09:00 - 11:00", venue: "Lab 1" },
-    { date: "2026-06-17", exam: "Life Sciences", time: "09:00 - 11:00", venue: "Hall B" },
+    { date: "2026-06-15", exam: "Mathematics/Mathematical Literacy", time: "09:00 - 11:00", venue: "Hall A" },
+    { date: "2026-06-16", exam: "English Home Language", time: "09:00 - 11:00", venue: "Hall B" },
+    { date: "2026-06-17", exam: "Physical Sciences/Life Sciences", time: "09:00 - 11:00", venue: "Lab 1" },
+    { date: "2026-06-18", exam: "Geography/History/Business Studies", time: "09:00 - 11:00", venue: "Hall C" },
   ],
   11: [
     { date: "2026-06-15", exam: "Mathematics", time: "09:00 - 12:00", venue: "Hall A" },
-    { date: "2026-06-16", exam: "Physical Sciences", time: "09:00 - 12:00", venue: "Lab 1" },
-    { date: "2026-06-17", exam: "English Home Language", time: "09:00 - 11:30", venue: "Hall B" },
-    { date: "2026-06-18", exam: "Life Sciences", time: "09:00 - 11:00", venue: "Hall A" },
+    { date: "2026-06-16", exam: "English Home Language", time: "09:00 - 11:30", venue: "Hall B" },
+    { date: "2026-06-17", exam: "Physical Sciences/Life Sciences", time: "09:00 - 12:00", venue: "Lab 1" },
+    { date: "2026-06-18", exam: "Accounting/Business Studies/Economics", time: "09:00 - 11:00", venue: "Hall C" },
   ],
   12: [
-    { date: "2026-06-15", exam: "Mathematics", time: "08:00 - 11:00", venue: "Hall A" },
-    { date: "2026-06-16", exam: "Physical Sciences", time: "08:00 - 11:00", venue: "Lab 1" },
-    { date: "2026-06-17", exam: "English Home Language", time: "08:00 - 11:00", venue: "Hall B" },
-    { date: "2026-06-18", exam: "Accounting/Business Studies", time: "08:00 - 11:00", venue: "Hall A" },
-    { date: "2026-06-19", exam: "Geography/History", time: "08:00 - 11:00", venue: "Hall B" },
+    { date: "2026-06-15", exam: "Mathematics/Mathematical Literacy", time: "08:00 - 11:00", venue: "Hall A" },
+    { date: "2026-06-16", exam: "English Home Language", time: "08:00 - 11:00", venue: "Hall B" },
+    { date: "2026-06-17", exam: "Physical Sciences/Life Sciences", time: "08:00 - 11:00", venue: "Lab 1" },
+    { date: "2026-06-18", exam: "Accounting/Business Studies/Economics", time: "08:00 - 11:00", venue: "Hall C" },
+    { date: "2026-06-19", exam: "Geography/History/IT", time: "08:00 - 11:00", venue: "Hall D" },
   ],
 };
 
 const weeklyTimetableByGrade: Record<number, { day: string; time: string; subject: string }[]> = {
   8: [
     { day: "Monday", time: "08:00 - 09:00", subject: "Mathematics" },
-    { day: "Monday", time: "09:00 - 10:00", subject: "Natural Sciences" },
-    { day: "Tuesday", time: "08:00 - 09:00", subject: "English Home Language" },
+    { day: "Monday", time: "09:00 - 10:00", subject: "English Home Language" },
+    { day: "Monday", time: "10:00 - 11:00", subject: "Natural Sciences" },
+    { day: "Tuesday", time: "08:00 - 09:00", subject: "Afrikaans First Add" },
+    { day: "Tuesday", time: "09:00 - 10:00", subject: "Geography" },
     { day: "Wednesday", time: "08:00 - 09:00", subject: "Mathematics" },
-    { day: "Thursday", time: "09:00 - 10:00", subject: "Geography" },
-    { day: "Friday", time: "08:00 - 09:00", subject: "History" },
+    { day: "Wednesday", time: "09:00 - 10:00", subject: "History" },
+    { day: "Thursday", time: "08:00 - 09:00", subject: "EMS" },
+    { day: "Thursday", time: "09:00 - 10:00", subject: "Technology" },
+    { day: "Friday", time: "08:00 - 09:00", subject: "Physical Education" },
+    { day: "Friday", time: "09:00 - 10:00", subject: "Life Orientation" },
   ],
   9: [
     { day: "Monday", time: "08:00 - 09:00", subject: "Mathematics" },
+    { day: "Monday", time: "09:00 - 10:00", subject: "English Home Language" },
     { day: "Monday", time: "10:00 - 11:00", subject: "Natural Sciences" },
-    { day: "Tuesday", time: "08:00 - 09:00", subject: "English Home Language" },
+    { day: "Tuesday", time: "08:00 - 09:00", subject: "Afrikaans First Add" },
+    { day: "Tuesday", time: "09:00 - 10:00", subject: "Geography" },
+    { day: "Wednesday", time: "08:00 - 09:00", subject: "EMS" },
     { day: "Wednesday", time: "09:00 - 10:00", subject: "Technology" },
-    { day: "Thursday", time: "08:00 - 09:00", subject: "Mathematics" },
-    { day: "Friday", time: "10:00 - 11:00", subject: "Geography" },
+    { day: "Thursday", time: "08:00 - 09:00", subject: "History" },
+    { day: "Thursday", time: "09:00 - 10:00", subject: "Life Orientation" },
+    { day: "Friday", time: "08:00 - 09:00", subject: "Music/Art" },
+    { day: "Friday", time: "09:00 - 10:00", subject: "Physical Education" },
   ],
   10: [
-    { day: "Monday", time: "08:00 - 09:00", subject: "Mathematics" },
-    { day: "Monday", time: "09:00 - 10:00", subject: "Physical Sciences" },
-    { day: "Tuesday", time: "08:00 - 09:00", subject: "English Home Language" },
-    { day: "Wednesday", time: "08:00 - 09:00", subject: "Life Sciences" },
-    { day: "Thursday", time: "09:00 - 10:00", subject: "Geography" },
-    { day: "Friday", time: "08:00 - 09:00", subject: "Mathematics" },
+    { day: "Monday", time: "08:00 - 09:00", subject: "Mathematics/Mathematical Literacy" },
+    { day: "Monday", time: "09:00 - 10:00", subject: "English Home Language" },
+    { day: "Monday", time: "10:00 - 11:00", subject: "Physical Sciences/Life Sciences" },
+    { day: "Tuesday", time: "08:00 - 09:00", subject: "Afrikaans First Add" },
+    { day: "Tuesday", time: "09:00 - 10:00", subject: "Geography/History" },
+    { day: "Tuesday", time: "10:00 - 11:00", subject: "Business Studies/Economics" },
+    { day: "Wednesday", time: "08:00 - 09:00", subject: "Information Technology" },
+    { day: "Wednesday", time: "09:00 - 10:00", subject: "Life Orientation" },
+    { day: "Thursday", time: "08:00 - 09:00", subject: "Mathematics/Mathematical Literacy" },
+    { day: "Thursday", time: "09:00 - 10:00", subject: "Physical Sciences/Life Sciences" },
+    { day: "Friday", time: "08:00 - 09:00", subject: "Consumer Studies" },
+    { day: "Friday", time: "09:00 - 10:00", subject: "Physical Education" },
   ],
   11: [
     { day: "Monday", time: "08:00 - 09:30", subject: "Mathematics" },
-    { day: "Monday", time: "10:00 - 11:30", subject: "Physical Sciences" },
+    { day: "Monday", time: "09:30 - 11:00", subject: "Physical Sciences" },
     { day: "Tuesday", time: "08:00 - 09:30", subject: "English Home Language" },
-    { day: "Wednesday", time: "08:00 - 09:30", subject: "Life Sciences" },
-    { day: "Thursday", time: "09:00 - 10:30", subject: "Afrikaans First Add" },
-    { day: "Friday", time: "08:00 - 09:30", subject: "History" },
+    { day: "Tuesday", time: "09:30 - 11:00", subject: "Accounting/Business Studies" },
+    { day: "Wednesday", time: "08:00 - 09:30", subject: "Life Sciences/Geography" },
+    { day: "Wednesday", time: "09:30 - 11:00", subject: "History/Economics" },
+    { day: "Thursday", time: "08:00 - 09:30", subject: "Information Technology" },
+    { day: "Thursday", time: "09:30 - 11:00", subject: "Afrikaans First Add" },
+    { day: "Friday", time: "08:00 - 09:30", subject: "Life Orientation" },
+    { day: "Friday", time: "09:30 - 11:00", subject: "Consumer Studies/Tourism" },
   ],
   12: [
-    { day: "Monday", time: "08:00 - 10:00", subject: "Mathematics" },
+    { day: "Monday", time: "08:00 - 10:00", subject: "Mathematics/Mathematical Literacy" },
     { day: "Tuesday", time: "08:00 - 10:00", subject: "Physical Sciences" },
-    { day: "Wednesday", time: "08:00 - 10:00", subject: "English Home Language" },
-    { day: "Thursday", time: "08:00 - 10:00", subject: "Accounting" },
-    { day: "Friday", time: "08:00 - 10:00", subject: "Geography" },
+    { day: "Tuesday", time: "10:00 - 11:30", subject: "English Home Language" },
+    { day: "Wednesday", time: "08:00 - 10:00", subject: "Accounting/Business Studies" },
+    { day: "Wednesday", time: "10:00 - 11:30", subject: "Geography/History" },
+    { day: "Thursday", time: "08:00 - 10:00", subject: "Life Sciences/Economics" },
+    { day: "Thursday", time: "10:00 - 11:30", subject: "Information Technology" },
+    { day: "Friday", time: "08:00 - 10:00", subject: "Afrikaans First Add" },
+    { day: "Friday", time: "10:00 - 11:30", subject: "Life Orientation" },
   ],
 };
 
@@ -218,6 +285,8 @@ const navItems = [
 export default function StudentPortal() {
   const router = useRouter();
   const [loggedInStudent, setLoggedInStudent] = useState<typeof studentsData[0] | null>(null);
+  const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
+  const [showSubjectModal, setShowSubjectModal] = useState(false);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [activeTest, setActiveTest] = useState<Test | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -241,7 +310,15 @@ export default function StudentPortal() {
       router.push("/login");
       return;
     }
-    setLoggedInStudent(JSON.parse(student));
+    const parsedStudent = JSON.parse(student);
+    setLoggedInStudent(parsedStudent);
+
+    const storedSubjects = localStorage.getItem(`studentSubjects_${parsedStudent.id}`);
+    if (storedSubjects) {
+      setSelectedSubjects(JSON.parse(storedSubjects));
+    } else if (parsedStudent.grade >= 10) {
+      setShowSubjectModal(true);
+    }
 
     const storedHomework = localStorage.getItem("homeworkData");
     if (storedHomework) setHomeworkList(JSON.parse(storedHomework));
@@ -261,6 +338,14 @@ export default function StudentPortal() {
     const storedCourses = localStorage.getItem("coursesData");
     if (storedCourses) setCoursesList(JSON.parse(storedCourses));
   }, [router]);
+
+  const saveSubjects = (subjects: string[]) => {
+    setSelectedSubjects(subjects);
+    if (loggedInStudent) {
+      localStorage.setItem(`studentSubjects_${loggedInStudent.id}`, JSON.stringify(subjects));
+    }
+    setShowSubjectModal(false);
+  };
 
   useEffect(() => {
     if (activeTest && timeLeft > 0 && !testSubmitted) {
@@ -291,11 +376,21 @@ export default function StudentPortal() {
   const allStudyMaterials = studyMaterialsList.length > 0 ? studyMaterialsList : studyMaterialsByGrade[loggedInStudent.grade] || [];
   const allCourses = coursesList.length > 0 ? coursesList : coursesByGrade[loggedInStudent.grade] || [];
 
-  const homework = allHomework.filter(hw => hw.grade === loggedInStudent.grade);
-  const tests = allTests.filter(t => t.grade === loggedInStudent.grade);
+  const isSubjectSpecific = (subject: string) => {
+    const electiveSubjects = ["Mathematics", "Physical Sciences", "Life Sciences", "Geography", "History", "Business Studies", "Accounting", "Economics", "Information Technology", "Mathematical Literacy", "Consumer Studies"];
+    return electiveSubjects.includes(subject);
+  };
+
+  const filterBySubjects = <T extends { subject: string }>(items: T[]): T[] => {
+    if (loggedInStudent!.grade < 10 || selectedSubjects.length === 0) return items;
+    return items.filter(item => !isSubjectSpecific(item.subject) || selectedSubjects.includes(item.subject));
+  };
+
+  const homework = filterBySubjects(allHomework.filter(hw => hw.grade === loggedInStudent.grade));
+  const tests = filterBySubjects(allTests.filter(t => t.grade === loggedInStudent.grade));
   const examTimetable = allExamTimetable.filter(et => et.grade === loggedInStudent.grade);
   const weeklyTimetable = allWeeklyTimetable.filter(wt => wt.grade === loggedInStudent.grade);
-  const studyMaterials = allStudyMaterials.filter(sm => sm.grade === loggedInStudent.grade);
+  const studyMaterials = filterBySubjects(allStudyMaterials.filter(sm => sm.grade === loggedInStudent.grade));
   const courses = allCourses;
 
   const gpaValues: Record<string, string> = { "A": "4.0", "A-": "3.7", "B+": "3.3", "B": "3.0", "B-": "2.7", "C+": "2.3", "C": "2.0" };
@@ -537,8 +632,68 @@ export default function StudentPortal() {
     </div>
   );
 
+  const grade10Subjects = [
+    "Mathematics", "Mathematical Literacy", "Physical Sciences", "Life Sciences",
+    "Geography", "History", "Business Studies", "Economics", "Information Technology",
+    "English Home Language", "Afrikaans First Add"
+  ];
+
+  const handleSubjectToggle = (subject: string) => {
+    if (selectedSubjects.includes(subject)) {
+      setSelectedSubjects(selectedSubjects.filter(s => s !== subject));
+    } else {
+      setSelectedSubjects([...selectedSubjects, subject]);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#0F172A] flex">
+      {showSubjectModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-[#1E293B] rounded-2xl p-6 w-full max-w-lg border border-white/10">
+            <h3 className="text-xl font-semibold text-white mb-4">Select Your Subjects</h3>
+            <p className="text-slate-400 text-sm mb-4">Choose the subjects you are taking this year (select at least 4):</p>
+            <div className="grid grid-cols-2 gap-3 max-h-64 overflow-y-auto mb-4">
+              {grade10Subjects.map(subject => (
+                <button
+                  key={subject}
+                  onClick={() => handleSubjectToggle(subject)}
+                  className={`p-3 rounded-xl text-left transition-all ${
+                    selectedSubjects.includes(subject)
+                      ? "bg-blue-500/20 border-2 border-blue-500 text-white"
+                      : "bg-white/5 border-2 border-transparent text-slate-300 hover:bg-white/10"
+                  }`}
+                >
+                  {subject}
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  if (selectedSubjects.length >= 4) {
+                    saveSubjects(selectedSubjects);
+                  } else {
+                    alert("Please select at least 4 subjects");
+                  }
+                }}
+                className="flex-1 px-4 py-3 rounded-xl bg-blue-600 text-white hover:bg-blue-700"
+              >
+                Save Subjects
+              </button>
+              {selectedSubjects.length > 0 && (
+                <button
+                  onClick={() => setShowSubjectModal(false)}
+                  className="flex-1 px-4 py-3 rounded-xl bg-white/10 text-white hover:bg-white/20"
+                >
+                  Skip for now
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       <aside className="w-72 bg-[#1E293B] border-r border-white/10 flex flex-col">
         <div className="p-6 border-b border-white/10">
           <div className="flex items-center gap-3 mb-6">
