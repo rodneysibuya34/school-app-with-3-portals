@@ -167,8 +167,9 @@ export default function AdminPortal() {
     const now = new Date();
     const daysUntilExpiry = Math.ceil((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
     
-    if (school.status === "Trial") return "trial";
+    if (school.paymentStatus === "trial" && daysUntilExpiry <= 7 && daysUntilExpiry >= 0) return "expiring_soon";
     if (daysUntilExpiry < 0) return "expired";
+    if (school.paymentStatus === "trial") return "trial";
     if (daysUntilExpiry <= 7) return "expiring_soon";
     return "active";
   };
@@ -220,7 +221,9 @@ export default function AdminPortal() {
       }
       const schoolUsername = formData.name.split(' ')[0].toLowerCase() + "_admin";
       const schoolPassword = genPassword(formData.name, formData.name);
-      const expiryDate = formData.schoolExpiry || new Date(formData.schoolYear + 1, 11, 31).toISOString().split('T')[0];
+      const trialEndDate = new Date();
+      trialEndDate.setDate(trialEndDate.getDate() + 10);
+      const expiryDate = formData.schoolExpiry || trialEndDate.toISOString().split('T')[0];
       
       const newSchool: School = {
         id: schools.length + 1,
@@ -245,7 +248,7 @@ export default function AdminPortal() {
       setSchools(updatedSchools);
       localStorage.setItem("schoolsData", JSON.stringify(updatedSchools));
       
-      alert(`School created!\n\nUsername: ${schoolUsername}\nPassword: ${schoolPassword}\nExpiry: ${expiryDate}`);
+      alert(`School created!\n\nUsername: ${schoolUsername}\nPassword: ${schoolPassword}\nTrial Period: 10 days (Expires: ${expiryDate})`);
       setShowModal(null);
       setFormData({ name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', schoolLogo: '', schoolContact: '', schoolAddress: '', teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', subSchool: '', subType: 'Primary', subStartDate: '' });
     } else if (type === 'teacher') {
