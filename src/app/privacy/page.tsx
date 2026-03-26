@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Privacy() {
   return (
-    <div className="min-h-screen bg-[#1C1917] p-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 p-8">
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold text-white mb-6 font-['Outfit']">Privacy Policy</h1>
         <div className="prose prose-invert prose-amber">

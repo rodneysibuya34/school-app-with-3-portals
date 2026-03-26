@@ -125,21 +125,21 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#1C1917] flex items-center justify-center">
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-red-500/10 rounded-full blur-3xl" />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-amber-200/30 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-red-200/30 rounded-full blur-3xl" />
       </div>
       
-      <div className="relative z-10 p-8 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 w-full max-w-md">
+      <div className="relative z-10 p-8 rounded-2xl bg-white shadow-2xl border border-slate-200 w-full max-w-md">
         <div className="text-center mb-8">
           <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center mx-auto mb-4">
             <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-white font-['Outfit']">Geleza Mzansi Login</h1>
-          <p className="text-slate-400 mt-2">Enter your credentials to access your portal</p>
+          <h1 className="text-2xl font-bold text-slate-800 font-['Outfit']">Geleza Mzansi Login</h1>
+          <p className="text-slate-500 mt-2">Enter your credentials to access your portal</p>
         </div>
 
         <div className="flex gap-2 mb-6">
@@ -147,8 +147,8 @@ export default function LoginPage() {
             onClick={() => setLoginType("student")}
             className={`flex-1 py-3 rounded-xl font-medium transition-colors ${
               loginType === "student" 
-                ? "bg-amber-600 text-white" 
-                : "bg-white/5 text-slate-400 hover:bg-white/10"
+                ? "bg-amber-500 text-white" 
+                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
             }`}
           >
             Student
@@ -157,8 +157,8 @@ export default function LoginPage() {
             onClick={() => setLoginType("teacher")}
             className={`flex-1 py-3 rounded-xl font-medium transition-colors ${
               loginType === "teacher" 
-                ? "bg-red-600 text-white" 
-                : "bg-white/5 text-slate-400 hover:bg-white/10"
+                ? "bg-red-500 text-white" 
+                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
             }`}
           >
             Teacher
@@ -167,38 +167,38 @@ export default function LoginPage() {
 
         <div className="space-y-4">
           <div>
-            <label className="block text-slate-400 text-sm mb-2">Username</label>
+            <label className="block text-slate-600 text-sm mb-2">Username</label>
             <input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleLogin()}
               placeholder={loginType === "student" ? "e.g., alex.t" : "e.g., s.mitchell"}
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-amber-500 focus:outline-none"
+              className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 focus:border-amber-500 focus:outline-none"
             />
           </div>
           <div>
-            <label className="block text-slate-400 text-sm mb-2">Password</label>
+            <label className="block text-slate-600 text-sm mb-2">Password</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleLogin()}
               placeholder="Enter your password"
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-amber-500 focus:outline-none"
+              className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 focus:border-amber-500 focus:outline-none"
             />
           </div>
-          {error && <p className="text-red-400 text-sm">{error}</p>}
+          {error && <p className="text-red-500 text-sm">{error}</p>}
           <button 
             onClick={handleLogin}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-medium transition-colors"
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-medium transition-colors"
           >
             Login
           </button>
         </div>
 
-        <div className="mt-6 pt-6 border-t border-white/10">
-          <p className="text-slate-400 text-sm text-center">
+        <div className="mt-6 pt-6 border-t border-slate-200">
+          <p className="text-slate-500 text-sm text-center">
             Contact your school admin for login credentials
           </p>
         </div>

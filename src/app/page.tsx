@@ -44,11 +44,11 @@ const portals = [
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#1C1917] relative overflow-hidden">
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-red-500/10 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-cyan-500/5 rounded-full blur-3xl" />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 relative overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-amber-200/30 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-red-200/30 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-cyan-200/20 rounded-full blur-3xl" />
       </div>
 
       <header className="relative z-10 px-8 py-6 flex items-center justify-between">
@@ -60,16 +60,16 @@ export default function Home() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14v7" />
             </svg>
           </div>
-          <span className="text-xl font-semibold text-white font-['Outfit']">Geleza Mzansi</span>
+          <span className="text-xl font-semibold text-slate-800 font-['Outfit']">Geleza Mzansi</span>
         </div>
       </header>
 
       <main className="relative z-10 px-8 py-12 max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h1 className="text-5xl font-bold text-white mb-4 font-['Outfit']">
-            Welcome to <span className="bg-gradient-to-r from-amber-400 via-orange-400 to-cyan-400 bg-clip-text text-transparent">Geleza Mzansi</span>
+          <h1 className="text-5xl font-bold text-slate-800 mb-4 font-['Outfit']">
+            Welcome to <span className="bg-gradient-to-r from-amber-500 via-orange-500 to-cyan-500 bg-clip-text text-transparent">Geleza Mzansi</span>
           </h1>
-          <p className="text-slate-400 text-lg max-w-2xl mx-auto">
+          <p className="text-slate-500 text-lg max-w-2xl mx-auto">
             Select your portal to access personalized academic information and resources
           </p>
         </div>
@@ -79,9 +79,9 @@ export default function Home() {
             <Link
               key={portal.id}
               href={portal.loginHref}
-              className="group relative p-8 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl overflow-hidden"
+              className="group relative p-8 rounded-2xl bg-white shadow-lg border border-slate-200 hover:shadow-xl hover:border-slate-300 transition-all duration-300 hover:scale-[1.02] overflow-hidden"
             >
-              <div className={`absolute inset-0 bg-gradient-to-br ${portal.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
+              <div className={`absolute inset-0 bg-gradient-to-br ${portal.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
               <div className="relative">
                 <div 
                   className="w-16 h-16 rounded-xl flex items-center justify-center mb-6 transition-transform duration-300 group-hover:scale-110"
@@ -89,9 +89,9 @@ export default function Home() {
                 >
                   <div style={{ color: portal.borderColor }}>{portal.icon}</div>
                 </div>
-                <h2 className="text-2xl font-semibold text-white mb-3 font-['Outfit']">{portal.title}</h2>
-                <p className="text-slate-400 leading-relaxed">{portal.description}</p>
-                <div className="mt-4 pt-4 border-t border-white/10">
+                <h2 className="text-2xl font-semibold text-slate-800 mb-3 font-['Outfit']">{portal.title}</h2>
+                <p className="text-slate-500 leading-relaxed">{portal.description}</p>
+                <div className="mt-4 pt-4 border-t border-slate-100">
                   <span className="text-sm font-medium" style={{ color: portal.borderColor }}>
                     Click to Login →
                   </span>
@@ -103,10 +103,10 @@ export default function Home() {
         </div>
       </main>
 
-      <footer className="relative z-10 px-8 py-6 text-center text-slate-500 text-sm">
+      <footer className="relative z-10 px-8 py-6 text-center text-slate-400 text-sm">
         <div className="flex justify-center gap-6 mb-2">
-          <a href="/terms" className="hover:text-slate-400 transition-colors">Terms & Conditions</a>
-          <a href="/privacy" className="hover:text-slate-400 transition-colors">Privacy Policy</a>
+          <a href="/terms" className="hover:text-slate-600 transition-colors">Terms & Conditions</a>
+          <a href="/privacy" className="hover:text-slate-600 transition-colors">Privacy Policy</a>
         </div>
         <p>Enzokuhle Holdings - Established 2026</p>
       </footer>
