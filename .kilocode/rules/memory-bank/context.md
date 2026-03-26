@@ -22,6 +22,9 @@ Now supports both Primary School (Grades 4-7) and High School (Grades 8-12).
   - Student mode: Helps students understand concepts (not give answers), guides through problems
   - Teacher mode: Helps create tests (guides, not do it), identifies struggling students
 - [x] Added School Info section to Admin portal - contact and address fields for each school
+- [x] Added Terms & Conditions page at /terms
+- [x] Added Privacy Policy page at /privacy
+- [x] Added footer links to Terms & Privacy on home page
 
 ## Current Structure
 
@@ -92,6 +95,7 @@ Student portal reads from same keys and filters by student's grade and selected 
 | Mar 26, 2026 | Added primary school support (Grades 4-7), Religious Studies, Xitsonga |
 | Mar 26, 2026 | Added Geleza AI Assistant with student/teacher modes |
 | Mar 26, 2026 | Added School Info section to Admin portal (contact, address) |
+| Mar 26, 2026 | Added Terms & Conditions and Privacy Policy pages |
 
 ## Pending Improvements
 
