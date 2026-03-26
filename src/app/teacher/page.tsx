@@ -132,6 +132,8 @@ export default function TeacherPortal() {
   const [showQuestionModal, setShowQuestionModal] = useState(false);
   const [currentTestId, setCurrentTestId] = useState<number | null>(null);
   const [newQuestion, setNewQuestion] = useState({ text: "", type: "mcq" as "mcq" | "truefalse", options: ["", "", "", ""], correctAnswer: "" });
+  const [bulkQuestionCount, setBulkQuestionCount] = useState(10);
+  const [bulkQuestions, setBulkQuestions] = useState<Question[]>([]);
   const [examTimetable, setExamTimetable] = useState<{ date: string; exam: string; time: string; venue: string; fileUrl?: string; fileType?: string }[]>([
     { date: "2026-06-15", exam: "Mathematics Paper 1", time: "09:00 - 11:00", venue: "Hall A" },
     { date: "2026-06-16", exam: "English Home Language", time: "09:00 - 11:30", venue: "Hall B" },
@@ -260,6 +262,30 @@ export default function TeacherPortal() {
       setNewQuestion({ text: "", type: "mcq", options: ["", "", "", ""], correctAnswer: "" });
       setShowQuestionModal(false);
     }
+  };
+
+  const handleBulkAddQuestions = () => {
+    if (bulkQuestions.length === 0 || !currentTestId) return;
+    
+    const validQuestions = bulkQuestions.filter(q => q.text.trim() && q.correctAnswer);
+    
+    if (validQuestions.length === 0) {
+      alert("Please fill in at least one question with text and a correct answer");
+      return;
+    }
+
+    setTestList(testList.map(t => {
+      if (t.id === currentTestId) {
+        return { ...t, questions: [...t.questions, ...validQuestions] };
+      }
+      return t;
+    }));
+
+    localStorage.setItem("testData", JSON.stringify(testList));
+    setBulkQuestions([]);
+    setBulkQuestionCount(10);
+    setShowQuestionModal(false);
+    setCurrentTestId(null);
   };
 
   const handleAddAnnouncement = () => {
@@ -666,50 +692,205 @@ export default function TeacherPortal() {
 
       {showQuestionModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-[#1E293B] rounded-2xl p-6 w-full max-w-lg border border-white/10">
-            <h3 className="text-xl font-semibold text-white mb-6">Add Question</h3>
+          <div className="bg-[#1E293B] rounded-2xl p-6 w-full max-w-2xl border border-white/10 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-semibold text-white">Add Questions to Test</h3>
+              <button onClick={() => setShowQuestionModal(false)} className="text-slate-400 hover:text-white">
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="mb-4 p-4 bg-purple-500/10 rounded-xl border border-purple-500/20">
+              <p className="text-purple-300 text-sm">
+                💡 Tip: Add 30-100 questions for a comprehensive test. You can add questions one by one or in bulk.
+              </p>
+            </div>
+
             <div className="space-y-4">
               <div>
-                <label className="block text-sm text-slate-400 mb-2">Question Type</label>
-                <select value={newQuestion.type} onChange={(e) => setNewQuestion({...newQuestion, type: e.target.value as "mcq" | "truefalse"})} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-500">
-                  <option value="mcq">Multiple Choice (MCQ)</option>
-                  <option value="truefalse">True/False</option>
-                </select>
+                <label className="block text-sm text-slate-400 mb-2">Number of questions to add</label>
+                <div className="flex gap-2 items-center">
+                  <input 
+                    type="number" 
+                    min="1" 
+                    max="100"
+                    value={bulkQuestionCount}
+                    onChange={(e) => setBulkQuestionCount(parseInt(e.target.value) || 1)}
+                    className="w-20 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-500"
+                  />
+                  <button 
+                    onClick={() => {
+                      const count = Math.min(Math.max(bulkQuestionCount, 1), 100);
+                      const newQuestions: Question[] = [];
+                      for (let i = 0; i < count; i++) {
+                        newQuestions.push({
+                          id: Date.now() + i,
+                          text: "",
+                          type: "mcq",
+                          options: ["", "", "", ""],
+                          correctAnswer: ""
+                        });
+                      }
+                      setBulkQuestions(newQuestions);
+                    }}
+                    className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                  >
+                    Create {bulkQuestionCount} Questions
+                  </button>
+                </div>
               </div>
-              <div>
-                <label className="block text-sm text-slate-400 mb-2">Question Text</label>
-                <textarea value={newQuestion.text} onChange={(e) => setNewQuestion({...newQuestion, text: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-500" rows={2} placeholder="Enter your question" />
-              </div>
-              {newQuestion.type === "mcq" && (
-                <div className="space-y-2">
-                  <label className="block text-sm text-slate-400 mb-2">Options</label>
-                  {newQuestion.options.map((opt, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <input type="radio" name="correct" checked={newQuestion.correctAnswer === opt} onChange={() => setNewQuestion({...newQuestion, correctAnswer: opt})} className="w-4 h-4 accent-purple-500" />
-                      <input type="text" value={opt} onChange={(e) => { const newOpts = [...newQuestion.options]; newOpts[i] = e.target.value; setNewQuestion({...newQuestion, options: newOpts}); }} className="flex-1 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white text-sm focus:outline-none focus:border-purple-500" placeholder={`Option ${i+1}`} />
+
+              {bulkQuestions.length > 0 && (
+                <div className="space-y-6 mt-4">
+                  <div className="flex justify-between items-center text-sm text-slate-400">
+                    <span>Questions: {bulkQuestions.length}</span>
+                    <button 
+                      onClick={() => {
+                        setBulkQuestions([...bulkQuestions, {
+                          id: Date.now(),
+                          text: "",
+                          type: "mcq",
+                          options: ["", "", "", ""],
+                          correctAnswer: ""
+                        }]);
+                      }}
+                      className="text-purple-400 hover:text-purple-300"
+                    >
+                      + Add Another Question
+                    </button>
+                  </div>
+
+                  {bulkQuestions.map((q, idx) => (
+                    <div key={q.id} className="p-4 bg-white/5 rounded-xl border border-white/10">
+                      <div className="flex justify-between items-start mb-3">
+                        <span className="text-purple-400 font-medium">Question {idx + 1}</span>
+                        <button 
+                          onClick={() => setBulkQuestions(bulkQuestions.filter((_, i) => i !== idx))}
+                          className="text-red-400 hover:text-red-300 text-sm"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-xs text-slate-500 mb-1">Question Type</label>
+                          <select 
+                            value={q.type}
+                            onChange={(e) => {
+                              const updated = [...bulkQuestions];
+                              updated[idx] = { ...q, type: e.target.value as "mcq" | "truefalse", correctAnswer: "" };
+                              setBulkQuestions(updated);
+                            }}
+                            className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white text-sm"
+                          >
+                            <option value="mcq">Multiple Choice (MCQ)</option>
+                            <option value="truefalse">True/False</option>
+                          </select>
+                        </div>
+                        
+                        <div>
+                          <label className="block text-xs text-slate-500 mb-1">Question Text</label>
+                          <textarea 
+                            value={q.text}
+                            onChange={(e) => {
+                              const updated = [...bulkQuestions];
+                              updated[idx] = { ...q, text: e.target.value };
+                              setBulkQuestions(updated);
+                            }}
+                            className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white text-sm"
+                            rows={2}
+                            placeholder="Enter your question"
+                          />
+                        </div>
+
+                        {q.type === "mcq" && q.options && (
+                          <div className="space-y-2">
+                            <label className="block text-xs text-slate-500 mb-1">Options (select the correct answer)</label>
+                            {q.options.map((opt, optIdx) => (
+                              <div key={optIdx} className="flex items-center gap-2">
+                                <input 
+                                  type="radio" 
+                                  name={`correct-${q.id}`}
+                                  checked={q.correctAnswer === opt}
+                                  onChange={() => {
+                                    const updated = [...bulkQuestions];
+                                    updated[idx] = { ...q, correctAnswer: opt };
+                                    setBulkQuestions(updated);
+                                  }}
+                                  className="w-4 h-4 accent-purple-500"
+                                />
+                                <input 
+                                  type="text" 
+                                  value={opt}
+                                  onChange={(e) => {
+                                    const updated = [...bulkQuestions];
+                                    const newOpts = [...(q.options || [])];
+                                    newOpts[optIdx] = e.target.value;
+                                    updated[idx] = { ...q, options: newOpts };
+                                    setBulkQuestions(updated);
+                                  }}
+                                  className="flex-1 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white text-sm"
+                                  placeholder={`Option ${optIdx + 1}`}
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {q.type === "truefalse" && (
+                          <div>
+                            <label className="block text-xs text-slate-500 mb-1">Correct Answer</label>
+                            <div className="flex gap-4">
+                              <label className="flex items-center gap-2 text-white">
+                                <input 
+                                  type="radio" 
+                                  name={`tf-${q.id}`}
+                                  checked={q.correctAnswer === "True"}
+                                  onChange={() => {
+                                    const updated = [...bulkQuestions];
+                                    updated[idx] = { ...q, correctAnswer: "True" };
+                                    setBulkQuestions(updated);
+                                  }}
+                                  className="w-4 h-4 accent-purple-500"
+                                />
+                                True
+                              </label>
+                              <label className="flex items-center gap-2 text-white">
+                                <input 
+                                  type="radio" 
+                                  name={`tf-${q.id}`}
+                                  checked={q.correctAnswer === "False"}
+                                  onChange={() => {
+                                    const updated = [...bulkQuestions];
+                                    updated[idx] = { ...q, correctAnswer: "False" };
+                                    setBulkQuestions(updated);
+                                  }}
+                                  className="w-4 h-4 accent-purple-500"
+                                />
+                                False
+                              </label>
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
               )}
-              {newQuestion.type === "truefalse" && (
-                <div>
-                  <label className="block text-sm text-slate-400 mb-2">Correct Answer</label>
-                  <div className="flex gap-4">
-                    <label className="flex items-center gap-2 text-white">
-                      <input type="radio" name="tf" checked={newQuestion.correctAnswer === "True"} onChange={() => setNewQuestion({...newQuestion, correctAnswer: "True"})} className="w-4 h-4 accent-purple-500" />
-                      True
-                    </label>
-                    <label className="flex items-center gap-2 text-white">
-                      <input type="radio" name="tf" checked={newQuestion.correctAnswer === "False"} onChange={() => setNewQuestion({...newQuestion, correctAnswer: "False"})} className="w-4 h-4 accent-purple-500" />
-                      False
-                    </label>
-                  </div>
-                </div>
-              )}
             </div>
+
             <div className="flex gap-3 mt-6">
-              <button onClick={() => setShowQuestionModal(false)} className="flex-1 px-4 py-3 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors">Cancel</button>
-              <button onClick={handleAddQuestion} className="flex-1 px-4 py-3 rounded-xl bg-purple-600 text-white hover:bg-purple-700 transition-colors">Add Question</button>
+              <button onClick={() => { setShowQuestionModal(false); setBulkQuestions([]); }} className="flex-1 px-4 py-3 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors">Cancel</button>
+              <button 
+                onClick={handleBulkAddQuestions} 
+                disabled={bulkQuestions.length === 0}
+                className="flex-1 px-4 py-3 rounded-xl bg-purple-600 text-white hover:bg-purple-700 transition-colors disabled:opacity-50"
+              >
+                Add {bulkQuestions.length} Question{bulkQuestions.length !== 1 ? "s" : ""}
+              </button>
             </div>
           </div>
         </div>

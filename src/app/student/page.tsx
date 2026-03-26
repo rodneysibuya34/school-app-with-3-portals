@@ -591,6 +591,13 @@ export default function StudentPortal() {
     setTestScore({ correct, total: activeTest.questions.length });
     setTestSubmitted(true);
     if (timerRef.current) clearTimeout(timerRef.current);
+    
+    if (loggedInStudent) {
+      const storedResults = localStorage.getItem(`testResults_${loggedInStudent.id}`);
+      const testResults: Record<number, { correct: number; total: number }> = storedResults ? JSON.parse(storedResults) : {};
+      testResults[activeTest.id] = { correct, total: activeTest.questions.length };
+      localStorage.setItem(`testResults_${loggedInStudent.id}`, JSON.stringify(testResults));
+    }
   };
 
   const handleDownload = (fileUrl: string, fileName: string, fileType: string = 'application/pdf') => {
@@ -788,25 +795,117 @@ export default function StudentPortal() {
     </div>
   );
 
-  const renderProgress = () => (
-    <div>
-      <h1 className="text-3xl font-bold text-white mb-6">My Progress</h1>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
-          <p className="text-3xl font-bold text-white mb-1">{gpa}</p>
-          <p className="text-slate-400 text-sm">Overall GPA</p>
+  const renderProgress = () => {
+    const storedTestResults = localStorage.getItem(`testResults_${loggedInStudent?.id}`);
+    const testResults: Record<number, { correct: number; total: number }> = storedTestResults ? JSON.parse(storedTestResults) : {};
+    
+    const homeworkCompleted = homework.length > 0 ? Math.min(100, Math.round((homework.length / 10) * 100)) : 0;
+    const testsTaken = Object.keys(testResults).length;
+    const avgTestScore = testsTaken > 0 
+      ? Math.round(Object.values(testResults).reduce((acc, r) => acc + (r.correct / r.total * 100), 0) / testsTaken)
+      : 0;
+
+    return (
+      <div>
+        <h1 className="text-3xl font-bold text-white mb-6">My Progress</h1>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
+            <p className="text-3xl font-bold text-white mb-1">{gpa}</p>
+            <p className="text-slate-400 text-sm">Overall GPA</p>
+          </div>
+          <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
+            <p className="text-3xl font-bold text-white mb-1">{courses.length}</p>
+            <p className="text-slate-400 text-sm">Courses</p>
+          </div>
+          <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
+            <p className="text-3xl font-bold text-white mb-1">{homework.length}</p>
+            <p className="text-slate-400 text-sm">Homework</p>
+          </div>
         </div>
-        <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
-          <p className="text-3xl font-bold text-white mb-1">{courses.length}</p>
-          <p className="text-slate-400 text-sm">Courses</p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
+            <h2 className="text-xl font-semibold text-white mb-4">Homework Progress</h2>
+            <div className="space-y-4">
+              <div>
+                <div className="flex justify-between text-sm mb-2">
+                  <span className="text-slate-400">Completion Rate</span>
+                  <span className="text-white font-medium">{homeworkCompleted}%</span>
+                </div>
+                <div className="w-full h-3 bg-white/10 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full transition-all duration-500"
+                    style={{ width: `${homeworkCompleted}%` }}
+                  />
+                </div>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-400">Total Homework</span>
+                <span className="text-white">{homework.length} assignments</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
+            <h2 className="text-xl font-semibold text-white mb-4">Test Progress</h2>
+            <div className="space-y-4">
+              <div>
+                <div className="flex justify-between text-sm mb-2">
+                  <span className="text-slate-400">Average Score</span>
+                  <span className="text-white font-medium">{avgTestScore}%</span>
+                </div>
+                <div className="w-full h-3 bg-white/10 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full transition-all duration-500"
+                    style={{ width: `${avgTestScore}%` }}
+                  />
+                </div>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-400">Tests Taken</span>
+                <span className="text-white">{testsTaken} tests</span>
+              </div>
+              {testsTaken > 0 && (
+                <div className="mt-4 pt-4 border-t border-white/10">
+                  <p className="text-slate-400 text-sm mb-2">Recent Test Results:</p>
+                  <div className="space-y-2">
+                    {Object.entries(testResults).slice(-3).map(([testId, result]) => {
+                      const test = tests.find(t => t.id === parseInt(testId));
+                      return (
+                        <div key={testId} className="flex justify-between text-sm">
+                          <span className="text-white">{test?.title || `Test #${testId}`}</span>
+                          <span className="text-green-400">{Math.round(result.correct / result.total * 100)}%</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
+
         <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
-          <p className="text-3xl font-bold text-white mb-1">{homework.length}</p>
-          <p className="text-slate-400 text-sm">Homework</p>
+          <h2 className="text-xl font-semibold text-white mb-4">Subject Performance</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {courses.map((course) => {
+              const gradeValue = gpaValues[course.grade] || "0";
+              const percentage = parseFloat(gradeValue) / 4 * 100;
+              return (
+                <div key={course.name} className="p-4 rounded-xl bg-white/5">
+                  <p className="text-white font-medium text-sm mb-2">{course.name}</p>
+                  <div className="flex justify-between items-center">
+                    <span className="text-green-400 font-bold">{course.grade}</span>
+                    <span className="text-slate-500 text-xs">{percentage}%</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const grade10Subjects = [
     "Mathematics", "Mathematical Literacy", "Physical Sciences", "Life Sciences",
