@@ -47,6 +47,9 @@ interface School {
   isActive: boolean;
   isBlocked: boolean;
   paymentStatus: "active" | "expired" | "expiring_soon" | "trial";
+  schoolLogo?: string;
+  contact?: string;
+  address?: string;
 }
 
 interface Teacher {
@@ -82,10 +85,10 @@ interface Subscription {
 }
 
 const initialSchools: School[] = [
-  { id: 1, name: "Oakridge Preparatory Academy", location: "Boston, MA", students: 892, teachers: 48, status: "Active", type: "High School", adminUsername: "oakridge_admin", adminPassword: "Oakridge2026!Admin", year: 2026, expiryDate: "2027-01-01", isActive: true, isBlocked: false, paymentStatus: "active" },
-  { id: 2, name: "Westfield Christian School", location: "Chicago, IL", students: 456, teachers: 28, status: "Active", type: "Primary", adminUsername: "westfield_admin", adminPassword: "Westfield2026!Admin", year: 2026, expiryDate: "2026-03-15", isActive: true, isBlocked: false, paymentStatus: "active" },
-  { id: 3, name: "Riverside Elementary", location: "Miami, FL", students: 324, teachers: 22, status: "Active", type: "Primary", adminUsername: "riverside_admin", adminPassword: "Riverside2026!Admin", year: 2026, expiryDate: "2026-06-01", isActive: true, isBlocked: false, paymentStatus: "active" },
-  { id: 4, name: "Highland Academy", location: "Seattle, WA", students: 678, teachers: 35, status: "Trial", type: "High School", adminUsername: "highland_admin", adminPassword: "Highland2026!Admin", year: 2026, expiryDate: "2026-03-31", isActive: true, isBlocked: false, paymentStatus: "trial" },
+  { id: 1, name: "Oakridge Preparatory Academy", location: "Boston, MA", students: 892, teachers: 48, status: "Active", type: "High School", adminUsername: "oakridge_admin", adminPassword: "Oakridge2026!Admin", year: 2026, expiryDate: "2027-01-01", isActive: true, isBlocked: false, paymentStatus: "active", contact: "info@oakridge.edu", address: "123 Oak Lane, Boston, MA" },
+  { id: 2, name: "Westfield Christian School", location: "Chicago, IL", students: 456, teachers: 28, status: "Active", type: "Primary", adminUsername: "westfield_admin", adminPassword: "Westfield2026!Admin", year: 2026, expiryDate: "2026-03-15", isActive: true, isBlocked: false, paymentStatus: "active", contact: "admin@westfield.org", address: "456 Church St, Chicago, IL" },
+  { id: 3, name: "Riverside Elementary", location: "Miami, FL", students: 324, teachers: 22, status: "Active", type: "Primary", adminUsername: "riverside_admin", adminPassword: "Riverside2026!Admin", year: 2026, expiryDate: "2026-06-01", isActive: true, isBlocked: false, paymentStatus: "active", contact: "riverside@school.edu", address: "789 River Rd, Miami, FL" },
+  { id: 4, name: "Highland Academy", location: "Seattle, WA", students: 678, teachers: 35, status: "Trial", type: "High School", adminUsername: "highland_admin", adminPassword: "Highland2026!Admin", year: 2026, expiryDate: "2026-03-31", isActive: true, isBlocked: false, paymentStatus: "trial", contact: "contact@highland.edu", address: "321 Highland Ave, Seattle, WA" },
 ];
 
 const initialTeachers: Teacher[] = [
@@ -134,7 +137,7 @@ export default function AdminPortal() {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>(() => initialSubscriptions);
   const [showModal, setShowModal] = useState<ModalType>(null);
   const [formData, setFormData] = useState({
-    name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '',
+    name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', schoolLogo: '', schoolContact: '', schoolAddress: '',
     teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '',
     studentName: '', studentEmail: '', studentGrade: '', studentSchool: '',
     subSchool: '', subType: 'Primary', subStartDate: ''
@@ -233,7 +236,9 @@ export default function AdminPortal() {
         expiryDate,
         isActive: true,
         isBlocked: false,
-        paymentStatus: "trial"
+        paymentStatus: "trial",
+        contact: formData.schoolContact,
+        address: formData.schoolAddress
       };
       
       const updatedSchools = [...schools, newSchool];
@@ -242,7 +247,7 @@ export default function AdminPortal() {
       
       alert(`School created!\n\nUsername: ${schoolUsername}\nPassword: ${schoolPassword}\nExpiry: ${expiryDate}`);
       setShowModal(null);
-      setFormData({ name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', subSchool: '', subType: 'Primary', subStartDate: '' });
+      setFormData({ name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', schoolLogo: '', schoolContact: '', schoolAddress: '', teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', subSchool: '', subType: 'Primary', subStartDate: '' });
     } else if (type === 'teacher') {
       if (!formData.teacherName || !formData.teacherSchool || !formData.teacherSubject) {
         alert("Please fill in Name, School, and Subject");
@@ -272,7 +277,7 @@ export default function AdminPortal() {
       
       alert(`Teacher created!\n\nUsername: ${teacherUsername}\nPassword: ${teacherPassword}`);
       setShowModal(null);
-      setFormData({ name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', subSchool: '', subType: 'Primary', subStartDate: '' });
+      setFormData({ name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', schoolLogo: '', schoolContact: '', schoolAddress: '', teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', subSchool: '', subType: 'Primary', subStartDate: '' });
     } else if (type === 'student') {
       if (!formData.studentName || !formData.studentGrade || !formData.studentSchool) {
         alert("Please fill in Name, Grade, and School");
@@ -302,7 +307,7 @@ export default function AdminPortal() {
       
       alert(`Student created!\n\nUsername: ${studentUsername}\nPassword: ${studentPassword}`);
       setShowModal(null);
-      setFormData({ name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', subSchool: '', subType: 'Primary', subStartDate: '' });
+      setFormData({ name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', schoolLogo: '', schoolContact: '', schoolAddress: '', teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', subSchool: '', subType: 'Primary', subStartDate: '' });
     }
   };
 
@@ -485,6 +490,8 @@ export default function AdminPortal() {
                       <div>
                         <h3 className="text-xl font-semibold text-white">{school.name}</h3>
                         <p className="text-slate-400 text-sm">{school.location}</p>
+                        {school.contact && <p className="text-slate-400 text-xs mt-1">{school.contact}</p>}
+                        {school.address && <p className="text-slate-400 text-xs">{school.address}</p>}
                       </div>
                       <span className={`px-3 py-1 rounded-full text-xs ${getStatusColor(school.status)}`}>{school.status}</span>
                     </div>
@@ -650,6 +657,8 @@ export default function AdminPortal() {
                 <>
                   <input type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="School Name" className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white" />
                   <input type="text" value={formData.location} onChange={(e) => setFormData({...formData, location: e.target.value})} placeholder="Location" className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white" />
+                  <input type="text" value={formData.schoolContact} onChange={(e) => setFormData({...formData, schoolContact: e.target.value})} placeholder="Contact (phone/email)" className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white" />
+                  <input type="text" value={formData.schoolAddress} onChange={(e) => setFormData({...formData, schoolAddress: e.target.value})} placeholder="School Address" className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white" />
                   <select value={formData.type} onChange={(e) => setFormData({...formData, type: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white">
                     <option value="Primary">Primary School</option>
                     <option value="High School">High School</option>
