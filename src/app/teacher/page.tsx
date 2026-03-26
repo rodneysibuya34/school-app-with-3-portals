@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import AIAssistant from "@/components/AIAssistant";
 
 interface TeacherData {
   id: number;
@@ -93,6 +94,10 @@ export default function TeacherPortal() {
   const router = useRouter();
   const [loggedInTeacher, setLoggedInTeacher] = useState<typeof teachersData[0] | null>(null);
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [strugglingStudents, setStrugglingStudents] = useState<{ name: string; topic: string; date: string }[]>(() => {
+    const stored = localStorage.getItem("strugglingStudents");
+    return stored ? JSON.parse(stored) : [];
+  });
   const [homeworkList, setHomeworkList] = useState<Homework[]>(() => {
     const stored = localStorage.getItem("homeworkData");
     return stored ? JSON.parse(stored) : [
@@ -159,6 +164,13 @@ export default function TeacherPortal() {
   const handleLogout = () => {
     localStorage.removeItem("loggedInTeacher");
     router.push("/");
+  };
+
+  const handleStrugglingAlert = (studentName: string, topic: string) => {
+    const newAlert = { name: studentName, topic, date: new Date().toISOString().split('T')[0] };
+    const updated = [...strugglingStudents, newAlert];
+    setStrugglingStudents(updated);
+    localStorage.setItem("strugglingStudents", JSON.stringify(updated));
   };
 
   const handleDownload = (fileUrl: string, fileName: string, fileType: string) => {
@@ -385,6 +397,28 @@ export default function TeacherPortal() {
             ))}
           </div>
         </div>
+
+        {strugglingStudents.length > 0 && (
+          <div className="p-6 rounded-2xl bg-red-500/10 backdrop-blur-xl border border-red-500/20">
+            <h2 className="text-xl font-semibold text-white mb-4 font-['Outfit'] flex items-center gap-2">
+              <svg className="w-5 h-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              Students Needing Support
+            </h2>
+            <div className="space-y-2">
+              {strugglingStudents.map((student, idx) => (
+                <div key={idx} className="p-3 rounded-xl bg-red-500/10 flex justify-between items-center">
+                  <div>
+                    <p className="text-white font-medium">{student.name}</p>
+                    <p className="text-slate-400 text-sm">Topic: {student.topic}</p>
+                  </div>
+                  <span className="text-red-400 text-xs">{student.date}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </>
     );
@@ -1016,6 +1050,7 @@ export default function TeacherPortal() {
     { label: "My Subject", value: loggedInTeacher.subject, icon: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253", color: "#3B82F6" },
     { label: "School Teachers", value: schoolTeachers.length.toString(), icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z", color: "#10B981" },
     { label: "School", value: loggedInTeacher.school.split(" ")[0], icon: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4", color: "#F59E0B" },
+    { label: "Need Support", value: strugglingStudents.length.toString(), icon: "M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z", color: "#EF4444" },
   ];
 
   const getInitials = (name: string) => {
@@ -1083,6 +1118,8 @@ export default function TeacherPortal() {
         {activeTab === "weekly timetable" && renderWeeklyTimetable()}
         {activeTab === "announcements" && renderAnnouncements()}
       </main>
+
+      <AIAssistant mode="teacher" onStrugglingAlert={handleStrugglingAlert} />
     </div>
   );
 }

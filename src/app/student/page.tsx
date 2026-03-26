@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import AIAssistant from "@/components/AIAssistant";
 
 const studentsData = [
   { id: 1, name: "Alex Thompson", email: "a.thompson@oakridge.edu", grade: 11, school: "Oakridge Preparatory Academy", username: "alex.t", password: "Alex@123", schoolYear: 2026, subjects: ["Mathematics", "Physical Sciences", "English Home Language", "Life Sciences", "Geography"] },
@@ -916,6 +917,8 @@ export default function StudentPortal() {
         {activeTab === "study materials" && renderStudyMaterials()}
         {activeTab === "my progress" && renderProgress()}
       </main>
+
+      <AIAssistant mode="student" studentName={loggedInStudent?.name} grade={loggedInStudent?.grade} />
     </div>
   );
 }
