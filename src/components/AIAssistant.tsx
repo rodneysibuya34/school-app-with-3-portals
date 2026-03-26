@@ -83,7 +83,23 @@ export default function AIAssistant({ mode, studentName, grade, onStrugglingAler
   };
 
   const handleAlertSubmit = () => {
-    if (alertStudent && alertTopic && onStrugglingAlert) {
+    if (!alertStudent.trim()) {
+      setMessages(prev => [...prev, { 
+        id: Date.now(), 
+        role: "assistant", 
+        content: `Please enter a student name to flag them for support.` 
+      }]);
+      return;
+    }
+    if (!alertTopic) {
+      setMessages(prev => [...prev, { 
+        id: Date.now(), 
+        role: "assistant", 
+        content: `Please select a topic area to flag this student.` 
+      }]);
+      return;
+    }
+    if (onStrugglingAlert) {
       onStrugglingAlert(alertStudent, alertTopic);
       setShowAlertForm(false);
       setAlertStudent("");
@@ -93,6 +109,15 @@ export default function AIAssistant({ mode, studentName, grade, onStrugglingAler
         role: "assistant", 
         content: `I've noted that ${alertStudent} may need support with ${alertTopic}. This will be flagged for your attention.` 
       }]);
+    } else {
+      setMessages(prev => [...prev, { 
+        id: Date.now(), 
+        role: "assistant", 
+        content: `Student ${alertStudent} flagged for ${alertTopic}. Your teacher will be notified!` 
+      }]);
+      setShowAlertForm(false);
+      setAlertStudent("");
+      setAlertTopic("");
     }
   };
 
