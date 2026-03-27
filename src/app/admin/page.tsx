@@ -513,7 +513,7 @@ export default function AdminPortal() {
                         <span className="text-slate-400">Expiry Date:</span>
                         <input 
                           type="date" 
-                          value={school.expiryDate}
+                          value={school.expiryDate || ''}
                           onChange={(e) => updateExpiryDate(school.id, e.target.value)}
                           className="bg-transparent text-white text-sm border border-white/10 rounded px-2"
                         />
