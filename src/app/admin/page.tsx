@@ -336,12 +336,12 @@ export default function AdminPortal() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center">
+      <div className="min-h-screen bg-[#1C1917] flex items-center justify-center">
           <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-200/30 rounded-full blur-3xl" />
           <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-200/30 rounded-full blur-3xl" />
         </div>
-        <div className="relative z-10 p-8 rounded-2xl bg-white shadow-2xl border border-slate-200 w-full max-w-md">
+        <div className="relative z-10 p-8 rounded-2xl bg-[#1E293B] shadow-2xl border border-slate-200 w-full max-w-md">
           <div className="text-center mb-8">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center mx-auto mb-4">
               <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -371,8 +371,8 @@ export default function AdminPortal() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
-      <aside className="w-64 bg-white border-r border-white/10 fixed h-full">
+    <div className="min-h-screen bg-[#1C1917]">
+      <aside className="w-64 bg-[#1E293B] border-r border-white/10 fixed h-full">
         <div className="p-6 border-b border-white/10">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center">
@@ -386,7 +386,7 @@ export default function AdminPortal() {
         <nav className="p-4 space-y-1">
           {navItems.map((item) => (
             <button key={item.label} onClick={() => setActiveTab(item.label.toLowerCase())}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${activeTab === item.label.toLowerCase() ? "bg-cyan-500/20 text-cyan-400 border-l-2 border-cyan-400" : "text-slate-400 hover:text-white hover:bg-white/5"}`}>
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${activeTab === item.label.toLowerCase() ? "bg-cyan-500/20 text-cyan-400 border-l-2 border-cyan-400" : "text-slate-400 hover:text-white hover:bg-[#1E293B]/5"}`}>
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={item.icon} />
               </svg>
@@ -409,24 +409,24 @@ export default function AdminPortal() {
           <div>
             <h1 className="text-3xl font-bold text-white mb-6">Dashboard</h1>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-              <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+              <div className="p-6 rounded-2xl bg-[#1E293B]/5 border border-white/10">
                 <p className="text-3xl font-bold text-white">{schools.length}</p>
                 <p className="text-slate-400 text-sm">Schools</p>
               </div>
-              <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+              <div className="p-6 rounded-2xl bg-[#1E293B]/5 border border-white/10">
                 <p className="text-3xl font-bold text-white">{teachers.length}</p>
                 <p className="text-slate-400 text-sm">Teachers</p>
               </div>
-              <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+              <div className="p-6 rounded-2xl bg-[#1E293B]/5 border border-white/10">
                 <p className="text-3xl font-bold text-white">{students.length}</p>
                 <p className="text-slate-400 text-sm">Students</p>
               </div>
-              <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+              <div className="p-6 rounded-2xl bg-[#1E293B]/5 border border-white/10">
                 <p className="text-3xl font-bold text-white">R{(schools.reduce((acc, s) => acc + (s.status === "Active" ? (s.type === "High School" ? 2500 : 1500) : 0), 0)).toLocaleString()}</p>
                 <p className="text-slate-400 text-sm">Monthly Revenue</p>
               </div>
             </div>
-            <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+            <div className="p-6 rounded-2xl bg-[#1E293B]/5 border border-white/10">
               <h2 className="text-xl font-semibold text-white mb-4">Schools Overview</h2>
               <div className="overflow-x-auto">
                 <table className="w-full">
@@ -488,7 +488,7 @@ export default function AdminPortal() {
               {schools.map(school => {
                 const paymentStatus = getPaymentStatus(school);
                 return (
-                  <div key={school.id} className="p-6 rounded-2xl bg-white/5 border border-white/10">
+                  <div key={school.id} className="p-6 rounded-2xl bg-[#1E293B]/5 border border-white/10">
                     <div className="flex justify-between items-start mb-4">
                       <div>
                         <h3 className="text-xl font-semibold text-white">{school.name}</h3>
@@ -499,11 +499,11 @@ export default function AdminPortal() {
                       <span className={`px-3 py-1 rounded-full text-xs ${getStatusColor(school.status)}`}>{school.status}</span>
                     </div>
                     <div className="grid grid-cols-2 gap-4 mb-4">
-                      <div className="p-3 rounded-xl bg-white/5">
+                      <div className="p-3 rounded-xl bg-[#1E293B]/5">
                         <p className="text-slate-400 text-xs">Students</p>
                         <p className="text-white font-bold">{school.students}</p>
                       </div>
-                      <div className="p-3 rounded-xl bg-white/5">
+                      <div className="p-3 rounded-xl bg-[#1E293B]/5">
                         <p className="text-slate-400 text-xs">Teachers</p>
                         <p className="text-white font-bold">{school.teachers}</p>
                       </div>
@@ -547,7 +547,7 @@ export default function AdminPortal() {
               <h1 className="text-3xl font-bold text-white">Teachers</h1>
               <button onClick={() => setShowModal('teacher')} className="px-4 py-2 rounded-xl bg-cyan-600 text-white hover:bg-cyan-700">Add Teacher</button>
             </div>
-            <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+            <div className="p-6 rounded-2xl bg-[#1E293B]/5 border border-white/10">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-white/10">
@@ -582,7 +582,7 @@ export default function AdminPortal() {
               <h1 className="text-3xl font-bold text-white">Students</h1>
               <button onClick={() => setShowModal('student')} className="px-4 py-2 rounded-xl bg-cyan-600 text-white hover:bg-cyan-700">Add Student</button>
             </div>
-            <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+            <div className="p-6 rounded-2xl bg-[#1E293B]/5 border border-white/10">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-white/10">
@@ -617,7 +617,7 @@ export default function AdminPortal() {
               <h1 className="text-3xl font-bold text-white">Subscriptions</h1>
               <button onClick={() => setShowModal('subscription')} className="px-4 py-2 rounded-xl bg-cyan-600 text-white hover:bg-cyan-700">Add Subscription</button>
             </div>
-            <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+            <div className="p-6 rounded-2xl bg-[#1E293B]/5 border border-white/10">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-white/10">
@@ -651,41 +651,41 @@ export default function AdminPortal() {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md border border-white/10">
+          <div className="bg-[#1E293B] rounded-2xl p-6 w-full max-w-md border border-white/10">
             <h3 className="text-xl font-semibold text-white mb-6">
               Add {showModal === 'school' ? 'School' : showModal === 'teacher' ? 'Teacher' : showModal === 'student' ? 'Student' : 'Subscription'}
             </h3>
             <div className="space-y-4">
               {showModal === 'school' && (
                 <>
-                  <input type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="School Name" className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white" />
-                  <input type="text" value={formData.location} onChange={(e) => setFormData({...formData, location: e.target.value})} placeholder="Location" className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white" />
-                  <input type="text" value={formData.schoolContact} onChange={(e) => setFormData({...formData, schoolContact: e.target.value})} placeholder="Contact (phone/email)" className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white" />
-                  <input type="text" value={formData.schoolAddress} onChange={(e) => setFormData({...formData, schoolAddress: e.target.value})} placeholder="School Address" className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white" />
+                  <input type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="School Name" className="w-full px-4 py-3 rounded-xl bg-[#1E293B]/5 border border-white/10 text-white" />
+                  <input type="text" value={formData.location} onChange={(e) => setFormData({...formData, location: e.target.value})} placeholder="Location" className="w-full px-4 py-3 rounded-xl bg-[#1E293B]/5 border border-white/10 text-white" />
+                  <input type="text" value={formData.schoolContact} onChange={(e) => setFormData({...formData, schoolContact: e.target.value})} placeholder="Contact (phone/email)" className="w-full px-4 py-3 rounded-xl bg-[#1E293B]/5 border border-white/10 text-white" />
+                  <input type="text" value={formData.schoolAddress} onChange={(e) => setFormData({...formData, schoolAddress: e.target.value})} placeholder="School Address" className="w-full px-4 py-3 rounded-xl bg-[#1E293B]/5 border border-white/10 text-white" />
                   <select value={formData.type} onChange={(e) => setFormData({...formData, type: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white">
                     <option value="Primary">Primary School</option>
                     <option value="High School">High School</option>
                   </select>
-                  <input type="number" value={formData.schoolYear} onChange={(e) => setFormData({...formData, schoolYear: parseInt(e.target.value)})} placeholder="Year" className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white" />
-                  <input type="date" value={formData.schoolExpiry} onChange={(e) => setFormData({...formData, schoolExpiry: e.target.value})} placeholder="Expiry Date" className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white" />
+                  <input type="number" value={formData.schoolYear} onChange={(e) => setFormData({...formData, schoolYear: parseInt(e.target.value)})} placeholder="Year" className="w-full px-4 py-3 rounded-xl bg-[#1E293B]/5 border border-white/10 text-white" />
+                  <input type="date" value={formData.schoolExpiry} onChange={(e) => setFormData({...formData, schoolExpiry: e.target.value})} placeholder="Expiry Date" className="w-full px-4 py-3 rounded-xl bg-[#1E293B]/5 border border-white/10 text-white" />
                 </>
               )}
               {showModal === 'teacher' && (
                 <>
-                  <input type="text" value={formData.teacherName} onChange={(e) => setFormData({...formData, teacherName: e.target.value})} placeholder="Teacher Name" className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white" />
-                  <input type="email" value={formData.teacherEmail} onChange={(e) => setFormData({...formData, teacherEmail: e.target.value})} placeholder="Email (optional)" className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white" />
+                  <input type="text" value={formData.teacherName} onChange={(e) => setFormData({...formData, teacherName: e.target.value})} placeholder="Teacher Name" className="w-full px-4 py-3 rounded-xl bg-[#1E293B]/5 border border-white/10 text-white" />
+                  <input type="email" value={formData.teacherEmail} onChange={(e) => setFormData({...formData, teacherEmail: e.target.value})} placeholder="Email (optional)" className="w-full px-4 py-3 rounded-xl bg-[#1E293B]/5 border border-white/10 text-white" />
                   <select value={formData.teacherSchool} onChange={(e) => setFormData({...formData, teacherSchool: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white">
                     <option value="">Select School</option>
                     {schools.map(s => <option key={s.id} value={s.name}>{s.name}</option>)}
                   </select>
-                  <input type="text" value={formData.teacherSubject} onChange={(e) => setFormData({...formData, teacherSubject: e.target.value})} placeholder="Subject" className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white" />
+                  <input type="text" value={formData.teacherSubject} onChange={(e) => setFormData({...formData, teacherSubject: e.target.value})} placeholder="Subject" className="w-full px-4 py-3 rounded-xl bg-[#1E293B]/5 border border-white/10 text-white" />
                 </>
               )}
               {showModal === 'student' && (
                 <>
-                  <input type="text" value={formData.studentName} onChange={(e) => setFormData({...formData, studentName: e.target.value})} placeholder="Student Name" className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white" />
-                  <input type="email" value={formData.studentEmail} onChange={(e) => setFormData({...formData, studentEmail: e.target.value})} placeholder="Email (optional)" className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white" />
-                  <input type="number" value={formData.studentGrade} onChange={(e) => setFormData({...formData, studentGrade: e.target.value})} placeholder="Grade (4-12)" className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white" />
+                  <input type="text" value={formData.studentName} onChange={(e) => setFormData({...formData, studentName: e.target.value})} placeholder="Student Name" className="w-full px-4 py-3 rounded-xl bg-[#1E293B]/5 border border-white/10 text-white" />
+                  <input type="email" value={formData.studentEmail} onChange={(e) => setFormData({...formData, studentEmail: e.target.value})} placeholder="Email (optional)" className="w-full px-4 py-3 rounded-xl bg-[#1E293B]/5 border border-white/10 text-white" />
+                  <input type="number" value={formData.studentGrade} onChange={(e) => setFormData({...formData, studentGrade: e.target.value})} placeholder="Grade (4-12)" className="w-full px-4 py-3 rounded-xl bg-[#1E293B]/5 border border-white/10 text-white" />
                   <select value={formData.studentSchool} onChange={(e) => setFormData({...formData, studentSchool: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white">
                     <option value="">Select School</option>
                     {schools.map(s => <option key={s.id} value={s.name}>{s.name}</option>)}
@@ -694,7 +694,7 @@ export default function AdminPortal() {
               )}
             </div>
             <div className="flex gap-3 mt-6">
-              <button onClick={() => setShowModal(null)} className="flex-1 px-4 py-3 rounded-xl bg-white/10 text-white hover:bg-white/20">Cancel</button>
+              <button onClick={() => setShowModal(null)} className="flex-1 px-4 py-3 rounded-xl bg-[#1E293B]/10 text-white hover:bg-[#1E293B]/20">Cancel</button>
               <button onClick={() => handleSubmit(showModal)} className="flex-1 px-4 py-3 rounded-xl bg-cyan-600 text-white hover:bg-cyan-700">Create</button>
             </div>
           </div>
