@@ -46,7 +46,8 @@ interface Test {
   subject: string;
   questions: { id: number; text: string; type: string; options?: string[]; correctAnswer: string }[];
   published: boolean;
-  timeLimit: number;
+  duration?: number;
+  timeLimit?: number;
 }
 
 interface StudyMaterial {
@@ -600,7 +601,7 @@ export default function StudentPortal() {
     setAnswers({});
     setTestSubmitted(false);
     setTestScore(null);
-    setTimeLeft(test.timeLimit * 60);
+    setTimeLeft((test.duration || test.timeLimit || 60) * 60);
   };
 
   const handleSubmitTest = () => {

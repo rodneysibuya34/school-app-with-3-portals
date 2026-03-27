@@ -694,7 +694,7 @@ export default function AdminPortal() {
               )}
             </div>
             <div className="flex gap-3 mt-6">
-              <button onClick={() => setShowModal(null)} className="flex-1 px-4 py-3 rounded-xl bg-stone-800 text-white hover:bg-white/20">Cancel</button>
+              <button onClick={() => setShowModal(null)} className="flex-1 px-4 py-3 rounded-xl bg-white/10 text-white hover:bg-white/20">Cancel</button>
               <button onClick={() => handleSubmit(showModal)} className="flex-1 px-4 py-3 rounded-xl bg-cyan-600 text-white hover:bg-cyan-700">Create</button>
             </div>
           </div>

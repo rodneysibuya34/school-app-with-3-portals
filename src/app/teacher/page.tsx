@@ -62,6 +62,7 @@ interface Test {
   subject: string;
   questions: Question[];
   published: boolean;
+  duration?: number;
 }
 
 interface Question {
@@ -127,7 +128,7 @@ export default function TeacherPortal() {
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [newHomework, setNewHomework] = useState({ title: "", description: "", dueDate: "", grade: "", subject: "" });
   const [homeworkFile, setHomeworkFile] = useState<{ name: string; data: string; type: string } | null>(null);
-  const [newTest, setNewTest] = useState({ title: "", description: "", dueDate: "", grade: "", subject: "" });
+  const [newTest, setNewTest] = useState({ title: "", description: "", dueDate: "", grade: "", subject: "", duration: "60" });
   const [newAnnouncement, setNewAnnouncement] = useState<{ title: string; content: string; priority: "normal" | "important" | "urgent" }>({ title: "", content: "", priority: "normal" });
   const [testQuestions, setTestQuestions] = useState<Question[]>([]);
   const [showQuestionModal, setShowQuestionModal] = useState(false);
@@ -182,6 +183,11 @@ export default function TeacherPortal() {
       }
     }
   }, [router]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    localStorage.setItem("testData", JSON.stringify(testList));
+  }, [testList]);
 
   const handleLogout = () => {
     localStorage.removeItem("loggedInTeacher");
@@ -260,11 +266,12 @@ export default function TeacherPortal() {
           grade: parseInt(newTest.grade),
           subject: newTest.subject,
           questions: [],
-          published: false
+          published: false,
+          duration: parseInt(newTest.duration) || 60
         };
         setTestList([...testList, test]);
         localStorage.setItem("testData", JSON.stringify([...testList, test]));
-        setNewTest({ title: "", description: "", dueDate: "", grade: "", subject: "" });
+        setNewTest({ title: "", description: "", dueDate: "", grade: "", subject: "", duration: "60" });
         setShowTestModal(false);
       }
     };
@@ -294,14 +301,15 @@ export default function TeacherPortal() {
       return;
     }
 
-    setTestList(testList.map(t => {
+    const updatedTestList = testList.map(t => {
       if (t.id === currentTestId) {
         return { ...t, questions: [...t.questions, ...validQuestions] };
       }
       return t;
-    }));
-
-    localStorage.setItem("testData", JSON.stringify(testList));
+    });
+    
+    setTestList(updatedTestList);
+    localStorage.setItem("testData", JSON.stringify(updatedTestList));
     setBulkQuestions([]);
     setBulkQuestionCount(10);
     setShowQuestionModal(false);
@@ -700,6 +708,10 @@ export default function TeacherPortal() {
                   <option value="Xitsonga">Xitsonga</option>
                   <option value="Life Skills">Life Skills</option>
                 </select>
+              </div>
+              <div>
+                <label className="block text-sm text-slate-400 mb-2">Duration (minutes)</label>
+                <input type="number" value={newTest.duration} onChange={(e) => setNewTest({...newTest, duration: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white focus:outline-none focus:border-purple-500" placeholder="e.g., 60" min="1" />
               </div>
             </div>
             <div className="flex gap-3 mt-6">
