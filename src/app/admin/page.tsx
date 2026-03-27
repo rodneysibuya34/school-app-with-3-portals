@@ -337,19 +337,19 @@ export default function AdminPortal() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-[#1C1917] flex items-center justify-center">
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
+          <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-200/30 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-200/30 rounded-full blur-3xl" />
         </div>
-        <div className="relative z-10 p-8 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 w-full max-w-md">
+        <div className="relative z-10 p-8 rounded-2xl bg-white shadow-2xl border border-slate-200 w-full max-w-md">
           <div className="text-center mb-8">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center mx-auto mb-4">
               <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
             </div>
-            <h1 className="text-2xl font-bold text-white font-['Outfit']">Geleza Mzansi Admin</h1>
-            <p className="text-slate-400 mt-2">Enter admin password to continue</p>
+            <h1 className="text-2xl font-bold text-slate-800 font-['Outfit']">Geleza Mzansi Admin</h1>
+            <p className="text-slate-500 mt-2">Enter admin password to continue</p>
           </div>
           <div className="space-y-4">
             <input
@@ -358,10 +358,10 @@ export default function AdminPortal() {
               onChange={(e) => setPasswordInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleLogin()}
               placeholder="Admin Password"
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-cyan-500 focus:outline-none"
+              className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 focus:border-cyan-500 focus:outline-none"
             />
-            {authError && <p className="text-red-400 text-sm">{authError}</p>}
-            <button onClick={handleLogin} className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-medium">
+            {authError && <p className="text-red-500 text-sm">{authError}</p>}
+            <button onClick={handleLogin} className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-medium">
               Login
             </button>
           </div>
