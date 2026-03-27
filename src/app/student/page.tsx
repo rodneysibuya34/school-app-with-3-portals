@@ -726,10 +726,51 @@ export default function StudentPortal() {
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-white">{activeTest.title}</h1>
             <p className="text-slate-400">Time: {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</p>
+            <p className="text-slate-500 text-sm mt-1">Question {currentQuestion + 1} of {activeTest.questions.length}</p>
           </div>
-          <div className="flex justify-between">
-            <button onClick={() => setCurrentQuestion(Math.max(0, currentQuestion - 1))} disabled={currentQuestion === 0} className="px-6 py-3 rounded-xl bg-white/10 text-white">Previous</button>
-            <button onClick={handleSubmitTest} className="px-6 py-3 rounded-xl bg-green-600 text-white">Submit</button>
+          {activeTest.questions.length === 0 ? (
+            <div className="p-8 rounded-2xl bg-white/5 border border-white/10 text-center">
+              <p className="text-slate-400 mb-4">This test has no questions yet.</p>
+              <button onClick={() => setActiveTest(null)} className="px-6 py-3 rounded-xl bg-blue-600 text-white">Back to Tests</button>
+            </div>
+          ) : (
+            <div className="p-8 rounded-2xl bg-white/5 border border-white/10">
+              <p className="text-white text-lg mb-6">{activeTest.questions[currentQuestion]?.text}</p>
+              {activeTest.questions[currentQuestion]?.type === "mcq" && activeTest.questions[currentQuestion]?.options && (
+                <div className="space-y-3">
+                  {activeTest.questions[currentQuestion]?.options?.map((opt, idx) => (
+                    <label key={idx} className={`flex items-center gap-3 p-4 rounded-xl cursor-pointer transition-all ${answers[activeTest.questions[currentQuestion].id] === opt ? 'bg-blue-600 text-white' : 'bg-white/5 text-slate-300 hover:bg-white/10'}`}>
+                      <input type="radio" name={`q-${activeTest.questions[currentQuestion].id}`} value={opt} checked={answers[activeTest.questions[currentQuestion].id] === opt} onChange={() => setAnswers({ ...answers, [activeTest.questions[currentQuestion].id]: opt })} className="hidden" />
+                      <span className="w-6 h-6 rounded-full border-2 border-current flex items-center justify-center">
+                        {answers[activeTest.questions[currentQuestion].id] === opt && <span className="w-3 h-3 rounded-full bg-current" />}
+                      </span>
+                      <span>{opt}</span>
+                    </label>
+                  ))}
+                </div>
+              )}
+              {activeTest.questions[currentQuestion]?.type === "truefalse" && (
+                <div className="space-y-3">
+                  {["True", "False"].map((opt) => (
+                    <label key={opt} className={`flex items-center gap-3 p-4 rounded-xl cursor-pointer transition-all ${answers[activeTest.questions[currentQuestion].id] === opt ? 'bg-blue-600 text-white' : 'bg-white/5 text-slate-300 hover:bg-white/10'}`}>
+                      <input type="radio" name={`q-${activeTest.questions[currentQuestion].id}`} value={opt} checked={answers[activeTest.questions[currentQuestion].id] === opt} onChange={() => setAnswers({ ...answers, [activeTest.questions[currentQuestion].id]: opt })} className="hidden" />
+                      <span className="w-6 h-6 rounded-full border-2 border-current flex items-center justify-center">
+                        {answers[activeTest.questions[currentQuestion].id] === opt && <span className="w-3 h-3 rounded-full bg-current" />}
+                      </span>
+                      <span>{opt}</span>
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+          <div className="flex justify-between mt-6">
+            <button onClick={() => setCurrentQuestion(Math.max(0, currentQuestion - 1))} disabled={currentQuestion === 0} className="px-6 py-3 rounded-xl bg-white/10 text-white disabled:opacity-50">Previous</button>
+            {currentQuestion < activeTest.questions.length - 1 ? (
+              <button onClick={() => setCurrentQuestion(currentQuestion + 1)} className="px-6 py-3 rounded-xl bg-blue-600 text-white">Next</button>
+            ) : (
+              <button onClick={handleSubmitTest} className="px-6 py-3 rounded-xl bg-green-600 text-white">Submit</button>
+            )}
           </div>
         </div>
       );
