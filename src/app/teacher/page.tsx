@@ -522,7 +522,7 @@ export default function TeacherPortal() {
 
       {showHomeworkModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-[#1E293B] rounded-2xl p-6 w-full max-w-md border border-white/10">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md border border-white/10">
             <h3 className="text-xl font-semibold text-white mb-6">Add New Homework</h3>
             <div className="space-y-4">
               <div>
@@ -659,7 +659,7 @@ export default function TeacherPortal() {
 
       {showTestModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-[#1E293B] rounded-2xl p-6 w-full max-w-md border border-white/10">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md border border-white/10">
             <h3 className="text-xl font-semibold text-white mb-6">Create New Test</h3>
             <div className="space-y-4">
               <div>
@@ -724,7 +724,7 @@ export default function TeacherPortal() {
 
       {showQuestionModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-[#1E293B] rounded-2xl p-6 w-full max-w-2xl border border-white/10 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-2xl border border-white/10 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-semibold text-white">Add Questions to Test</h3>
               <button onClick={() => setShowQuestionModal(false)} className="text-slate-400 hover:text-white">
@@ -984,7 +984,7 @@ export default function TeacherPortal() {
 
       {showExamModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-[#1E293B] rounded-2xl p-6 w-full max-w-md border border-white/10">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md border border-white/10">
             <h3 className="text-xl font-semibold text-white mb-6">Add New Exam</h3>
             <div className="space-y-4">
               <div>
@@ -1074,7 +1074,7 @@ export default function TeacherPortal() {
 
       {showScheduleModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-[#1E293B] rounded-2xl p-6 w-full max-w-md border border-white/10">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md border border-white/10">
             <h3 className="text-xl font-semibold text-white mb-6">Add New Schedule</h3>
             <div className="space-y-4">
               <div>
@@ -1217,7 +1217,7 @@ export default function TeacherPortal() {
 
       {showAnnouncementModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-[#1E293B] rounded-2xl p-6 w-full max-w-md border border-white/10">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md border border-white/10">
             <h3 className="text-xl font-semibold text-white mb-6">New Announcement</h3>
             <div className="space-y-4">
               <div>
@@ -1249,7 +1249,7 @@ export default function TeacherPortal() {
 
   if (!loggedInTeacher) {
     return (
-      <div className="min-h-screen bg-[#0F172A] flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
@@ -1271,8 +1271,8 @@ export default function TeacherPortal() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0F172A] flex">
-      <aside className="w-72 bg-[#1E293B] border-r border-white/10 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex">
+      <aside className="w-72 bg-white border-r border-white/10 flex flex-col">
         <div className="p-6 border-b border-white/10">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">

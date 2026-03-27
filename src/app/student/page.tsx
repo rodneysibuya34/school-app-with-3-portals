@@ -559,7 +559,7 @@ export default function StudentPortal() {
 
   if (!loggedInStudent) {
     return (
-      <div className="min-h-screen bg-[#0F172A] flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
@@ -983,10 +983,10 @@ export default function StudentPortal() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0F172A] flex">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex">
       {showSubjectModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-[#1E293B] rounded-2xl p-6 w-full max-w-lg border border-white/10">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-lg border border-white/10">
             <h3 className="text-xl font-semibold text-white mb-4">Select Your Subjects</h3>
             <p className="text-slate-400 text-sm mb-4">Choose the subjects you are taking this year (select at least 4):</p>
             <div className="grid grid-cols-2 gap-3 max-h-64 overflow-y-auto mb-4">
@@ -1030,7 +1030,7 @@ export default function StudentPortal() {
         </div>
       )}
 
-      <aside className="w-72 bg-[#1E293B] border-r border-white/10 flex flex-col">
+      <aside className="w-72 bg-white border-r border-white/10 flex flex-col">
         <div className="p-6 border-b border-white/10">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">

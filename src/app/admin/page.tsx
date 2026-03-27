@@ -336,7 +336,7 @@ export default function AdminPortal() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-[#1C1917] flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center">
           <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-200/30 rounded-full blur-3xl" />
           <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-200/30 rounded-full blur-3xl" />
@@ -371,8 +371,8 @@ export default function AdminPortal() {
   }
 
   return (
-    <div className="min-h-screen bg-[#1C1917]">
-      <aside className="w-64 bg-[#1E293B] border-r border-white/10 fixed h-full">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+      <aside className="w-64 bg-white border-r border-white/10 fixed h-full">
         <div className="p-6 border-b border-white/10">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center">
@@ -651,7 +651,7 @@ export default function AdminPortal() {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-[#1E293B] rounded-2xl p-6 w-full max-w-md border border-white/10">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md border border-white/10">
             <h3 className="text-xl font-semibold text-white mb-6">
               Add {showModal === 'school' ? 'School' : showModal === 'teacher' ? 'Teacher' : showModal === 'student' ? 'Student' : 'Subscription'}
             </h3>
