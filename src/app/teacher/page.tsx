@@ -316,6 +316,14 @@ export default function TeacherPortal() {
     setCurrentTestId(null);
   };
 
+  const handleDeleteTest = (testId: number) => {
+    if (confirm("Are you sure you want to delete this test? This cannot be undone.")) {
+      const updatedTestList = testList.filter(t => t.id !== testId);
+      setTestList(updatedTestList);
+      localStorage.setItem("testData", JSON.stringify(updatedTestList));
+    }
+  };
+
   const handleAddAnnouncement = () => {
     if (newAnnouncement.title && newAnnouncement.content) {
       const ann: Announcement = {
@@ -651,6 +659,7 @@ export default function TeacherPortal() {
               <div className="flex gap-2">
                 <button onClick={() => { setCurrentTestId(test.id); setShowQuestionModal(true); }} className="text-purple-400 hover:text-purple-300">Add Questions</button>
                 <button onClick={() => handlePublishTest(test.id)} className="text-blue-400 hover:text-blue-300">{test.published ? 'Unpublish' : 'Publish'}</button>
+                <button onClick={() => handleDeleteTest(test.id)} className="text-red-400 hover:text-red-300">Delete</button>
               </div>
             </div>
           </div>
@@ -1128,7 +1137,10 @@ export default function TeacherPortal() {
   );
 
   const renderStudents = () => {
-    const myStudents = studentsData.filter(s => s.school === loggedInTeacher?.school);
+    const storedStudents = localStorage.getItem("studentsData");
+    const allStudents: StudentData[] = storedStudents ? JSON.parse(storedStudents) : [];
+    const combinedStudents = [...studentsData, ...allStudents.filter(s => !studentsData.some(d => d.id === s.id))];
+    const myStudents = combinedStudents.filter(s => s.school === loggedInTeacher?.school);
     const gradeFilter = localStorage.getItem("teacherGradeFilter") || "";
     const filteredStudents = gradeFilter ? myStudents.filter(s => s.grade === parseInt(gradeFilter)) : myStudents;
     
@@ -1255,7 +1267,10 @@ export default function TeacherPortal() {
     );
   }
 
-  const schoolStudents = studentsData.filter(s => s.school === loggedInTeacher.school);
+  const storedStudentsList = localStorage.getItem("studentsData");
+  const allStudentsList: StudentData[] = storedStudentsList ? JSON.parse(storedStudentsList) : [];
+  const combinedStudentsList = [...studentsData, ...allStudentsList.filter(s => !studentsData.some(d => d.id === s.id))];
+  const schoolStudents = combinedStudentsList.filter(s => s.school === loggedInTeacher.school);
   const schoolTeachers = teachersData.filter(t => t.school === loggedInTeacher.school);
 
   const stats = [
