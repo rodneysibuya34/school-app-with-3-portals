@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Logo from "@/components/Logo";
 
 const ADMIN_PASSWORD = "Admin.manager@2026!Geleza";
 
@@ -398,11 +399,7 @@ export default function AdminPortal() {
         </div>
         <div className="relative z-10 p-8 rounded-2xl bg-[#1E293B] shadow-2xl border border-slate-200 w-full max-w-md">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-            </div>
+            <Logo size={64} />
             <h1 className="text-2xl font-bold text-slate-800 font-['Outfit']">Geleza Mzansi Admin</h1>
             <p className="text-slate-500 mt-2">Enter admin password to continue</p>
           </div>
@@ -430,11 +427,7 @@ export default function AdminPortal() {
       <aside className="w-64 bg-[#1E293B] border-r border-white/10 fixed h-full">
         <div className="p-6 border-b border-white/10">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center">
-              <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-            </div>
+            <Logo size={40} />
             <span className="text-xl font-semibold text-white">Admin</span>
           </div>
         </div>

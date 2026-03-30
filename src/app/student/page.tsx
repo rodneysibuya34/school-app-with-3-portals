@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import AIAssistant from "@/components/AIAssistant";
+import Logo from "@/components/Logo";
 
 const studentsData = [
   { id: 1, name: "Alex Thompson", email: "a.thompson@oakridge.edu", grade: 11, school: "Oakridge Preparatory Academy", username: "alex.t", password: "Alex@123", schoolYear: 2026, subjects: ["Mathematics", "Physical Sciences", "English Home Language", "Life Sciences", "Geography"] },
@@ -1075,9 +1076,7 @@ export default function StudentPortal() {
       <aside className="w-72 bg-[#1E293B] border-r border-white/10 flex flex-col">
         <div className="p-6 border-b border-white/10">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-              <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" /></svg>
-            </div>
+            <Logo size={40} />
             <span className="text-xl font-semibold text-white">Geleza Mzansi</span>
           </div>
           <div className="flex items-center gap-3">
