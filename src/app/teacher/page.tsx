@@ -127,6 +127,9 @@ export default function TeacherPortal() {
   const [showAnnouncementModal, setShowAnnouncementModal] = useState(false);
   const [showExamModal, setShowExamModal] = useState(false);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [showStudentGradesModal, setShowStudentGradesModal] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState<StudentData | null>(null);
+  const [studentGrades, setStudentGrades] = useState<Record<number, { correct: number; total: number }>>({});
   const [newHomework, setNewHomework] = useState({ title: "", description: "", dueDate: "", grade: "", subject: "" });
   const [homeworkFile, setHomeworkFile] = useState<{ name: string; data: string; type: string } | null>(null);
   const [newTest, setNewTest] = useState({ title: "", description: "", dueDate: "", grade: "", subject: "", duration: "60" });
@@ -212,6 +215,17 @@ export default function TeacherPortal() {
     const updated = [...strugglingStudents, newAlert];
     setStrugglingStudents(updated);
     localStorage.setItem("strugglingStudents", JSON.stringify(updated));
+  };
+
+  const handleViewStudentGrades = (student: StudentData) => {
+    setSelectedStudent(student);
+    const storedResults = localStorage.getItem(`testResults_${student.id}`);
+    if (storedResults) {
+      setStudentGrades(JSON.parse(storedResults));
+    } else {
+      setStudentGrades({});
+    }
+    setShowStudentGradesModal(true);
   };
 
   const handleDownload = (fileUrl: string, fileName: string, fileType: string) => {
@@ -447,7 +461,7 @@ export default function TeacherPortal() {
                       <p className="text-slate-400 text-sm">Grade {student.grade}</p>
                     </div>
                   </div>
-                  <button className="text-purple-400 hover:text-purple-300 text-sm">View Grades</button>
+                  <button onClick={() => handleViewStudentGrades(student)} className="text-purple-400 hover:text-purple-300 text-sm">View Grades</button>
                 </div>
               </div>
             ))}
@@ -1266,6 +1280,43 @@ export default function TeacherPortal() {
               <button onClick={() => setShowAnnouncementModal(false)} className="flex-1 px-4 py-3 rounded-xl bg-stone-800 text-white hover:bg-[#1E293B]/20 transition-colors">Cancel</button>
               <button onClick={handleAddAnnouncement} className="flex-1 px-4 py-3 rounded-xl bg-purple-600 text-white hover:bg-purple-700 transition-colors">Post</button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {showStudentGradesModal && selectedStudent && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-[#1E293B] rounded-2xl p-6 w-full max-w-lg border border-white/10 max-h-[80vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-semibold text-white">Grades for {selectedStudent.name}</h3>
+              <button onClick={() => setShowStudentGradesModal(false)} className="text-slate-400 hover:text-white">
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            {Object.keys(studentGrades).length === 0 ? (
+              <p className="text-slate-400 text-center py-8">No test results found for this student.</p>
+            ) : (
+              <div className="space-y-3">
+                {Object.entries(studentGrades).map(([testId, result]) => {
+                  const percentage = Math.round((result.correct / result.total) * 100);
+                  const gradeColor = percentage >= 80 ? 'text-green-400' : percentage >= 60 ? 'text-yellow-400' : 'text-red-400';
+                  return (
+                    <div key={testId} className="p-4 rounded-xl bg-stone-800">
+                      <div className="flex justify-between items-center">
+                        <span className="text-white">Test #{testId}</span>
+                        <div className="flex items-center gap-4">
+                          <span className="text-slate-400">{result.correct}/{result.total}</span>
+                          <span className={`font-bold ${gradeColor}`}>{percentage}%</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            <button onClick={() => setShowStudentGradesModal(false)} className="w-full mt-6 py-3 rounded-xl bg-purple-600 text-white hover:bg-purple-700 transition-colors">Close</button>
           </div>
         </div>
       )}
