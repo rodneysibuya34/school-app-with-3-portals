@@ -143,6 +143,7 @@ export default function AdminPortal() {
     studentName: '', studentEmail: '', studentGrade: '', studentSchool: '',
     subSchool: '', subType: 'Primary', subStartDate: ''
   });
+  const [schoolLogoFile, setSchoolLogoFile] = useState<string | null>(null);
 
   useEffect(() => {
     localStorage.setItem("schoolsData", JSON.stringify(schools));
@@ -293,7 +294,8 @@ export default function AdminPortal() {
         isBlocked: false,
         paymentStatus: "trial",
         contact: formData.schoolContact,
-        address: formData.schoolAddress
+        address: formData.schoolAddress,
+        schoolLogo: schoolLogoFile || undefined
       };
       
       const updatedSchools = [...schools, newSchool];
@@ -302,6 +304,7 @@ export default function AdminPortal() {
       
       alert(`School created!\n\nUsername: ${schoolUsername}\nPassword: ${schoolPassword}\nTrial Period: 10 days (Expires: ${expiryDate})`);
       setShowModal(null);
+      setSchoolLogoFile(null);
       setFormData({ name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', schoolLogo: '', schoolContact: '', schoolAddress: '', teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', subSchool: '', subType: 'Primary', subStartDate: '' });
     } else if (type === 'teacher') {
       if (!formData.teacherName || !formData.teacherSchool || !formData.teacherSubject) {
@@ -544,11 +547,20 @@ export default function AdminPortal() {
                 return (
                   <div key={school.id} className="p-6 rounded-2xl bg-[#1E293B]/5 border border-white/10">
                     <div className="flex justify-between items-start mb-4">
-                      <div>
-                        <h3 className="text-xl font-semibold text-white">{school.name}</h3>
-                        <p className="text-slate-400 text-sm">{school.location}</p>
-                        {school.contact && <p className="text-slate-400 text-xs mt-1">{school.contact}</p>}
-                        {school.address && <p className="text-slate-400 text-xs">{school.address}</p>}
+                      <div className="flex items-center gap-3">
+                        {school.schoolLogo ? (
+                          <img src={school.schoolLogo} alt={school.name} className="w-12 h-12 rounded-lg object-cover" />
+                        ) : (
+                          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-white font-bold text-lg">
+                            {school.name.charAt(0)}
+                          </div>
+                        )}
+                        <div>
+                          <h3 className="text-xl font-semibold text-white">{school.name}</h3>
+                          <p className="text-slate-400 text-sm">{school.location}</p>
+                          {school.contact && <p className="text-slate-400 text-xs mt-1">{school.contact}</p>}
+                          {school.address && <p className="text-slate-400 text-xs">{school.address}</p>}
+                        </div>
                       </div>
                       <span className={`px-3 py-1 rounded-full text-xs ${getStatusColor(school.status)}`}>{school.status}</span>
                     </div>
@@ -731,6 +743,30 @@ export default function AdminPortal() {
               {showModal === 'school' && (
                 <>
                   <input type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="School Name" className="w-full px-4 py-3 rounded-xl bg-[#1E293B]/5 border border-white/10 text-white" />
+                  <div>
+                    <label className="block text-sm text-slate-400 mb-2">School Logo</label>
+                    <input 
+                      type="file" 
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = (event) => {
+                            setSchoolLogoFile(event.target?.result as string);
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      className="w-full px-4 py-3 rounded-xl bg-[#1E293B]/5 border border-white/10 text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-cyan-600 file:text-white file:cursor-pointer"
+                    />
+                    {schoolLogoFile && (
+                      <div className="mt-2 flex items-center gap-2">
+                        <img src={schoolLogoFile} alt="Logo preview" className="w-12 h-12 rounded-lg object-cover" />
+                        <button type="button" onClick={() => setSchoolLogoFile(null)} className="text-red-400 text-sm hover:text-red-300">Remove</button>
+                      </div>
+                    )}
+                  </div>
                   <input type="text" value={formData.location} onChange={(e) => setFormData({...formData, location: e.target.value})} placeholder="Location" className="w-full px-4 py-3 rounded-xl bg-[#1E293B]/5 border border-white/10 text-white" />
                   <input type="text" value={formData.schoolContact} onChange={(e) => setFormData({...formData, schoolContact: e.target.value})} placeholder="Contact (phone/email)" className="w-full px-4 py-3 rounded-xl bg-[#1E293B]/5 border border-white/10 text-white" />
                   <input type="text" value={formData.schoolAddress} onChange={(e) => setFormData({...formData, schoolAddress: e.target.value})} placeholder="School Address" className="w-full px-4 py-3 rounded-xl bg-[#1E293B]/5 border border-white/10 text-white" />

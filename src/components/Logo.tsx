@@ -1,4 +1,15 @@
-export default function Logo({ size = 40 }: { size?: number }) {
+export default function Logo({ size = 40, src }: { size?: number; src?: string }) {
+  if (src) {
+    return (
+      <img 
+        src={src} 
+        alt="Logo" 
+        width={size} 
+        height={size} 
+        className="rounded-lg object-cover"
+      />
+    );
+  }
   return (
     <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
