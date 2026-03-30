@@ -678,7 +678,7 @@ export default function AdminPortal() {
                     <option value="">Select School</option>
                     {schools.map(s => <option key={s.id} value={s.name}>{s.name}</option>)}
                   </select>
-                  <input type="text" value={formData.teacherSubject} onChange={(e) => setFormData({...formData, teacherSubject: e.target.value})} placeholder="Subject" className="w-full px-4 py-3 rounded-xl bg-[#1E293B]/5 border border-white/10 text-white" />
+                  <input type="text" value={formData.teacherSubject} onChange={(e) => setFormData({...formData, teacherSubject: e.target.value})} placeholder="Subject(s) - e.g., Mathematics, Physics, Chemistry" className="w-full px-4 py-3 rounded-xl bg-[#1E293B]/5 border border-white/10 text-white" />
                 </>
               )}
               {showModal === 'student' && (
