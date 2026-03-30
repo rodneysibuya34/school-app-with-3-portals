@@ -472,6 +472,7 @@ export default function StudentPortal() {
   const [timeLeft, setTimeLeft] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const [paymentWarning, setPaymentWarning] = useState<{ school: string; daysLeft: number } | null>(null);
+  const [completedTests, setCompletedTests] = useState<Record<number, { correct: number; total: number }>>({});
 
   const [homeworkList, setHomeworkList] = useState<Homework[]>([]);
   const [testList, setTestList] = useState<Test[]>([]);
@@ -514,6 +515,9 @@ export default function StudentPortal() {
 
     const storedCourses = localStorage.getItem("coursesData");
     if (storedCourses) setCoursesList(JSON.parse(storedCourses));
+
+    const storedResults = localStorage.getItem(`testResults_${parsedStudent.id}`);
+    if (storedResults) setCompletedTests(JSON.parse(storedResults));
 
     const storedSchools = localStorage.getItem("schoolsData");
     if (storedSchools && parsedStudent.school) {
@@ -617,6 +621,7 @@ export default function StudentPortal() {
       const testResults: Record<number, { correct: number; total: number }> = storedResults ? JSON.parse(storedResults) : {};
       testResults[activeTest.id] = { correct, total: activeTest.questions.length };
       localStorage.setItem(`testResults_${loggedInStudent.id}`, JSON.stringify(testResults));
+      setCompletedTests(testResults);
     }
   };
 
@@ -636,7 +641,12 @@ export default function StudentPortal() {
     }
   };
 
-  const renderDashboard = () => (
+  const renderDashboard = () => {
+    const totalSubjects = loggedInStudent.subjects?.length || 0;
+    const completedTestCount = Object.keys(completedTests).length;
+    const testPercentage = tests.length > 0 ? Math.round((completedTestCount / tests.length) * 100) : 0;
+    
+    return (
     <>
       <div className="p-6 rounded-2xl bg-gradient-to-r from-blue-500/20 to-purple-500/10 border border-blue-500/20 mb-8">
         <div className="flex items-center gap-4">
@@ -652,12 +662,12 @@ export default function StudentPortal() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="p-6 rounded-2xl bg-[#1E293B]/5 backdrop-blur-xl border border-white/10">
-          <p className="text-3xl font-bold text-white mb-1">{gpa}</p>
-          <p className="text-slate-400 text-sm">GPA</p>
+          <p className="text-3xl font-bold text-white mb-1">{totalSubjects}</p>
+          <p className="text-slate-400 text-sm">Total Subjects</p>
         </div>
         <div className="p-6 rounded-2xl bg-[#1E293B]/5 backdrop-blur-xl border border-white/10">
-          <p className="text-3xl font-bold text-white mb-1">96%</p>
-          <p className="text-slate-400 text-sm">Attendance</p>
+          <p className="text-3xl font-bold text-white mb-1">{completedTestCount}/{tests.length}</p>
+          <p className="text-slate-400 text-sm">Tests Completed</p>
         </div>
         <div className="p-6 rounded-2xl bg-[#1E293B]/5 backdrop-blur-xl border border-white/10">
           <p className="text-3xl font-bold text-white mb-1">{loggedInStudent.grade}</p>
@@ -667,8 +677,8 @@ export default function StudentPortal() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="p-6 rounded-2xl bg-[#1E293B]/5 backdrop-blur-xl border border-white/10">
-          <h2 className="text-xl font-semibold text-white mb-6">My Courses</h2>
-          {courses.map((course) => (
+          <h2 className="text-xl font-semibold text-white mb-6">My Subjects</h2>
+          {courses.length > 0 ? courses.map((course) => (
             <div key={course.name} className="p-4 rounded-xl bg-[#1E293B]/5 mb-3">
               <div className="flex justify-between mb-2">
                 <h3 className="text-white font-medium">{course.name}</h3>
@@ -676,7 +686,9 @@ export default function StudentPortal() {
               </div>
               <p className="text-slate-400 text-sm">{course.teacher}</p>
             </div>
-          ))}
+          )) : (
+            <p className="text-slate-400">No subjects enrolled yet</p>
+          )}
         </div>
 
         <div className="p-6 rounded-2xl bg-[#1E293B]/5 backdrop-blur-xl border border-white/10">
@@ -691,6 +703,7 @@ export default function StudentPortal() {
       </div>
     </>
   );
+  };
 
   const renderHomework = () => (
     <div>
@@ -779,13 +792,30 @@ export default function StudentPortal() {
       <div>
         <h1 className="text-3xl font-bold text-white mb-6">Online Tests</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {tests.map((test) => (
-            <div key={test.id} className="p-6 rounded-2xl bg-[#1E293B]/5 backdrop-blur-xl border border-white/10">
-              <h3 className="text-lg font-semibold text-white mb-2">{test.title}</h3>
-              <p className="text-slate-400 text-sm mb-4">{test.description}</p>
-              <button onClick={() => startTest(test)} className="px-4 py-2 rounded-xl bg-green-600 text-white">Start Test</button>
-            </div>
-          ))}
+          {tests.map((test) => {
+            const completed = completedTests[test.id];
+            return (
+              <div key={test.id} className="p-6 rounded-2xl bg-[#1E293B]/5 backdrop-blur-xl border border-white/10">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="text-lg font-semibold text-white">{test.title}</h3>
+                  {completed && (
+                    <span className="px-3 py-1 rounded-full text-xs bg-green-500/20 text-green-400">Completed</span>
+                  )}
+                </div>
+                <p className="text-slate-400 text-sm mb-4">{test.description}</p>
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-500 text-sm">{test.duration || 60} min</span>
+                  {completed ? (
+                    <span className="px-4 py-2 rounded-xl bg-slate-500/20 text-slate-400 cursor-not-allowed">
+                      {completed.correct}/{completed.total} - Completed
+                    </span>
+                  ) : (
+                    <button onClick={() => startTest(test)} className="px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-700 transition-colors">Start Test</button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     );
