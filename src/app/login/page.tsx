@@ -29,6 +29,7 @@ const schoolsData = [
 ];
 
 const getStoredTeachers = (): Teacher[] => {
+  if (typeof window === 'undefined') return [];
   const stored = localStorage.getItem("teachersData");
   if (stored) return JSON.parse(stored);
   
@@ -43,16 +44,11 @@ const getStoredTeachers = (): Teacher[] => {
   
   defaultTeachers.forEach(t => existingUsernames.push(t.username));
   
-  defaultTeachers.forEach(t => {
-    if (t.password !== generatePassword(t.name, t.school)) {
-      console.log(`Teacher ${t.name} password verified`);
-    }
-  });
-  
   return defaultTeachers;
 };
 
 const getStoredStudents = (): User[] => {
+  if (typeof window === 'undefined') return [];
   const stored = localStorage.getItem("studentsData");
   if (stored) return JSON.parse(stored);
   
