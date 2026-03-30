@@ -522,8 +522,20 @@ export default function StudentPortal() {
     const storedSchools = localStorage.getItem("schoolsData");
     if (storedSchools && parsedStudent.school) {
       const schools = JSON.parse(storedSchools);
-      const mySchool = schools.find((s: { name: string; expiryDate: string }) => s.name === parsedStudent.school);
+      const mySchool = schools.find((s: { name: string; expiryDate: string; isActive?: boolean; isBlocked?: boolean }) => s.name === parsedStudent.school);
       if (mySchool) {
+        if (mySchool.isBlocked) {
+          alert("Your school has been blocked. Please contact your administrator.");
+          localStorage.removeItem("loggedInStudent");
+          router.push("/");
+          return;
+        }
+        if (!mySchool.isActive) {
+          alert("Your school is inactive. Please contact your administrator.");
+          localStorage.removeItem("loggedInStudent");
+          router.push("/");
+          return;
+        }
         const expiry = new Date(mySchool.expiryDate);
         const now = new Date();
         const daysLeft = Math.ceil((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));

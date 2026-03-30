@@ -50,6 +50,7 @@ interface School {
   schoolLogo?: string;
   contact?: string;
   address?: string;
+  trialStartDate?: string;
 }
 
 interface Teacher {
@@ -202,6 +203,57 @@ export default function AdminPortal() {
     if (confirm("Are you sure you want to delete this school? This cannot be undone.")) {
       setSchools(schools.filter(s => s.id !== schoolId));
     }
+  };
+
+  const activateTrial = (schoolId: number) => {
+    setSchools(schools.map(s => {
+      if (s.id === schoolId) {
+        const trialStart = new Date();
+        const trialEnd = new Date();
+        trialEnd.setDate(trialEnd.getDate() + 7);
+        return { 
+          ...s, 
+          trialStartDate: trialStart.toISOString().split('T')[0],
+          expiryDate: trialEnd.toISOString().split('T')[0],
+          paymentStatus: "trial" as const,
+          isActive: true,
+          status: "Trial"
+        };
+      }
+      return s;
+    }));
+  };
+
+  const endTrial = (schoolId: number) => {
+    setSchools(schools.map(s => {
+      if (s.id === schoolId) {
+        return { 
+          ...s, 
+          paymentStatus: "expired" as const,
+          isActive: false,
+          status: "Inactive"
+        };
+      }
+      return s;
+    }));
+  };
+
+  const upgradeToPaid = (schoolId: number) => {
+    setSchools(schools.map(s => {
+      if (s.id === schoolId) {
+        const newExpiry = new Date();
+        newExpiry.setFullYear(newExpiry.getFullYear() + 1);
+        return { 
+          ...s, 
+          paymentStatus: "active" as const,
+          isActive: true,
+          status: "Active",
+          expiryDate: newExpiry.toISOString().split('T')[0],
+          trialStartDate: undefined
+        };
+      }
+      return s;
+    }));
   };
 
   const updateExpiryDate = (schoolId: number, newDate: string) => {
@@ -487,6 +539,8 @@ export default function AdminPortal() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {schools.map(school => {
                 const paymentStatus = getPaymentStatus(school);
+                const trialDaysLeft = school.trialStartDate ? 
+                  Math.max(0, 7 - Math.ceil((new Date().getTime() - new Date(school.trialStartDate).getTime()) / (1000 * 60 * 60 * 24))) : 0;
                 return (
                   <div key={school.id} className="p-6 rounded-2xl bg-[#1E293B]/5 border border-white/10">
                     <div className="flex justify-between items-start mb-4">
@@ -524,14 +578,32 @@ export default function AdminPortal() {
                           {paymentStatus === 'active' ? 'Active' : paymentStatus === 'expired' ? 'Expired' : paymentStatus === 'expiring_soon' ? 'Expiring Soon' : 'Trial'}
                         </span>
                       </div>
-                      <div className="flex gap-2 pt-2">
-                        <button onClick={() => toggleSchoolActive(school.id)} className={`flex-1 py-2 rounded-lg text-sm ${school.isActive ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'}`}>
-                          {school.isActive ? 'Deactivate' : 'Activate'}
-                        </button>
-                        <button onClick={() => toggleSchoolBlock(school.id)} className={`flex-1 py-2 rounded-lg text-sm ${school.isBlocked ? 'bg-green-500/20 text-green-400' : 'bg-orange-500/20 text-orange-400'}`}>
-                          {school.isBlocked ? 'Unblock' : 'Block'}
-                        </button>
-                        <button onClick={() => deleteSchool(school.id)} className="flex-1 py-2 rounded-lg text-sm bg-red-500/20 text-red-400">Delete</button>
+                      {paymentStatus === 'trial' && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-slate-400">Trial Days Left:</span>
+                          <span className={trialDaysLeft <= 2 ? 'text-red-400' : 'text-green-400'}>
+                            {trialDaysLeft} days
+                          </span>
+                        </div>
+                      )}
+                      <div className="flex gap-2 pt-2 flex-wrap">
+                        {paymentStatus === 'trial' ? (
+                          <>
+                            <button onClick={() => upgradeToPaid(school.id)} className="flex-1 py-2 rounded-lg text-sm bg-green-500/20 text-green-400">Upgrade to Paid</button>
+                            <button onClick={() => endTrial(school.id)} className="flex-1 py-2 rounded-lg text-sm bg-red-500/20 text-red-400">End Trial</button>
+                          </>
+                        ) : (
+                          <>
+                            <button onClick={() => activateTrial(school.id)} className="flex-1 py-2 rounded-lg text-sm bg-purple-500/20 text-purple-400">Start Trial</button>
+                            <button onClick={() => toggleSchoolActive(school.id)} className={`flex-1 py-2 rounded-lg text-sm ${school.isActive ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'}`}>
+                              {school.isActive ? 'Deactivate' : 'Activate'}
+                            </button>
+                            <button onClick={() => toggleSchoolBlock(school.id)} className={`flex-1 py-2 rounded-lg text-sm ${school.isBlocked ? 'bg-green-500/20 text-green-400' : 'bg-orange-500/20 text-orange-400'}`}>
+                              {school.isBlocked ? 'Unblock' : 'Block'}
+                            </button>
+                            <button onClick={() => deleteSchool(school.id)} className="flex-1 py-2 rounded-lg text-sm bg-red-500/20 text-red-400">Delete</button>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
