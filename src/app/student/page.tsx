@@ -15,6 +15,7 @@ interface StudentData {
   password: string;
   schoolYear: number;
   subjects: string[];
+  profilePicture?: string;
 }
 
 const studentsData: StudentData[] = [];
@@ -424,6 +425,81 @@ export default function StudentPortal() {
     }
   };
 
+  const renderChat = () => {
+    if (!isChatAvailable()) {
+      return (
+        <div className="flex flex-col items-center justify-center h-96">
+          <svg className="w-16 h-16 text-slate-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+          <h2 className="text-xl font-semibold text-white mb-2">Chat Locked</h2>
+          <p className="text-slate-400">Group chat is available Friday to Sunday only</p>
+        </div>
+      );
+    }
+
+    if (!loggedInStudent) return null;
+    const gradeMessages = chatMessages.filter(m => m.grade === loggedInStudent.grade);
+    
+    return (
+      <div>
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-white font-['Outfit']">Grade {loggedInStudent.grade} Group Chat</h1>
+          <p className="text-slate-400 mt-1">Chat with your classmates and teachers</p>
+        </div>
+
+        <div className="h-96 overflow-y-auto p-4 rounded-2xl bg-stone-800 border border-white/10 mb-4 space-y-3">
+          {gradeMessages.length === 0 ? (
+            <p className="text-slate-500 text-center py-8">No messages yet. Start the conversation!</p>
+          ) : (
+            gradeMessages.map((msg) => (
+              <div key={msg.id} className={`p-4 rounded-xl ${msg.role === 'teacher' ? (msg.isLocked ? 'bg-purple-500/10 border border-purple-500/30' : 'bg-blue-500/10 border border-blue-500/30') : 'bg-slate-700'}`}>
+                <div className="flex justify-between items-start mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-white font-medium">{msg.sender}</span>
+                    <span className={`px-2 py-0.5 rounded text-xs ${msg.role === 'teacher' ? 'bg-blue-500/20 text-blue-300' : 'bg-green-500/20 text-green-300'}`}>
+                      {msg.role === 'teacher' ? 'Teacher' : 'Student'}
+                    </span>
+                    {msg.isLocked && !unlockedMessages[msg.id] && <span className="text-yellow-400 text-xs">Locked</span>}
+                  </div>
+                  <span className="text-slate-500 text-xs">{new Date(msg.timestamp).toLocaleString()}</span>
+                </div>
+                
+                {msg.isLocked && !unlockedMessages[msg.id] ? (
+                  <div className="mt-2">
+                    {unlockingMessageId === msg.id ? (
+                      <div className="flex gap-2">
+                        <input type="password" value={unlockPassword} onChange={(e) => setUnlockPassword(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleUnlockMessage(msg.id, unlockPassword)} placeholder="Enter password" className="flex-1 px-3 py-2 rounded-lg bg-slate-600 border border-white/10 text-white text-sm focus:outline-none" />
+                        <button onClick={() => handleUnlockMessage(msg.id, unlockPassword)} className="px-4 py-2 rounded-lg bg-purple-600 text-white text-sm hover:bg-purple-700">Unlock</button>
+                        <button onClick={() => { setUnlockingMessageId(null); setUnlockPassword(""); }} className="px-3 py-2 rounded-lg bg-slate-600 text-white text-sm">Cancel</button>
+                      </div>
+                    ) : (
+                      <button onClick={() => setUnlockingMessageId(msg.id)} className="px-4 py-2 rounded-lg bg-purple-600/20 text-purple-300 text-sm hover:bg-purple-600/30">Enter Password to View</button>
+                    )}
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-slate-300">{msg.message}</p>
+                    {msg.fileUrl && (
+                      <a href={msg.fileUrl} download={msg.fileName} className="mt-2 inline-block text-blue-400 text-sm hover:text-blue-300">Download: {msg.fileName}</a>
+                    )}
+                  </>
+                )}
+              </div>
+            ))
+          )}
+        </div>
+
+        <div className="p-4 rounded-2xl bg-stone-800 border border-white/10">
+          <div className="flex gap-2">
+            <input type="text" value={newChatMessage} onChange={(e) => setNewChatMessage(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleSendChatMessage()} placeholder="Type your message..." className="flex-1 px-4 py-3 rounded-xl bg-slate-700 border border-white/10 text-white focus:outline-none focus:border-blue-500" />
+            <button onClick={handleSendChatMessage} className="px-6 py-3 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-colors">Send</button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const renderDashboard = () => {
     const totalSubjects = loggedInStudent.subjects?.length || 0;
     const completedTestCount = Object.keys(completedTests).length;
@@ -433,8 +509,39 @@ export default function StudentPortal() {
     <>
       <div className="p-6 rounded-2xl bg-gradient-to-r from-blue-500/20 to-purple-500/10 border border-blue-500/20 mb-8">
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-xl font-bold">
-            {getInitials(loggedInStudent.name)}
+          <div className="relative group">
+            {loggedInStudent.profilePicture ? (
+              <img src={loggedInStudent.profilePicture} alt={loggedInStudent.name} className="w-16 h-16 rounded-full object-cover border-2 border-blue-400" />
+            ) : (
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-xl font-bold">
+                {getInitials(loggedInStudent.name)}
+              </div>
+            )}
+            <label className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
+              <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <input type="file" accept="image/*" className="hidden" onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onload = (event) => {
+                    const pic = event.target?.result as string;
+                    const updatedStudent = { ...loggedInStudent, profilePicture: pic };
+                    setLoggedInStudent(updatedStudent);
+                    localStorage.setItem("loggedInStudent", JSON.stringify(updatedStudent));
+                    const storedStudents = localStorage.getItem("studentsData");
+                    if (storedStudents) {
+                      const students = JSON.parse(storedStudents);
+                      const updated = students.map((s: StudentData) => s.id === loggedInStudent.id ? { ...s, profilePicture: pic } : s);
+                      localStorage.setItem("studentsData", JSON.stringify(updated));
+                    }
+                  };
+                  reader.readAsDataURL(file);
+                }
+              }} />
+            </label>
           </div>
           <div>
             <h2 className="text-xl font-semibold text-white">{loggedInStudent.name}</h2>
@@ -850,9 +957,13 @@ export default function StudentPortal() {
             <span className="text-xl font-semibold text-white">Geleza Mzansi</span>
           </div>
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-semibold">
-              {getInitials(loggedInStudent.name)}
-            </div>
+            {loggedInStudent.profilePicture ? (
+              <img src={loggedInStudent.profilePicture} alt={loggedInStudent.name} className="w-12 h-12 rounded-full object-cover border-2 border-blue-400" />
+            ) : (
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-semibold">
+                {getInitials(loggedInStudent.name)}
+              </div>
+            )}
             <div>
               <p className="text-white font-medium">{loggedInStudent.name}</p>
               <p className="text-slate-400 text-sm">Grade {loggedInStudent.grade}</p>
@@ -903,6 +1014,7 @@ export default function StudentPortal() {
         {activeTab === "weekly timetable" && renderWeeklyTimetable()}
         {activeTab === "study materials" && renderStudyMaterials()}
         {activeTab === "my progress" && renderProgress()}
+        {activeTab === "chat" && renderChat()}
       </main>
 
       <AIAssistant mode="student" studentName={loggedInStudent?.name} grade={loggedInStudent?.grade} />

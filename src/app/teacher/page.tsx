@@ -25,6 +25,7 @@ interface StudentData {
   username: string;
   password: string;
   schoolYear: number;
+  profilePicture?: string;
 }
 
 const teachersData: TeacherData[] = [
@@ -487,9 +488,13 @@ export default function TeacherPortal() {
               <div key={student.id} className="p-4 rounded-xl bg-stone-800 hover:bg-stone-800 transition-colors">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-sm font-medium">
-                      {getInitials(student.name)}
-                    </div>
+                    {student.profilePicture ? (
+                      <img src={student.profilePicture} alt={student.name} className="w-10 h-10 rounded-full object-cover border-2 border-blue-400" />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-sm font-medium">
+                        {getInitials(student.name)}
+                      </div>
+                    )}
                     <div>
                       <h3 className="text-white font-medium">{student.name}</h3>
                       <p className="text-slate-400 text-sm">Grade {student.grade}</p>
