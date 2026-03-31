@@ -125,19 +125,8 @@ export default function TeacherPortal() {
   const [newQuestion, setNewQuestion] = useState({ text: "", type: "mcq" as "mcq" | "truefalse", options: ["", "", "", ""], correctAnswer: "" });
   const [bulkQuestionCount, setBulkQuestionCount] = useState(10);
   const [bulkQuestions, setBulkQuestions] = useState<Question[]>([]);
-  const [examTimetable, setExamTimetable] = useState<{ date: string; exam: string; time: string; venue: string; fileUrl?: string; fileType?: string }[]>([
-    { date: "2026-06-15", exam: "Mathematics Paper 1", time: "09:00 - 11:00", venue: "Hall A" },
-    { date: "2026-06-16", exam: "English Home Language", time: "09:00 - 11:30", venue: "Hall B" },
-    { date: "2026-06-17", exam: "Physical Sciences", time: "09:00 - 11:00", venue: "Lab 1" },
-  ]);
-  const [weeklyTimetable, setWeeklyTimetable] = useState<{ day: string; time: string; subject: string; grade: number; fileUrl?: string; fileType?: string }[]>([
-    { day: "Monday", time: "08:00 - 09:00", subject: "Mathematics", grade: 11 },
-    { day: "Monday", time: "09:00 - 10:00", subject: "Physical Sciences", grade: 11 },
-    { day: "Tuesday", time: "08:00 - 09:00", subject: "English Home Language", grade: 11 },
-    { day: "Wednesday", time: "08:00 - 09:00", subject: "Life Sciences", grade: 11 },
-    { day: "Thursday", time: "09:00 - 10:00", subject: "Geography", grade: 11 },
-    { day: "Friday", time: "08:00 - 09:00", subject: "History", grade: 11 },
-  ]);
+  const [examTimetable, setExamTimetable] = useState<{ date: string; exam: string; time: string; venue: string; fileUrl?: string; fileType?: string }[]>([]);
+  const [weeklyTimetable, setWeeklyTimetable] = useState<{ day: string; time: string; subject: string; grade: number; fileUrl?: string; fileType?: string }[]>([]);
   const [newExam, setNewExam] = useState({ date: "", exam: "", time: "", venue: "" });
   const [examFile, setExamFile] = useState<{ name: string; data: string; type: string } | null>(null);
   const [newSchedule, setNewSchedule] = useState({ day: "Monday", time: "08:00 - 09:00", subject: "", grade: "" });
