@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
+import Image from "next/image";
 
 const ADMIN_PASSWORD = "Admin.manager@2026!Geleza";
 
@@ -531,7 +532,7 @@ export default function AdminPortal() {
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex items-center gap-3">
                         {school.schoolLogo ? (
-                          <img src={school.schoolLogo} alt={school.name} className="w-12 h-12 rounded-lg object-cover" />
+                          <Image src={school.schoolLogo} alt={school.name} width={48} height={48} className="rounded-lg object-cover" unoptimized />
                         ) : (
                           <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-white font-bold text-lg">
                             {school.name.charAt(0)}
@@ -744,7 +745,7 @@ export default function AdminPortal() {
                     />
                     {schoolLogoFile && (
                       <div className="mt-2 flex items-center gap-2">
-                        <img src={schoolLogoFile} alt="Logo preview" className="w-12 h-12 rounded-lg object-cover" />
+                        <Image src={schoolLogoFile} alt="Logo preview" width={48} height={48} className="rounded-lg object-cover" unoptimized />
                         <button type="button" onClick={() => setSchoolLogoFile(null)} className="text-red-400 text-sm hover:text-red-300">Remove</button>
                       </div>
                     )}

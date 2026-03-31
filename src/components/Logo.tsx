@@ -1,12 +1,15 @@
+import Image from "next/image";
+
 export default function Logo({ size = 40, src }: { size?: number; src?: string }) {
   if (src) {
     return (
-      <img 
+      <Image 
         src={src} 
         alt="Logo" 
         width={size} 
         height={size} 
         className="rounded-lg object-cover"
+        unoptimized
       />
     );
   }
