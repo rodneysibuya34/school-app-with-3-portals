@@ -33,18 +33,7 @@ const getStoredTeachers = (): Teacher[] => {
   const stored = localStorage.getItem("teachersData");
   if (stored) return JSON.parse(stored);
   
-  const existingUsernames: string[] = [];
-  const defaultTeachers: Teacher[] = [
-    { id: 1, name: "Dr. Sarah Mitchell", email: "s.mitchell@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "Mathematics", username: "s.mitchell", password: "SM@OAK852Sep" },
-    { id: 2, name: "Mr. David Park", email: "d.park@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "English Literature", username: "d.park", password: "DP@OAK371Nov" },
-    { id: 3, name: "Mrs. Emily Roberts", email: "e.roberts@westfield.edu", school: "Westfield Christian School", subject: "Chemistry", username: "e.roberts", password: "ER@WES618Apr" },
-    { id: 4, name: "Dr. James Chen", email: "j.chen@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "Physics", username: "j.chen", password: "JC@OAK293Jul" },
-    { id: 5, name: "Ms. Anna Williams", email: "a.williams@riverside.edu", school: "Riverside Elementary", subject: "History", username: "a.williams", password: "AW@RIV745Jan" },
-  ];
-  
-  defaultTeachers.forEach(t => existingUsernames.push(t.username));
-  
-  return defaultTeachers;
+  return [];
 };
 
 const getStoredStudents = (): User[] => {
@@ -52,17 +41,7 @@ const getStoredStudents = (): User[] => {
   const stored = localStorage.getItem("studentsData");
   if (stored) return JSON.parse(stored);
   
-  const defaultStudents: User[] = [
-    { id: 1, name: "Alex Thompson", email: "a.thompson@oakridge.edu", grade: 11, school: "Oakridge Preparatory Academy", username: "alex.t", password: "AT@OAK419Mar" },
-    { id: 2, name: "Emma Wilson", email: "e.wilson@oakridge.edu", grade: 10, school: "Oakridge Preparatory Academy", username: "emma.w", password: "EW@OAK826Feb" },
-    { id: 3, name: "Michael Brown", email: "m.brown@westfield.edu", grade: 9, school: "Westfield Christian School", username: "michael.b", password: "MB@WES152Oct" },
-    { id: 4, name: "Sophia Lee", email: "s.lee@oakridge.edu", grade: 12, school: "Oakridge Preparatory Academy", username: "sophia.l", password: "SL@OAK937Aug" },
-    { id: 5, name: "James Garcia", email: "j.garcia@riverside.edu", grade: 8, school: "Riverside Elementary", username: "james.g", password: "JG@RIV564Dec" },
-    { id: 6, name: "Lina Naidoo", email: "lina.n@riverside.edu", grade: 5, school: "Riverside Elementary", username: "lina.n", password: "LN@RIV281Jun" },
-    { id: 7, name: "Thabo Mbeki", email: "thabo.m@westfield.edu", grade: 4, school: "Westfield Christian School", username: "thabo.m", password: "TM@WES673Sep" },
-  ];
-  
-  return defaultStudents;
+  return [];
 };
 
 export default function LoginPage() {

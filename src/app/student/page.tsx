@@ -5,16 +5,6 @@ import { useRouter } from "next/navigation";
 import AIAssistant from "@/components/AIAssistant";
 import Logo from "@/components/Logo";
 
-const studentsData = [
-  { id: 1, name: "Alex Thompson", email: "a.thompson@oakridge.edu", grade: 11, school: "Oakridge Preparatory Academy", username: "alex.t", password: "Alex@123", schoolYear: 2026, subjects: ["Mathematics", "Physical Sciences", "English Home Language", "Life Sciences", "Geography"] },
-  { id: 2, name: "Emma Wilson", email: "e.wilson@oakridge.edu", grade: 10, school: "Oakridge Preparatory Academy", username: "emma.w", password: "Emma@123", schoolYear: 2026, subjects: ["Mathematics", "Physical Sciences", "English Home Language", "Life Sciences", "Geography"] },
-  { id: 3, name: "Michael Brown", email: "m.brown@westfield.edu", grade: 9, school: "Westfield Christian School", username: "michael.b", password: "Mike@123", schoolYear: 2026, subjects: [] },
-  { id: 4, name: "Sophia Lee", email: "s.lee@oakridge.edu", grade: 12, school: "Oakridge Preparatory Academy", username: "sophia.l", password: "Soph@123", schoolYear: 2026, subjects: ["Mathematics", "Physical Sciences", "English Home Language", "Accounting", "Geography"] },
-  { id: 5, name: "James Garcia", email: "j.garcia@riverside.edu", grade: 7, school: "Riverside Elementary", username: "james.g", password: "Jame@123", schoolYear: 2026, subjects: [] },
-  { id: 6, name: "Lina Naidoo", email: "lina.n@riverside.edu", grade: 5, school: "Riverside Elementary", username: "lina.n", password: "Lina@123", schoolYear: 2026, subjects: [] },
-  { id: 7, name: "Thabo Mbeki", email: "thabo.m@westfield.edu", grade: 4, school: "Westfield Christian School", username: "thabo.m", password: "Thab@123", schoolYear: 2026, subjects: [] },
-];
-
 interface StudentData {
   id: number;
   name: string;
@@ -26,6 +16,8 @@ interface StudentData {
   schoolYear: number;
   subjects: string[];
 }
+
+const studentsData: StudentData[] = [];
 
 interface Homework {
   id: number;

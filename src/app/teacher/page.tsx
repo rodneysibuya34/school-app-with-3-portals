@@ -35,13 +35,7 @@ const teachersData: TeacherData[] = [
   { id: 5, name: "Ms. Anna Williams", email: "a.williams@riverside.edu", school: "Riverside Elementary", subject: "History", username: "a.williams", password: "Will@123", schoolYear: 2026 },
 ];
 
-const studentsData: StudentData[] = [
-  { id: 1, name: "Alex Thompson", email: "a.thompson@oakridge.edu", grade: 11, school: "Oakridge Preparatory Academy", username: "alex.t", password: "Alex@123", schoolYear: 2026 },
-  { id: 2, name: "Emma Wilson", email: "e.wilson@oakridge.edu", grade: 10, school: "Oakridge Preparatory Academy", username: "emma.w", password: "Emma@123", schoolYear: 2026 },
-  { id: 3, name: "Michael Brown", email: "m.brown@westfield.edu", grade: 9, school: "Westfield Christian School", username: "michael.b", password: "Mike@123", schoolYear: 2026 },
-  { id: 4, name: "Sophia Lee", email: "s.lee@oakridge.edu", grade: 12, school: "Oakridge Preparatory Academy", username: "sophia.l", password: "Soph@123", schoolYear: 2026 },
-  { id: 5, name: "James Garcia", email: "j.garcia@riverside.edu", grade: 8, school: "Riverside Elementary", username: "james.g", password: "Jame@123", schoolYear: 2026 },
-];
+const studentsData: StudentData[] = [];
 
 interface Homework {
   id: number;
@@ -103,24 +97,15 @@ export default function TeacherPortal() {
   });
   const [homeworkList, setHomeworkList] = useState<Homework[]>(() => {
     const stored = localStorage.getItem("homeworkData");
-    return stored ? JSON.parse(stored) : [
-      { id: 1, title: "Algebra Practice Problems", description: "Complete exercises 1-20 from Chapter 5", dueDate: "2026-04-02", grade: 11, fileUrl: "", fileType: "application/pdf", subject: "Mathematics" },
-      { id: 2, title: "Geometry Proofs", description: "Submit proofs for theorems 1-5", dueDate: "2026-04-05", grade: 10, fileUrl: "", fileType: "application/pdf", subject: "Mathematics" },
-    ];
+    return stored ? JSON.parse(stored) : [];
   });
   const [testList, setTestList] = useState<Test[]>(() => {
     const stored = localStorage.getItem("testData");
-    return stored ? JSON.parse(stored) : [
-      { id: 1, title: "Mid-term Exam", description: "Covers chapters 1-5", dueDate: "2026-04-15", grade: 11, subject: "Mathematics", questions: [], published: true },
-      { id: 2, title: "Quiz: Trigonometry", description: "Short quiz on basic trig functions", dueDate: "2026-04-10", grade: 10, subject: "Mathematics", questions: [], published: false },
-    ];
+    return stored ? JSON.parse(stored) : [];
   });
   const [announcements, setAnnouncements] = useState<Announcement[]>(() => {
     const stored = localStorage.getItem("announcementData");
-    return stored ? JSON.parse(stored) : [
-      { id: 1, title: "Parent-Teacher Meeting", content: "Join us this Friday at 2 PM for the quarterly parent-teacher meeting.", date: "2026-03-26", priority: "important" },
-      { id: 2, title: "Exam Preparation", content: "Please ensure all students complete practice papers before the mid-term.", date: "2026-03-24", priority: "normal" },
-    ];
+    return stored ? JSON.parse(stored) : [];
   });
   const [showHomeworkModal, setShowHomeworkModal] = useState(false);
   const [showTestModal, setShowTestModal] = useState(false);

@@ -86,20 +86,9 @@ interface Subscription {
   renewal: string;
 }
 
-const initialSchools: School[] = [
-  { id: 1, name: "Oakridge Preparatory Academy", location: "Boston, MA", students: 892, teachers: 48, status: "Active", type: "High School", adminUsername: "oakridge_admin", adminPassword: "Oakridge2026!Admin", year: 2026, expiryDate: "2027-01-01", isActive: true, isBlocked: false, paymentStatus: "active", contact: "info@oakridge.edu", address: "123 Oak Lane, Boston, MA" },
-  { id: 2, name: "Westfield Christian School", location: "Chicago, IL", students: 456, teachers: 28, status: "Active", type: "Primary", adminUsername: "westfield_admin", adminPassword: "Westfield2026!Admin", year: 2026, expiryDate: "2026-03-15", isActive: true, isBlocked: false, paymentStatus: "active", contact: "admin@westfield.org", address: "456 Church St, Chicago, IL" },
-  { id: 3, name: "Riverside Elementary", location: "Miami, FL", students: 324, teachers: 22, status: "Active", type: "Primary", adminUsername: "riverside_admin", adminPassword: "Riverside2026!Admin", year: 2026, expiryDate: "2026-06-01", isActive: true, isBlocked: false, paymentStatus: "active", contact: "riverside@school.edu", address: "789 River Rd, Miami, FL" },
-  { id: 4, name: "Highland Academy", location: "Seattle, WA", students: 678, teachers: 35, status: "Trial", type: "High School", adminUsername: "highland_admin", adminPassword: "Highland2026!Admin", year: 2026, expiryDate: "2026-03-31", isActive: true, isBlocked: false, paymentStatus: "trial", contact: "contact@highland.edu", address: "321 Highland Ave, Seattle, WA" },
-];
+const initialSchools: School[] = [];
 
-const initialTeachers: Teacher[] = [
-  { id: 1, name: "Dr. Sarah Mitchell", email: "s.mitchell@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "Mathematics", status: "Active", username: "s.mitchell", password: "SM@OAK852Sep" },
-  { id: 2, name: "Mr. David Park", email: "d.park@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "English Literature", status: "Active", username: "d.park", password: "DP@OAK371Nov" },
-  { id: 3, name: "Mrs. Emily Roberts", email: "e.roberts@westfield.edu", school: "Westfield Christian School", subject: "Chemistry", status: "Active", username: "e.roberts", password: "ER@WES618Apr" },
-  { id: 4, name: "Dr. James Chen", email: "j.chen@oakridge.edu", school: "Oakridge Preparatory Academy", subject: "Physics", status: "Active", username: "j.chen", password: "JC@OAK293Jul" },
-  { id: 5, name: "Ms. Anna Williams", email: "a.williams@riverside.edu", school: "Riverside Elementary", subject: "History", status: "Active", username: "a.williams", password: "AW@RIV745Jan" },
-];
+const initialTeachers: Teacher[] = [];
 
 const initialStudents: Student[] = [
   { id: 1, name: "Alex Thompson", email: "a.thompson@oakridge.edu", grade: 11, school: "Oakridge Preparatory Academy", status: "Active", username: "alex.t", password: "AT@OAK419Mar" },
