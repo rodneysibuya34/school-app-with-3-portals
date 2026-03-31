@@ -897,17 +897,15 @@ export default function StudentPortal() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="p-6 rounded-2xl bg-[#1E293B]/5 backdrop-blur-xl border border-white/10">
           <h2 className="text-xl font-semibold text-white mb-6">My Subjects</h2>
-          {courses.length > 0 ? courses.map((course) => (
-            <div key={course.name} className="p-4 rounded-xl bg-[#1E293B]/5 mb-3">
-              <div className="flex justify-between mb-2">
-                <h3 className="text-white font-medium">{course.name}</h3>
-                <span className="px-3 py-1 rounded-full text-sm bg-green-500/20 text-green-400">{course.grade}</span>
+          {(selectedSubjects.length > 0 ? selectedSubjects : (loggedInStudent?.subjects || [])).length > 0 ? 
+            (selectedSubjects.length > 0 ? selectedSubjects : (loggedInStudent?.subjects || [])).map((subject) => (
+              <div key={subject} className="p-4 rounded-xl bg-[#1E293B]/5 mb-3">
+                <h3 className="text-white font-medium">{subject}</h3>
               </div>
-              <p className="text-slate-400 text-sm">{course.teacher}</p>
-            </div>
-          )) : (
-            <p className="text-slate-400">No subjects enrolled yet</p>
-          )}
+            )) : (
+              <p className="text-slate-400">No subjects enrolled yet</p>
+            )
+          }
         </div>
 
         <div className="p-6 rounded-2xl bg-[#1E293B]/5 backdrop-blur-xl border border-white/10">
@@ -1120,16 +1118,16 @@ export default function StudentPortal() {
         <h1 className="text-3xl font-bold text-white mb-6">My Progress</h1>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="p-6 rounded-2xl bg-[#1E293B]/5 backdrop-blur-xl border border-white/10">
-            <p className="text-3xl font-bold text-white mb-1">{gpa}</p>
-            <p className="text-slate-400 text-sm">Overall GPA</p>
-          </div>
-          <div className="p-6 rounded-2xl bg-[#1E293B]/5 backdrop-blur-xl border border-white/10">
-            <p className="text-3xl font-bold text-white mb-1">{courses.length}</p>
-            <p className="text-slate-400 text-sm">Courses</p>
+            <p className="text-3xl font-bold text-white mb-1">{selectedSubjects.length || loggedInStudent?.subjects?.length || 0}</p>
+            <p className="text-slate-400 text-sm">Total Subjects</p>
           </div>
           <div className="p-6 rounded-2xl bg-[#1E293B]/5 backdrop-blur-xl border border-white/10">
             <p className="text-3xl font-bold text-white mb-1">{homework.length}</p>
             <p className="text-slate-400 text-sm">Homework</p>
+          </div>
+          <div className="p-6 rounded-2xl bg-[#1E293B]/5 backdrop-blur-xl border border-white/10">
+            <p className="text-3xl font-bold text-white mb-1">{testsTaken}</p>
+            <p className="text-slate-400 text-sm">Tests Taken</p>
           </div>
         </div>
 
@@ -1196,31 +1194,28 @@ export default function StudentPortal() {
         </div>
 
         <div className="p-6 rounded-2xl bg-[#1E293B]/5 backdrop-blur-xl border border-white/10">
-          <h2 className="text-xl font-semibold text-white mb-4">Subject Performance</h2>
+          <h2 className="text-xl font-semibold text-white mb-4">My Subjects</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {courses.map((course) => {
-              const gradeValue = gpaValues[course.grade] || "0";
-              const percentage = parseFloat(gradeValue) / 4 * 100;
-              return (
-                <div key={course.name} className="p-4 rounded-xl bg-[#1E293B]/5">
-                  <p className="text-white font-medium text-sm mb-2">{course.name}</p>
-                  <div className="flex justify-between items-center">
-                    <span className="text-green-400 font-bold">{course.grade}</span>
-                    <span className="text-slate-500 text-xs">{percentage}%</span>
-                  </div>
-                </div>
-              );
-            })}
+            {(selectedSubjects.length > 0 ? selectedSubjects : (loggedInStudent?.subjects || [])).map((subject) => (
+              <div key={subject} className="p-4 rounded-xl bg-[#1E293B]/5">
+                <p className="text-white font-medium text-sm">{subject}</p>
+              </div>
+            ))}
           </div>
+          {(selectedSubjects.length === 0 && (!loggedInStudent?.subjects || loggedInStudent.subjects.length === 0)) && (
+            <p className="text-slate-400 text-center py-4">No subjects selected yet</p>
+          )}
         </div>
       </div>
     );
   };
 
-  const grade10Subjects = [
+  const allSubjects = [
     "Mathematics", "Mathematical Literacy", "Physical Sciences", "Life Sciences",
     "Geography", "History", "Business Studies", "Economics", "Information Technology",
-    "English Home Language", "Afrikaans First Add", "Religious Studies", "Xitsonga", "Accounting"
+    "English Home Language", "Afrikaans First Add", "Religious Studies", "Xitsonga", "Accounting",
+    "Natural Sciences", "Social Sciences", "Life Skills", "Technology", "EMS",
+    "Consumer Studies", "Tourism"
   ];
 
   const handleSubjectToggle = (subject: string) => {
@@ -1237,9 +1232,9 @@ export default function StudentPortal() {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-[#1E293B] rounded-2xl p-6 w-full max-w-lg border border-white/10">
             <h3 className="text-xl font-semibold text-white mb-4">Select Your Subjects</h3>
-            <p className="text-slate-400 text-sm mb-4">Choose the subjects you are taking this year (select at least 4):</p>
+            <p className="text-slate-400 text-sm mb-4">Choose the subjects you are learning:</p>
             <div className="grid grid-cols-2 gap-3 max-h-64 overflow-y-auto mb-4">
-              {grade10Subjects.map(subject => (
+              {allSubjects.map((subject: string) => (
                 <button
                   key={subject}
                   onClick={() => handleSubjectToggle(subject)}
@@ -1256,10 +1251,10 @@ export default function StudentPortal() {
             <div className="flex gap-3">
               <button
                 onClick={() => {
-                  if (selectedSubjects.length >= 4) {
+                  if (selectedSubjects.length > 0) {
                     saveSubjects(selectedSubjects);
                   } else {
-                    alert("Please select at least 4 subjects");
+                    alert("Please select at least 1 subject");
                   }
                 }}
                 className="flex-1 px-4 py-3 rounded-xl bg-blue-600 text-white hover:bg-blue-700"
