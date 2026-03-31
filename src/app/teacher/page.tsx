@@ -66,6 +66,16 @@ interface Homework {
   subject: string;
 }
 
+interface StudyMaterial {
+  id: number;
+  title: string;
+  subject: string;
+  description: string;
+  fileUrl: string;
+  fileType: string;
+  grade: number;
+}
+
 interface Test {
   id: number;
   title: string;
@@ -102,6 +112,7 @@ const navItems = [
   { icon: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z", label: "Exam Timetable" },
   { icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", label: "Weekly Timetable" },
   { icon: "M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z", label: "Announcements" },
+  { icon: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253", label: "Study Materials" },
   { icon: "M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z", label: "Chat" },
   { icon: "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z", label: "Settings" },
 ];
@@ -123,6 +134,13 @@ export default function TeacherPortal() {
     const stored = localStorage.getItem("testData");
     return stored ? JSON.parse(stored) : [];
   });
+  const [studyMaterialsList, setStudyMaterialsList] = useState<StudyMaterial[]>(() => {
+    const stored = localStorage.getItem("studyMaterialsData");
+    return stored ? JSON.parse(stored) : [];
+  });
+  const [showStudyMaterialModal, setShowStudyMaterialModal] = useState(false);
+  const [newStudyMaterial, setNewStudyMaterial] = useState({ title: "", subject: "", description: "", grade: "" });
+  const [studyMaterialFile, setStudyMaterialFile] = useState<{ name: string; data: string; type: string } | null>(null);
   const [announcements, setAnnouncements] = useState<Announcement[]>(() => {
     const stored = localStorage.getItem("announcementData");
     return stored ? JSON.parse(stored) : [];
@@ -289,6 +307,25 @@ export default function TeacherPortal() {
       setNewHomework({ title: "", description: "", dueDate: "", grade: "", subject: "" });
       setHomeworkFile(null);
       setShowHomeworkModal(false);
+    }
+  };
+
+  const handleAddStudyMaterial = () => {
+    if (newStudyMaterial.title && newStudyMaterial.subject && newStudyMaterial.grade) {
+      const sm: StudyMaterial = {
+        id: Date.now(),
+        title: newStudyMaterial.title,
+        subject: newStudyMaterial.subject,
+        description: newStudyMaterial.description,
+        grade: parseInt(newStudyMaterial.grade),
+        fileUrl: studyMaterialFile?.data || "",
+        fileType: studyMaterialFile?.type || "unknown"
+      };
+      setStudyMaterialsList([...studyMaterialsList, sm]);
+      localStorage.setItem("studyMaterialsData", JSON.stringify([...studyMaterialsList, sm]));
+      setNewStudyMaterial({ title: "", subject: "", description: "", grade: "" });
+      setStudyMaterialFile(null);
+      setShowStudyMaterialModal(false);
     }
   };
 
@@ -1394,6 +1431,88 @@ export default function TeacherPortal() {
     </div>
   );
 
+  const renderStudyMaterials = () => (
+    <div>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-white font-['Outfit']">Study Materials</h1>
+          <p className="text-slate-400 mt-1">Upload study materials for students</p>
+        </div>
+        <button onClick={() => setShowStudyMaterialModal(true)} className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-medium transition-colors flex items-center gap-2">
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          Add Study Material
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {studyMaterialsList.map((sm) => (
+          <div key={sm.id} className="p-6 rounded-2xl bg-stone-800 border border-white/10">
+            <h3 className="text-lg font-semibold text-white mb-2">{sm.title}</h3>
+            <p className="text-slate-400 text-sm mb-2">Subject: {sm.subject} • Grade: {sm.grade}</p>
+            <p className="text-slate-300 text-sm mb-4">{sm.description}</p>
+            {sm.fileUrl && (
+              <a href={sm.fileUrl} download={sm.title} className="text-blue-400 hover:text-blue-300 text-sm">Download Material</a>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {showStudyMaterialModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-[#1E293B] rounded-2xl p-6 w-full max-w-md border border-white/10">
+            <h3 className="text-xl font-semibold text-white mb-6">Add Study Material</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm text-slate-400 mb-2">Title</label>
+                <input type="text" value={newStudyMaterial.title} onChange={(e) => setNewStudyMaterial({...newStudyMaterial, title: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white focus:outline-none focus:border-purple-500" placeholder="Study material title" />
+              </div>
+              <div>
+                <label className="block text-sm text-slate-400 mb-2">Subject</label>
+                <input type="text" value={newStudyMaterial.subject} onChange={(e) => setNewStudyMaterial({...newStudyMaterial, subject: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white focus:outline-none focus:border-purple-500" placeholder="Subject" />
+              </div>
+              <div>
+                <label className="block text-sm text-slate-400 mb-2">Grade</label>
+                <select value={newStudyMaterial.grade} onChange={(e) => setNewStudyMaterial({...newStudyMaterial, grade: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white focus:outline-none focus:border-purple-500">
+                  <option value="">Select Grade</option>
+                  {[4,5,6,7,8,9,10,11,12].map(g => <option key={g} value={g}>Grade {g}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm text-slate-400 mb-2">Description</label>
+                <textarea value={newStudyMaterial.description} onChange={(e) => setNewStudyMaterial({...newStudyMaterial, description: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white focus:outline-none focus:border-purple-500" rows={3} placeholder="Description" />
+              </div>
+              <div>
+                <label className="block text-sm text-slate-400 mb-2">File</label>
+                <input type="file" onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                      setStudyMaterialFile({ name: file.name, data: event.target?.result as string, type: file.type });
+                    };
+                    reader.readAsDataURL(file);
+                  }
+                }} className="w-full text-slate-400 text-sm file:mr-2 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-purple-600 file:text-white file:cursor-pointer" />
+                {studyMaterialFile && (
+                  <div className="flex items-center gap-2 mt-2 text-sm">
+                    <span className="text-slate-400">{studyMaterialFile.name}</span>
+                    <button onClick={() => setStudyMaterialFile(null)} className="text-red-400 hover:text-red-300">Remove</button>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button onClick={() => { setShowStudyMaterialModal(false); setNewStudyMaterial({ title: "", subject: "", description: "", grade: "" }); setStudyMaterialFile(null); }} className="flex-1 px-4 py-3 rounded-xl bg-stone-800 text-white hover:bg-[#1E293B]/20 transition-colors">Cancel</button>
+              <button onClick={handleAddStudyMaterial} className="flex-1 px-4 py-3 rounded-xl bg-purple-600 text-white hover:bg-purple-700 transition-colors">Add</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
   const renderChat = () => {
     const gradeMessages = chatGrade ? chatMessages.filter(m => m.grade === parseInt(chatGrade)) : [];
     return (
@@ -1628,6 +1747,7 @@ export default function TeacherPortal() {
         {activeTab === "exam timetable" && renderExamTimetable()}
         {activeTab === "weekly timetable" && renderWeeklyTimetable()}
         {activeTab === "announcements" && renderAnnouncements()}
+        {activeTab === "study materials" && renderStudyMaterials()}
         {activeTab === "chat" && renderChat()}
         {activeTab === "settings" && renderSettings()}
       </main>
