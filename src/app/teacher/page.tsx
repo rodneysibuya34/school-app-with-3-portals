@@ -15,6 +15,7 @@ interface TeacherData {
   username: string;
   password: string;
   schoolYear: number;
+  profilePicture?: string;
 }
 
 interface StudentData {
@@ -27,6 +28,21 @@ interface StudentData {
   password: string;
   schoolYear: number;
   profilePicture?: string;
+}
+
+interface ChatMessage {
+  id: number;
+  sender: string;
+  role: "teacher" | "student";
+  school: string;
+  grade: number;
+  message: string;
+  isLocked: boolean;
+  password?: string;
+  timestamp: string;
+  fileType?: string;
+  fileUrl?: string;
+  fileName?: string;
 }
 
 const teachersData: TeacherData[] = [
@@ -78,21 +94,6 @@ interface Announcement {
   priority: "normal" | "important" | "urgent";
 }
 
-interface ChatMessage {
-  id: number;
-  sender: string;
-  role: "teacher" | "student";
-  school: string;
-  grade: number;
-  message: string;
-  isLocked: boolean;
-  password?: string;
-  timestamp: string;
-  fileType?: string;
-  fileUrl?: string;
-  fileName?: string;
-}
-
 const navItems = [
   { icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6", label: "Dashboard" },
   { icon: "M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10", label: "Homework" },
@@ -102,6 +103,7 @@ const navItems = [
   { icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", label: "Weekly Timetable" },
   { icon: "M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z", label: "Announcements" },
   { icon: "M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z", label: "Chat" },
+  { icon: "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z", label: "Settings" },
 ];
 
 export default function TeacherPortal() {
@@ -134,6 +136,7 @@ export default function TeacherPortal() {
   const [chatPassword, setChatPassword] = useState("");
   const [chatIsLocked, setChatIsLocked] = useState(false);
   const [chatFile, setChatFile] = useState<{ name: string; data: string; type: string } | null>(null);
+  const [profilePictureFile, setProfilePictureFile] = useState<string | null>(null);
   const [showHomeworkModal, setShowHomeworkModal] = useState(false);
   const [showTestModal, setShowTestModal] = useState(false);
   const [showAnnouncementModal, setShowAnnouncementModal] = useState(false);
@@ -152,8 +155,19 @@ export default function TeacherPortal() {
   const [newQuestion, setNewQuestion] = useState({ text: "", type: "mcq" as "mcq" | "truefalse", options: ["", "", "", ""], correctAnswer: "" });
   const [bulkQuestionCount, setBulkQuestionCount] = useState(10);
   const [bulkQuestions, setBulkQuestions] = useState<Question[]>([]);
-  const [examTimetable, setExamTimetable] = useState<{ date: string; exam: string; time: string; venue: string; fileUrl?: string; fileType?: string }[]>([]);
-  const [weeklyTimetable, setWeeklyTimetable] = useState<{ day: string; time: string; subject: string; grade: number; fileUrl?: string; fileType?: string }[]>([]);
+  const [examTimetable, setExamTimetable] = useState<{ date: string; exam: string; time: string; venue: string; fileUrl?: string; fileType?: string }[]>([
+    { date: "2026-06-15", exam: "Mathematics Paper 1", time: "09:00 - 11:00", venue: "Hall A" },
+    { date: "2026-06-16", exam: "English Home Language", time: "09:00 - 11:30", venue: "Hall B" },
+    { date: "2026-06-17", exam: "Physical Sciences", time: "09:00 - 11:00", venue: "Lab 1" },
+  ]);
+  const [weeklyTimetable, setWeeklyTimetable] = useState<{ day: string; time: string; subject: string; grade: number; fileUrl?: string; fileType?: string }[]>([
+    { day: "Monday", time: "08:00 - 09:00", subject: "Mathematics", grade: 11 },
+    { day: "Monday", time: "09:00 - 10:00", subject: "Physical Sciences", grade: 11 },
+    { day: "Tuesday", time: "08:00 - 09:00", subject: "English Home Language", grade: 11 },
+    { day: "Wednesday", time: "08:00 - 09:00", subject: "Life Sciences", grade: 11 },
+    { day: "Thursday", time: "09:00 - 10:00", subject: "Geography", grade: 11 },
+    { day: "Friday", time: "08:00 - 09:00", subject: "History", grade: 11 },
+  ]);
   const [newExam, setNewExam] = useState({ date: "", exam: "", time: "", venue: "" });
   const [examFile, setExamFile] = useState<{ name: string; data: string; type: string } | null>(null);
   const [newSchedule, setNewSchedule] = useState({ day: "Monday", time: "08:00 - 09:00", subject: "", grade: "" });
@@ -402,6 +416,27 @@ export default function TeacherPortal() {
     localStorage.setItem("chatMessages", JSON.stringify(updated));
   };
 
+  const handleProfilePictureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && loggedInTeacher) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const pic = event.target?.result as string;
+        const updatedTeacher = { ...loggedInTeacher, profilePicture: pic };
+        setLoggedInTeacher(updatedTeacher);
+        localStorage.setItem("loggedInTeacher", JSON.stringify(updatedTeacher));
+        const storedTeachers = localStorage.getItem("teachersData");
+        if (storedTeachers) {
+          const teachers = JSON.parse(storedTeachers);
+          const updated = teachers.map((t: TeacherData) => t.id === loggedInTeacher.id ? { ...t, profilePicture: pic } : t);
+          localStorage.setItem("teachersData", JSON.stringify(updated));
+        }
+        setProfilePictureFile(pic);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleAddExam = () => {
     if (newExam.date && newExam.exam && newExam.time && newExam.venue) {
       setExamTimetable([...examTimetable, { ...newExam, fileUrl: examFile?.data, fileType: examFile?.type }]);
@@ -489,13 +524,9 @@ export default function TeacherPortal() {
               <div key={student.id} className="p-4 rounded-xl bg-stone-800 hover:bg-stone-800 transition-colors">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    {student.profilePicture ? (
-                      <Image src={student.profilePicture} alt={student.name} width={40} height={40} className="rounded-full object-cover border-2 border-blue-400" unoptimized />
-                    ) : (
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-sm font-medium">
-                        {getInitials(student.name)}
-                      </div>
-                    )}
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-sm font-medium">
+                      {getInitials(student.name)}
+                    </div>
                     <div>
                       <h3 className="text-white font-medium">{student.name}</h3>
                       <p className="text-slate-400 text-sm">Grade {student.grade}</p>
@@ -1389,8 +1420,10 @@ export default function TeacherPortal() {
                     <div className="flex justify-between items-start mb-2">
                       <div className="flex items-center gap-2">
                         <span className="text-white font-medium">{msg.sender}</span>
-                        <span className="px-2 py-0.5 rounded text-xs bg-purple-500/20 text-purple-300">Teacher</span>
-                        {msg.isLocked && <span className="text-yellow-400">Locked</span>}
+                        <span className={`px-2 py-0.5 rounded text-xs ${msg.role === 'teacher' ? 'bg-blue-500/20 text-blue-300' : 'bg-green-500/20 text-green-300'}`}>
+                          {msg.role === 'teacher' ? 'Teacher' : 'Student'}
+                        </span>
+                        {msg.isLocked && <span className="text-yellow-400 text-xs">Locked</span>}
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-slate-500 text-xs">{new Date(msg.timestamp).toLocaleString()}</span>
@@ -1442,6 +1475,57 @@ export default function TeacherPortal() {
             </div>
           </>
         )}
+      </div>
+    );
+  };
+
+  const renderSettings = () => {
+    if (!loggedInTeacher) return null;
+    return (
+      <div>
+        <h1 className="text-3xl font-bold text-white mb-6 font-['Outfit']">Settings</h1>
+        
+        <div className="p-6 rounded-2xl bg-stone-800 border border-white/10 mb-6">
+          <h2 className="text-xl font-semibold text-white mb-4">Profile Picture</h2>
+          <div className="flex items-center gap-6">
+            {loggedInTeacher.profilePicture ? (
+              <Image src={loggedInTeacher.profilePicture} alt={loggedInTeacher.name} width={100} height={100} className="rounded-full object-cover border-2 border-purple-400" unoptimized />
+            ) : (
+              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white text-3xl font-bold">
+                {getInitials(loggedInTeacher.name)}
+              </div>
+            )}
+            <div>
+              <label className="px-4 py-2 rounded-xl bg-purple-600 text-white cursor-pointer hover:bg-purple-700 transition-colors">
+                Upload Picture
+                <input type="file" accept="image/*" className="hidden" onChange={handleProfilePictureUpload} />
+              </label>
+              <p className="text-slate-400 text-sm mt-2">Recommended: Square image, at least 200x200 pixels</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-6 rounded-2xl bg-stone-800 border border-white/10">
+          <h2 className="text-xl font-semibold text-white mb-4">Account Information</h2>
+          <div className="space-y-3">
+            <div className="flex justify-between">
+              <span className="text-slate-400">Name:</span>
+              <span className="text-white">{loggedInTeacher.name}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-400">Subject:</span>
+              <span className="text-white">{loggedInTeacher.subject}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-400">School:</span>
+              <span className="text-white">{loggedInTeacher.school}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-400">Username:</span>
+              <span className="text-white">{loggedInTeacher.username}</span>
+            </div>
+          </div>
+        </div>
       </div>
     );
   };
@@ -1545,6 +1629,7 @@ export default function TeacherPortal() {
         {activeTab === "weekly timetable" && renderWeeklyTimetable()}
         {activeTab === "announcements" && renderAnnouncements()}
         {activeTab === "chat" && renderChat()}
+        {activeTab === "settings" && renderSettings()}
       </main>
 
       <AIAssistant mode="teacher" onStrugglingAlert={handleStrugglingAlert} />

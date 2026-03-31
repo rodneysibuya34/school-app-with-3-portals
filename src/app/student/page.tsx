@@ -19,7 +19,30 @@ interface StudentData {
   profilePicture?: string;
 }
 
-const studentsData: StudentData[] = [];
+interface ChatMessage {
+  id: number;
+  sender: string;
+  role: "teacher" | "student";
+  school: string;
+  grade: number;
+  message: string;
+  isLocked: boolean;
+  password?: string;
+  timestamp: string;
+  fileType?: string;
+  fileUrl?: string;
+  fileName?: string;
+}
+
+const studentsData: StudentData[] = [
+  { id: 1, name: "Alex Thompson", email: "a.thompson@oakridge.edu", grade: 11, school: "Oakridge Preparatory Academy", username: "alex.t", password: "Alex@123", schoolYear: 2026, subjects: ["Mathematics", "Physical Sciences", "English Home Language", "Life Sciences", "Geography"] },
+  { id: 2, name: "Emma Wilson", email: "e.wilson@oakridge.edu", grade: 10, school: "Oakridge Preparatory Academy", username: "emma.w", password: "Emma@123", schoolYear: 2026, subjects: ["Mathematics", "Physical Sciences", "English Home Language", "Life Sciences", "Geography"] },
+  { id: 3, name: "Michael Brown", email: "m.brown@westfield.edu", grade: 9, school: "Westfield Christian School", username: "michael.b", password: "Mike@123", schoolYear: 2026, subjects: [] },
+  { id: 4, name: "Sophia Lee", email: "s.lee@oakridge.edu", grade: 12, school: "Oakridge Preparatory Academy", username: "sophia.l", password: "Soph@123", schoolYear: 2026, subjects: ["Mathematics", "Physical Sciences", "English Home Language", "Accounting", "Geography"] },
+  { id: 5, name: "James Garcia", email: "j.garcia@riverside.edu", grade: 8, school: "Riverside Elementary", username: "james.g", password: "Jame@123", schoolYear: 2026, subjects: [] },
+  { id: 6, name: "Lina Naidoo", email: "lina.n@riverside.edu", grade: 5, school: "Riverside Elementary", username: "lina.n", password: "Lina@123", schoolYear: 2026, subjects: [] },
+  { id: 7, name: "Thabo Mbeki", email: "thabo.m@westfield.edu", grade: 4, school: "Westfield Christian School", username: "thabo.m", password: "Thab@123", schoolYear: 2026, subjects: [] },
+];
 
 interface Homework {
   id: number;
@@ -53,21 +76,6 @@ interface StudyMaterial {
   fileUrl: string;
   fileType: string;
   grade: number;
-}
-
-interface ChatMessage {
-  id: number;
-  sender: string;
-  role: "teacher" | "student";
-  school: string;
-  grade: number;
-  message: string;
-  isLocked: boolean;
-  password?: string;
-  timestamp: string;
-  fileType?: string;
-  fileUrl?: string;
-  fileName?: string;
 }
 
 const homeworkByGrade: Record<number, Homework[]> = {
@@ -170,13 +178,293 @@ const testsByGrade: Record<number, Test[]> = {
   ],
 };
 
-const examTimetableByGrade: Record<number, { date: string; exam: string; time: string; venue: string }[]> = {};
+const examTimetableByGrade: Record<number, { date: string; exam: string; time: string; venue: string }[]> = {
+  4: [
+    { date: "2026-06-15", exam: "Mathematics", time: "09:00 - 10:30", venue: "Room 4A" },
+    { date: "2026-06-16", exam: "English Home Language", time: "09:00 - 10:30", venue: "Room 4A" },
+    { date: "2026-06-17", exam: "Afrikaans First Add", time: "09:00 - 10:30", venue: "Room 4A" },
+    { date: "2026-06-18", exam: "Natural Sciences", time: "09:00 - 10:00", venue: "Room 4A" },
+    { date: "2026-06-19", exam: "Life Skills", time: "09:00 - 10:00", venue: "Room 4A" },
+  ],
+  5: [
+    { date: "2026-06-15", exam: "Mathematics", time: "09:00 - 10:30", venue: "Room 5A" },
+    { date: "2026-06-16", exam: "English Home Language", time: "09:00 - 10:30", venue: "Room 5A" },
+    { date: "2026-06-17", exam: "Afrikaans First Add", time: "09:00 - 10:30", venue: "Room 5A" },
+    { date: "2026-06-18", exam: "Natural Sciences", time: "09:00 - 10:00", venue: "Room 5A" },
+    { date: "2026-06-19", exam: "Social Sciences", time: "09:00 - 10:00", venue: "Room 5A" },
+  ],
+  6: [
+    { date: "2026-06-15", exam: "Mathematics", time: "09:00 - 11:00", venue: "Room 6A" },
+    { date: "2026-06-16", exam: "English Home Language", time: "09:00 - 11:00", venue: "Room 6A" },
+    { date: "2026-06-17", exam: "Afrikaans First Add", time: "09:00 - 10:30", venue: "Room 6A" },
+    { date: "2026-06-18", exam: "Natural Sciences", time: "09:00 - 10:30", venue: "Room 6A" },
+    { date: "2026-06-19", exam: "Social Sciences", time: "09:00 - 10:30", venue: "Room 6A" },
+  ],
+  7: [
+    { date: "2026-06-15", exam: "Mathematics", time: "09:00 - 11:00", venue: "Room 7A" },
+    { date: "2026-06-16", exam: "English Home Language", time: "09:00 - 11:00", venue: "Room 7A" },
+    { date: "2026-06-17", exam: "Afrikaans First Add", time: "09:00 - 10:30", venue: "Room 7A" },
+    { date: "2026-06-18", exam: "Natural Sciences", time: "09:00 - 11:00", venue: "Lab 1" },
+    { date: "2026-06-19", exam: "Social Sciences", time: "09:00 - 10:30", venue: "Room 7A" },
+  ],
+  8: [
+    { date: "2026-06-15", exam: "Mathematics", time: "09:00 - 11:00", venue: "Hall A" },
+    { date: "2026-06-16", exam: "English Home Language", time: "09:00 - 11:00", venue: "Hall B" },
+    { date: "2026-06-17", exam: "Natural Sciences", time: "09:00 - 11:00", venue: "Lab 1" },
+  ],
+  9: [
+    { date: "2026-06-15", exam: "Mathematics", time: "09:00 - 11:00", venue: "Hall A" },
+    { date: "2026-06-16", exam: "English Home Language", time: "09:00 - 11:00", venue: "Hall B" },
+    { date: "2026-06-17", exam: "EMS", time: "09:00 - 11:00", venue: "Hall C" },
+  ],
+  10: [
+    { date: "2026-06-15", exam: "Mathematics/Mathematical Literacy", time: "09:00 - 11:00", venue: "Hall A" },
+    { date: "2026-06-16", exam: "English Home Language", time: "09:00 - 11:00", venue: "Hall B" },
+    { date: "2026-06-17", exam: "Physical Sciences/Life Sciences", time: "09:00 - 11:00", venue: "Lab 1" },
+    { date: "2026-06-18", exam: "Geography/History/Business Studies", time: "09:00 - 11:00", venue: "Hall C" },
+  ],
+  11: [
+    { date: "2026-06-15", exam: "Mathematics", time: "09:00 - 12:00", venue: "Hall A" },
+    { date: "2026-06-16", exam: "English Home Language", time: "09:00 - 11:30", venue: "Hall B" },
+    { date: "2026-06-17", exam: "Physical Sciences/Life Sciences", time: "09:00 - 12:00", venue: "Lab 1" },
+    { date: "2026-06-18", exam: "Accounting/Business Studies/Economics", time: "09:00 - 11:00", venue: "Hall C" },
+  ],
+  12: [
+    { date: "2026-06-15", exam: "Mathematics/Mathematical Literacy", time: "08:00 - 11:00", venue: "Hall A" },
+    { date: "2026-06-16", exam: "English Home Language", time: "08:00 - 11:00", venue: "Hall B" },
+    { date: "2026-06-17", exam: "Physical Sciences/Life Sciences", time: "08:00 - 11:00", venue: "Lab 1" },
+    { date: "2026-06-18", exam: "Accounting/Business Studies/Economics", time: "08:00 - 11:00", venue: "Hall C" },
+    { date: "2026-06-19", exam: "Geography/History/IT", time: "08:00 - 11:00", venue: "Hall D" },
+  ],
+};
 
-const weeklyTimetableByGrade: Record<number, { day: string; time: string; subject: string }[]> = {};
+const weeklyTimetableByGrade: Record<number, { day: string; time: string; subject: string }[]> = {
+  4: [
+    { day: "Monday", time: "08:00 - 08:45", subject: "Mathematics" },
+    { day: "Monday", time: "08:45 - 09:30", subject: "English Home Language" },
+    { day: "Monday", time: "10:00 - 10:45", subject: "Afrikaans First Add" },
+    { day: "Tuesday", time: "08:00 - 08:45", subject: "English Home Language" },
+    { day: "Tuesday", time: "08:45 - 09:30", subject: "Mathematics" },
+    { day: "Wednesday", time: "08:00 - 08:45", subject: "Natural Sciences" },
+    { day: "Wednesday", time: "08:45 - 09:30", subject: "Mathematics" },
+    { day: "Thursday", time: "08:00 - 08:45", subject: "Social Sciences" },
+    { day: "Thursday", time: "08:45 - 09:30", subject: "Life Skills" },
+    { day: "Friday", time: "08:00 - 08:45", subject: "Mathematics" },
+    { day: "Friday", time: "08:45 - 09:30", subject: "English Home Language" },
+  ],
+  5: [
+    { day: "Monday", time: "08:00 - 08:45", subject: "English Home Language" },
+    { day: "Monday", time: "08:45 - 09:30", subject: "Mathematics" },
+    { day: "Monday", time: "10:00 - 10:45", subject: "Afrikaans First Add" },
+    { day: "Tuesday", time: "08:00 - 08:45", subject: "Mathematics" },
+    { day: "Tuesday", time: "08:45 - 09:30", subject: "Natural Sciences" },
+    { day: "Wednesday", time: "08:00 - 08:45", subject: "Social Sciences" },
+    { day: "Wednesday", time: "08:45 - 09:30", subject: "Mathematics" },
+    { day: "Thursday", time: "08:00 - 08:45", subject: "English Home Language" },
+    { day: "Thursday", time: "08:45 - 09:30", subject: "Life Skills" },
+    { day: "Friday", time: "08:00 - 08:45", subject: "Mathematics" },
+    { day: "Friday", time: "08:45 - 09:30", subject: "English Home Language" },
+  ],
+  6: [
+    { day: "Monday", time: "08:00 - 09:00", subject: "Mathematics" },
+    { day: "Monday", time: "09:00 - 10:00", subject: "English Home Language" },
+    { day: "Monday", time: "10:30 - 11:15", subject: "Afrikaans First Add" },
+    { day: "Tuesday", time: "08:00 - 09:00", subject: "English Home Language" },
+    { day: "Tuesday", time: "09:00 - 10:00", subject: "Mathematics" },
+    { day: "Wednesday", time: "08:00 - 09:00", subject: "Natural Sciences" },
+    { day: "Wednesday", time: "09:00 - 10:00", subject: "Social Sciences" },
+    { day: "Thursday", time: "08:00 - 09:00", subject: "Mathematics" },
+    { day: "Thursday", time: "09:00 - 10:00", subject: "Life Skills" },
+    { day: "Friday", time: "08:00 - 09:00", subject: "English Home Language" },
+    { day: "Friday", time: "09:00 - 10:00", subject: "Mathematics" },
+  ],
+  7: [
+    { day: "Monday", time: "08:00 - 09:00", subject: "Mathematics" },
+    { day: "Monday", time: "09:00 - 10:00", subject: "English Home Language" },
+    { day: "Monday", time: "10:30 - 11:15", subject: "Afrikaans First Add" },
+    { day: "Tuesday", time: "08:00 - 09:00", subject: "Natural Sciences" },
+    { day: "Tuesday", time: "09:00 - 10:00", subject: "Mathematics" },
+    { day: "Wednesday", time: "08:00 - 09:00", subject: "Social Sciences" },
+    { day: "Wednesday", time: "09:00 - 10:00", subject: "English Home Language" },
+    { day: "Thursday", time: "08:00 - 09:00", subject: "Mathematics" },
+    { day: "Thursday", time: "09:00 - 10:00", subject: "Natural Sciences" },
+    { day: "Friday", time: "08:00 - 09:00", subject: "English Home Language" },
+    { day: "Friday", time: "09:00 - 10:00", subject: "Life Skills" },
+  ],
+  8: [
+    { day: "Monday", time: "08:00 - 09:00", subject: "Mathematics" },
+    { day: "Monday", time: "09:00 - 10:00", subject: "English Home Language" },
+    { day: "Monday", time: "10:00 - 11:00", subject: "Natural Sciences" },
+    { day: "Tuesday", time: "08:00 - 09:00", subject: "Afrikaans First Add" },
+    { day: "Tuesday", time: "09:00 - 10:00", subject: "Geography" },
+    { day: "Wednesday", time: "08:00 - 09:00", subject: "Mathematics" },
+    { day: "Wednesday", time: "09:00 - 10:00", subject: "History" },
+    { day: "Thursday", time: "08:00 - 09:00", subject: "EMS" },
+    { day: "Thursday", time: "09:00 - 10:00", subject: "Technology" },
+    { day: "Friday", time: "08:00 - 09:00", subject: "Physical Education" },
+    { day: "Friday", time: "09:00 - 10:00", subject: "Life Orientation" },
+  ],
+  9: [
+    { day: "Monday", time: "08:00 - 09:00", subject: "Mathematics" },
+    { day: "Monday", time: "09:00 - 10:00", subject: "English Home Language" },
+    { day: "Monday", time: "10:00 - 11:00", subject: "Natural Sciences" },
+    { day: "Tuesday", time: "08:00 - 09:00", subject: "Afrikaans First Add" },
+    { day: "Tuesday", time: "09:00 - 10:00", subject: "Geography" },
+    { day: "Wednesday", time: "08:00 - 09:00", subject: "EMS" },
+    { day: "Wednesday", time: "09:00 - 10:00", subject: "Technology" },
+    { day: "Thursday", time: "08:00 - 09:00", subject: "History" },
+    { day: "Thursday", time: "09:00 - 10:00", subject: "Life Orientation" },
+    { day: "Friday", time: "08:00 - 09:00", subject: "Music/Art" },
+    { day: "Friday", time: "09:00 - 10:00", subject: "Physical Education" },
+  ],
+  10: [
+    { day: "Monday", time: "08:00 - 09:00", subject: "Mathematics/Mathematical Literacy" },
+    { day: "Monday", time: "09:00 - 10:00", subject: "English Home Language" },
+    { day: "Monday", time: "10:00 - 11:00", subject: "Physical Sciences/Life Sciences" },
+    { day: "Tuesday", time: "08:00 - 09:00", subject: "Afrikaans First Add" },
+    { day: "Tuesday", time: "09:00 - 10:00", subject: "Geography/History" },
+    { day: "Tuesday", time: "10:00 - 11:00", subject: "Business Studies/Economics" },
+    { day: "Wednesday", time: "08:00 - 09:00", subject: "Information Technology" },
+    { day: "Wednesday", time: "09:00 - 10:00", subject: "Life Orientation" },
+    { day: "Thursday", time: "08:00 - 09:00", subject: "Mathematics/Mathematical Literacy" },
+    { day: "Thursday", time: "09:00 - 10:00", subject: "Physical Sciences/Life Sciences" },
+    { day: "Friday", time: "08:00 - 09:00", subject: "Consumer Studies" },
+    { day: "Friday", time: "09:00 - 10:00", subject: "Physical Education" },
+  ],
+  11: [
+    { day: "Monday", time: "08:00 - 09:30", subject: "Mathematics" },
+    { day: "Monday", time: "09:30 - 11:00", subject: "Physical Sciences" },
+    { day: "Tuesday", time: "08:00 - 09:30", subject: "English Home Language" },
+    { day: "Tuesday", time: "09:30 - 11:00", subject: "Accounting/Business Studies" },
+    { day: "Wednesday", time: "08:00 - 09:30", subject: "Life Sciences/Geography" },
+    { day: "Wednesday", time: "09:30 - 11:00", subject: "History/Economics" },
+    { day: "Thursday", time: "08:00 - 09:30", subject: "Information Technology" },
+    { day: "Thursday", time: "09:30 - 11:00", subject: "Afrikaans First Add" },
+    { day: "Friday", time: "08:00 - 09:30", subject: "Life Orientation" },
+    { day: "Friday", time: "09:30 - 11:00", subject: "Consumer Studies/Tourism" },
+  ],
+  12: [
+    { day: "Monday", time: "08:00 - 10:00", subject: "Mathematics/Mathematical Literacy" },
+    { day: "Tuesday", time: "08:00 - 10:00", subject: "Physical Sciences" },
+    { day: "Tuesday", time: "10:00 - 11:30", subject: "English Home Language" },
+    { day: "Wednesday", time: "08:00 - 10:00", subject: "Accounting/Business Studies" },
+    { day: "Wednesday", time: "10:00 - 11:30", subject: "Geography/History" },
+    { day: "Thursday", time: "08:00 - 10:00", subject: "Life Sciences/Economics" },
+    { day: "Thursday", time: "10:00 - 11:30", subject: "Information Technology" },
+    { day: "Friday", time: "08:00 - 10:00", subject: "Afrikaans First Add" },
+    { day: "Friday", time: "10:00 - 11:30", subject: "Life Orientation" },
+  ],
+};
 
-const studyMaterialsByGrade: Record<number, StudyMaterial[]> = {};
+const studyMaterialsByGrade: Record<number, StudyMaterial[]> = {
+  4: [
+    { id: 1, title: "Mathematics Basics", subject: "Mathematics", description: "Basic operations and number sense", fileUrl: "", fileType: "application/pdf", grade: 4 },
+    { id: 2, title: "English Phonics", subject: "English Home Language", description: "Phonics and spelling rules", fileUrl: "", fileType: "application/pdf", grade: 4 },
+    { id: 3, title: "South Africa Fact Sheet", subject: "Social Sciences", description: "Facts about our country", fileUrl: "", fileType: "application/pdf", grade: 4 },
+  ],
+  5: [
+    { id: 4, title: "Fractions Guide", subject: "Mathematics", description: "Understanding fractions", fileUrl: "", fileType: "application/pdf", grade: 5 },
+    { id: 5, title: "Reading Strategies", subject: "English Home Language", description: "Comprehension techniques", fileUrl: "", fileType: "application/pdf", grade: 5 },
+    { id: 6, title: "Natural Sciences Notes", subject: "Natural Sciences", description: "Living and non-living things", fileUrl: "", fileType: "application/pdf", grade: 5 },
+  ],
+  6: [
+    { id: 7, title: "Decimals and Percentages", subject: "Mathematics", description: "Working with decimals", fileUrl: "", fileType: "application/pdf", grade: 6 },
+    { id: 8, title: "Writing Toolkit", subject: "English Home Language", description: "Essay writing tips", fileUrl: "", fileType: "application/pdf", grade: 6 },
+    { id: 9, title: "South African Provinces", subject: "Social Sciences", description: "Map of our provinces", fileUrl: "", fileType: "application/pdf", grade: 6 },
+  ],
+  7: [
+    { id: 10, title: "Integers and Algebra", subject: "Mathematics", description: "Introduction to algebra", fileUrl: "", fileType: "application/pdf", grade: 7 },
+    { id: 11, title: "Grammar Handbook", subject: "English Home Language", description: "Punctuation and grammar", fileUrl: "", fileType: "application/pdf", grade: 7 },
+    { id: 12, title: "Matter and Materials", subject: "Natural Sciences", description: "States of matter", fileUrl: "", fileType: "application/pdf", grade: 7 },
+  ],
+  8: [
+    { id: 1, title: "Mathematics Basics", subject: "Mathematics", description: "Basic math formulas and concepts", fileUrl: "", fileType: "application/pdf", grade: 8 },
+    { id: 2, title: "Natural Sciences Guide", subject: "Natural Sciences", description: "Physics and Chemistry fundamentals", fileUrl: "", fileType: "application/pdf", grade: 8 },
+  ],
+  9: [
+    { id: 3, title: "Algebra Workbook", subject: "Mathematics", description: "Algebra exercises and answers", fileUrl: "", fileType: "application/pdf", grade: 9 },
+    { id: 4, title: "Geography Map Skills", subject: "Geography", description: "Map reading and interpretation", fileUrl: "", fileType: "application/pdf", grade: 9 },
+  ],
+  10: [
+    { id: 5, title: "Trigonometry Notes", subject: "Mathematics", description: "Complete trig formulas", fileUrl: "", fileType: "application/pdf", grade: 10 },
+    { id: 6, title: "Physics Formula Sheet", subject: "Physical Sciences", description: "Mechanics and waves formulas", fileUrl: "", fileType: "application/pdf", grade: 10 },
+  ],
+  11: [
+    { id: 7, title: "Calculus Quick Reference", subject: "Mathematics", description: "Derivatives and integrals", fileUrl: "", fileType: "application/pdf", grade: 11 },
+    { id: 8, title: "Chemistry Periodic Table", subject: "Physical Sciences", description: "Full periodic table with properties", fileUrl: "", fileType: "application/pdf", grade: 11 },
+  ],
+  12: [
+    { id: 9, title: "Mathematics Paper 1 Checklist", subject: "Mathematics", description: "All topics for final exam", fileUrl: "", fileType: "application/pdf", grade: 12 },
+    { id: 10, title: "Physics Past Papers", subject: "Physical Sciences", description: "Grade 12 practice papers", fileUrl: "", fileType: "application/pdf", grade: 12 },
+  ],
+};
 
-const coursesByGrade: Record<number, { name: string; teacher: string; grade: string; progress: number }[]> = {};
+const coursesByGrade: Record<number, { name: string; teacher: string; grade: string; progress: number }[]> = {
+  4: [
+    { name: "Mathematics", teacher: "Ms. Sarah Jones", grade: "A", progress: 92 },
+    { name: "English Home Language", teacher: "Mrs. Amy Miller", grade: "A-", progress: 88 },
+    { name: "Afrikaans First Add", teacher: "Mnr. Pieter van der Merwe", grade: "B+", progress: 85 },
+    { name: "Natural Sciences", teacher: "Mr. David Park", grade: "A", progress: 90 },
+    { name: "Social Sciences", teacher: "Ms. Lisa Johnson", grade: "A-", progress: 89 },
+    { name: "Life Skills", teacher: "Mrs. Karen Brown", grade: "A", progress: 94 },
+  ],
+  5: [
+    { name: "Mathematics", teacher: "Ms. Sarah Jones", grade: "A-", progress: 90 },
+    { name: "English Home Language", teacher: "Mrs. Amy Miller", grade: "A", progress: 92 },
+    { name: "Afrikaans First Add", teacher: "Mnr. Pieter van der Merwe", grade: "B+", progress: 84 },
+    { name: "Natural Sciences", teacher: "Mr. David Park", grade: "A-", progress: 88 },
+    { name: "Social Sciences", teacher: "Ms. Lisa Johnson", grade: "B+", progress: 86 },
+    { name: "Life Skills", teacher: "Mrs. Karen Brown", grade: "A", progress: 91 },
+  ],
+  6: [
+    { name: "Mathematics", teacher: "Mrs. Emily Roberts", grade: "A", progress: 94 },
+    { name: "English Home Language", teacher: "Ms. Lisa Johnson", grade: "A-", progress: 90 },
+    { name: "Afrikaans First Add", teacher: "Mnr. Pieter van der Merwe", grade: "A-", progress: 88 },
+    { name: "Natural Sciences", teacher: "Mr. David Park", grade: "A", progress: 92 },
+    { name: "Social Sciences", teacher: "Mrs. Karen Brown", grade: "B+", progress: 85 },
+    { name: "Life Skills", teacher: "Ms. Anna Williams", grade: "A", progress: 93 },
+  ],
+  7: [
+    { name: "Mathematics", teacher: "Mrs. Emily Roberts", grade: "A-", progress: 88 },
+    { name: "English Home Language", teacher: "Ms. Lisa Johnson", grade: "A", progress: 91 },
+    { name: "Afrikaans First Add", teacher: "Mnr. Pieter van der Merwe", grade: "B+", progress: 84 },
+    { name: "Natural Sciences", teacher: "Dr. James Chen", grade: "A-", progress: 87 },
+    { name: "Social Sciences", teacher: "Mrs. Karen Brown", grade: "A-", progress: 89 },
+    { name: "Life Skills", teacher: "Ms. Anna Williams", grade: "A", progress: 92 },
+  ],
+  8: [
+    { name: "Mathematics", teacher: "Ms. Anna Williams", grade: "A", progress: 92 },
+    { name: "Natural Sciences", teacher: "Mr. David Park", grade: "A-", progress: 88 },
+    { name: "English Home Language", teacher: "Mrs. Emily Roberts", grade: "A", progress: 94 },
+    { name: "Geography", teacher: "Dr. James Chen", grade: "B+", progress: 85 },
+  ],
+  9: [
+    { name: "Mathematics", teacher: "Mrs. Emily Roberts", grade: "B+", progress: 82 },
+    { name: "Natural Sciences", teacher: "Mr. David Park", grade: "B", progress: 78 },
+    { name: "English Home Language", teacher: "Dr. Sarah Mitchell", grade: "A-", progress: 90 },
+    { name: "Geography", teacher: "Dr. James Chen", grade: "B+", progress: 84 },
+  ],
+  10: [
+    { name: "Mathematics", teacher: "Dr. Sarah Mitchell", grade: "A-", progress: 88 },
+    { name: "Physical Sciences", teacher: "Dr. James Chen", grade: "A", progress: 92 },
+    { name: "English Home Language", teacher: "Mrs. Emily Roberts", grade: "A", progress: 95 },
+    { name: "Life Sciences", teacher: "Mr. David Park", grade: "B+", progress: 86 },
+  ],
+  11: [
+    { name: "Mathematics", teacher: "Dr. Sarah Mitchell", grade: "A", progress: 92 },
+    { name: "Physical Sciences", teacher: "Dr. James Chen", grade: "A-", progress: 88 },
+    { name: "English Home Language", teacher: "Mrs. Emily Roberts", grade: "A", progress: 94 },
+    { name: "Life Sciences", teacher: "Mr. David Park", grade: "B+", progress: 85 },
+    { name: "History", teacher: "Ms. Anna Williams", grade: "A-", progress: 89 },
+  ],
+  12: [
+    { name: "Mathematics", teacher: "Dr. Sarah Mitchell", grade: "A", progress: 95 },
+    { name: "Physical Sciences", teacher: "Dr. James Chen", grade: "A", progress: 93 },
+    { name: "English Home Language", teacher: "Mrs. Emily Roberts", grade: "A-", progress: 90 },
+    { name: "Accounting", teacher: "Ms. Anna Williams", grade: "A", progress: 96 },
+    { name: "Geography", teacher: "Mr. David Park", grade: "B+", progress: 87 },
+  ],
+};
 
 const navItems = [
   { icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6", label: "Dashboard" },
@@ -187,6 +475,7 @@ const navItems = [
   { icon: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253", label: "Study Materials" },
   { icon: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z", label: "My Progress" },
   { icon: "M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z", label: "Chat" },
+  { icon: "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z", label: "Settings" },
 ];
 
 export default function StudentPortal() {
@@ -219,6 +508,7 @@ export default function StudentPortal() {
   const [unlockPassword, setUnlockPassword] = useState("");
   const [unlockingMessageId, setUnlockingMessageId] = useState<number | null>(null);
   const [unlockedMessages, setUnlockedMessages] = useState<Record<number, boolean>>({});
+  const [profilePictureFile, setProfilePictureFile] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -426,6 +716,27 @@ export default function StudentPortal() {
     }
   };
 
+  const handleProfilePictureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && loggedInStudent) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const pic = event.target?.result as string;
+        const updatedStudent = { ...loggedInStudent, profilePicture: pic };
+        setLoggedInStudent(updatedStudent);
+        localStorage.setItem("loggedInStudent", JSON.stringify(updatedStudent));
+        const storedStudents = localStorage.getItem("studentsData");
+        if (storedStudents) {
+          const students = JSON.parse(storedStudents);
+          const updated = students.map((s: StudentData) => s.id === loggedInStudent.id ? { ...s, profilePicture: pic } : s);
+          localStorage.setItem("studentsData", JSON.stringify(updated));
+        }
+        setProfilePictureFile(pic);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const renderChat = () => {
     if (!isChatAvailable()) {
       return (
@@ -501,6 +812,57 @@ export default function StudentPortal() {
     );
   };
 
+  const renderSettings = () => {
+    if (!loggedInStudent) return null;
+    return (
+      <div>
+        <h1 className="text-3xl font-bold text-white mb-6 font-['Outfit']">Settings</h1>
+        
+        <div className="p-6 rounded-2xl bg-stone-800 border border-white/10 mb-6">
+          <h2 className="text-xl font-semibold text-white mb-4">Profile Picture</h2>
+          <div className="flex items-center gap-6">
+            {loggedInStudent.profilePicture ? (
+              <Image src={loggedInStudent.profilePicture} alt={loggedInStudent.name} width={100} height={100} className="rounded-full object-cover border-2 border-blue-400" unoptimized />
+            ) : (
+              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-3xl font-bold">
+                {getInitials(loggedInStudent.name)}
+              </div>
+            )}
+            <div>
+              <label className="px-4 py-2 rounded-xl bg-blue-600 text-white cursor-pointer hover:bg-blue-700 transition-colors">
+                Upload Picture
+                <input type="file" accept="image/*" className="hidden" onChange={handleProfilePictureUpload} />
+              </label>
+              <p className="text-slate-400 text-sm mt-2">Recommended: Square image, at least 200x200 pixels</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-6 rounded-2xl bg-stone-800 border border-white/10">
+          <h2 className="text-xl font-semibold text-white mb-4">Account Information</h2>
+          <div className="space-y-3">
+            <div className="flex justify-between">
+              <span className="text-slate-400">Name:</span>
+              <span className="text-white">{loggedInStudent.name}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-400">Grade:</span>
+              <span className="text-white">{loggedInStudent.grade}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-400">School:</span>
+              <span className="text-white">{loggedInStudent.school}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-400">Username:</span>
+              <span className="text-white">{loggedInStudent.username}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const renderDashboard = () => {
     const totalSubjects = loggedInStudent.subjects?.length || 0;
     const completedTestCount = Object.keys(completedTests).length;
@@ -510,39 +872,8 @@ export default function StudentPortal() {
     <>
       <div className="p-6 rounded-2xl bg-gradient-to-r from-blue-500/20 to-purple-500/10 border border-blue-500/20 mb-8">
         <div className="flex items-center gap-4">
-          <div className="relative group">
-            {loggedInStudent.profilePicture ? (
-              <Image src={loggedInStudent.profilePicture} alt={loggedInStudent.name} width={64} height={64} className="rounded-full object-cover border-2 border-blue-400" unoptimized />
-            ) : (
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-xl font-bold">
-                {getInitials(loggedInStudent.name)}
-              </div>
-            )}
-            <label className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
-              <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              <input type="file" accept="image/*" className="hidden" onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) {
-                  const reader = new FileReader();
-                  reader.onload = (event) => {
-                    const pic = event.target?.result as string;
-                    const updatedStudent = { ...loggedInStudent, profilePicture: pic };
-                    setLoggedInStudent(updatedStudent);
-                    localStorage.setItem("loggedInStudent", JSON.stringify(updatedStudent));
-                    const storedStudents = localStorage.getItem("studentsData");
-                    if (storedStudents) {
-                      const students = JSON.parse(storedStudents);
-                      const updated = students.map((s: StudentData) => s.id === loggedInStudent.id ? { ...s, profilePicture: pic } : s);
-                      localStorage.setItem("studentsData", JSON.stringify(updated));
-                    }
-                  };
-                  reader.readAsDataURL(file);
-                }
-              }} />
-            </label>
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-xl font-bold">
+            {getInitials(loggedInStudent.name)}
           </div>
           <div>
             <h2 className="text-xl font-semibold text-white">{loggedInStudent.name}</h2>
@@ -958,13 +1289,9 @@ export default function StudentPortal() {
             <span className="text-xl font-semibold text-white">Geleza Mzansi</span>
           </div>
           <div className="flex items-center gap-3">
-            {loggedInStudent.profilePicture ? (
-              <Image src={loggedInStudent.profilePicture} alt={loggedInStudent.name} width={48} height={48} className="rounded-full object-cover border-2 border-blue-400" unoptimized />
-            ) : (
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-semibold">
-                {getInitials(loggedInStudent.name)}
-              </div>
-            )}
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-semibold">
+              {getInitials(loggedInStudent.name)}
+            </div>
             <div>
               <p className="text-white font-medium">{loggedInStudent.name}</p>
               <p className="text-slate-400 text-sm">Grade {loggedInStudent.grade}</p>
@@ -1016,6 +1343,7 @@ export default function StudentPortal() {
         {activeTab === "study materials" && renderStudyMaterials()}
         {activeTab === "my progress" && renderProgress()}
         {activeTab === "chat" && renderChat()}
+        {activeTab === "settings" && renderSettings()}
       </main>
 
       <AIAssistant mode="student" studentName={loggedInStudent?.name} grade={loggedInStudent?.grade} />
