@@ -76,6 +76,21 @@ interface Announcement {
   priority: "normal" | "important" | "urgent";
 }
 
+interface ChatMessage {
+  id: number;
+  sender: string;
+  role: "teacher" | "student";
+  school: string;
+  grade: number;
+  message: string;
+  isLocked: boolean;
+  password?: string;
+  timestamp: string;
+  fileType?: string;
+  fileUrl?: string;
+  fileName?: string;
+}
+
 const navItems = [
   { icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6", label: "Dashboard" },
   { icon: "M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10", label: "Homework" },
@@ -84,6 +99,7 @@ const navItems = [
   { icon: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z", label: "Exam Timetable" },
   { icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", label: "Weekly Timetable" },
   { icon: "M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z", label: "Announcements" },
+  { icon: "M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z", label: "Chat" },
 ];
 
 export default function TeacherPortal() {
@@ -107,6 +123,15 @@ export default function TeacherPortal() {
     const stored = localStorage.getItem("announcementData");
     return stored ? JSON.parse(stored) : [];
   });
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>(() => {
+    const stored = localStorage.getItem("chatMessages");
+    return stored ? JSON.parse(stored) : [];
+  });
+  const [chatGrade, setChatGrade] = useState<string>("");
+  const [newChatMessage, setNewChatMessage] = useState("");
+  const [chatPassword, setChatPassword] = useState("");
+  const [chatIsLocked, setChatIsLocked] = useState(false);
+  const [chatFile, setChatFile] = useState<{ name: string; data: string; type: string } | null>(null);
   const [showHomeworkModal, setShowHomeworkModal] = useState(false);
   const [showTestModal, setShowTestModal] = useState(false);
   const [showAnnouncementModal, setShowAnnouncementModal] = useState(false);
@@ -338,6 +363,41 @@ export default function TeacherPortal() {
       setNewAnnouncement({ title: "", content: "", priority: "normal" });
       setShowAnnouncementModal(false);
     }
+  };
+
+  const handleSendChatMessage = () => {
+    if (!newChatMessage.trim() || !chatGrade || !loggedInTeacher) return;
+    if (chatIsLocked && !chatPassword.trim()) {
+      alert("Please set a password for the locked message");
+      return;
+    }
+    const msg: ChatMessage = {
+      id: Date.now(),
+      sender: loggedInTeacher.name,
+      role: "teacher",
+      school: loggedInTeacher.school,
+      grade: parseInt(chatGrade),
+      message: newChatMessage,
+      isLocked: chatIsLocked,
+      password: chatIsLocked ? chatPassword : undefined,
+      timestamp: new Date().toISOString(),
+      fileType: chatFile?.type,
+      fileUrl: chatFile?.data,
+      fileName: chatFile?.name
+    };
+    const updated = [...chatMessages, msg];
+    setChatMessages(updated);
+    localStorage.setItem("chatMessages", JSON.stringify(updated));
+    setNewChatMessage("");
+    setChatPassword("");
+    setChatIsLocked(false);
+    setChatFile(null);
+  };
+
+  const handleDeleteChatMessage = (msgId: number) => {
+    const updated = chatMessages.filter(m => m.id !== msgId);
+    setChatMessages(updated);
+    localStorage.setItem("chatMessages", JSON.stringify(updated));
   };
 
   const handleAddExam = () => {
@@ -1297,6 +1357,89 @@ export default function TeacherPortal() {
     </div>
   );
 
+  const renderChat = () => {
+    const gradeMessages = chatGrade ? chatMessages.filter(m => m.grade === parseInt(chatGrade)) : [];
+    return (
+      <div>
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-3xl font-bold text-white font-['Outfit']">Group Chat</h1>
+            <p className="text-slate-400 mt-1">Send messages to students by grade</p>
+          </div>
+          <select value={chatGrade} onChange={(e) => setChatGrade(e.target.value)} className="px-4 py-2 rounded-xl bg-stone-800 border border-white/10 text-white">
+            <option value="">Select Grade</option>
+            {[4,5,6,7,8,9,10,11,12].map(g => <option key={g} value={g}>Grade {g}</option>)}
+          </select>
+        </div>
+
+        {chatGrade && (
+          <>
+            <div className="h-96 overflow-y-auto p-4 rounded-2xl bg-stone-800 border border-white/10 mb-4 space-y-3">
+              {gradeMessages.length === 0 ? (
+                <p className="text-slate-500 text-center py-8">No messages yet. Send the first message!</p>
+              ) : (
+                gradeMessages.map((msg) => (
+                  <div key={msg.id} className={`p-4 rounded-xl ${msg.isLocked ? 'bg-purple-500/10 border border-purple-500/30' : 'bg-slate-700'}`}>
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-white font-medium">{msg.sender}</span>
+                        <span className="px-2 py-0.5 rounded text-xs bg-purple-500/20 text-purple-300">Teacher</span>
+                        {msg.isLocked && <span className="text-yellow-400">Locked</span>}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-slate-500 text-xs">{new Date(msg.timestamp).toLocaleString()}</span>
+                        <button onClick={() => handleDeleteChatMessage(msg.id)} className="text-red-400 hover:text-red-300 text-xs">Delete</button>
+                      </div>
+                    </div>
+                    <p className="text-slate-300">{msg.message}</p>
+                    {msg.fileUrl && (
+                      <a href={msg.fileUrl} download={msg.fileName} className="mt-2 inline-block text-blue-400 text-sm hover:text-blue-300">Download: {msg.fileName}</a>
+                    )}
+                    {msg.password && (
+                      <p className="text-slate-500 text-xs mt-1">Password: {msg.password}</p>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="p-4 rounded-2xl bg-stone-800 border border-white/10">
+              <div className="flex items-center gap-2 mb-3">
+                <input type="checkbox" id="lockMsg" checked={chatIsLocked} onChange={(e) => setChatIsLocked(e.target.checked)} className="accent-purple-500" />
+                <label htmlFor="lockMsg" className="text-slate-400 text-sm">Lock message with password</label>
+              </div>
+              {chatIsLocked && (
+                <input type="text" value={chatPassword} onChange={(e) => setChatPassword(e.target.value)} placeholder="Set password for this message" className="w-full px-4 py-2 rounded-xl bg-slate-700 border border-white/10 text-white mb-3 focus:outline-none focus:border-purple-500" />
+              )}
+              <div className="flex gap-2 mb-3">
+                <input type="file" onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                      setChatFile({ name: file.name, data: event.target?.result as string, type: file.type });
+                    };
+                    reader.readAsDataURL(file);
+                  }
+                }} className="flex-1 text-slate-400 text-sm file:mr-2 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-purple-600 file:text-white file:cursor-pointer" />
+              </div>
+              {chatFile && (
+                <div className="flex items-center gap-2 mb-3 text-sm">
+                  <span className="text-slate-400">{chatFile.name}</span>
+                  <button onClick={() => setChatFile(null)} className="text-red-400 hover:text-red-300">Remove</button>
+                </div>
+              )}
+              <div className="flex gap-2">
+                <input type="text" value={newChatMessage} onChange={(e) => setNewChatMessage(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleSendChatMessage()} placeholder="Type your message..." className="flex-1 px-4 py-3 rounded-xl bg-slate-700 border border-white/10 text-white focus:outline-none focus:border-purple-500" />
+                <button onClick={handleSendChatMessage} className="px-6 py-3 rounded-xl bg-purple-600 text-white hover:bg-purple-700 transition-colors">Send</button>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    );
+  };
+
   if (!loggedInTeacher) {
     return (
       <div className="min-h-screen bg-[#0F172A] flex items-center justify-center">
@@ -1395,6 +1538,7 @@ export default function TeacherPortal() {
         {activeTab === "exam timetable" && renderExamTimetable()}
         {activeTab === "weekly timetable" && renderWeeklyTimetable()}
         {activeTab === "announcements" && renderAnnouncements()}
+        {activeTab === "chat" && renderChat()}
       </main>
 
       <AIAssistant mode="teacher" onStrugglingAlert={handleStrugglingAlert} />

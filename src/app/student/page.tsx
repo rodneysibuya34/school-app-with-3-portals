@@ -53,6 +53,21 @@ interface StudyMaterial {
   grade: number;
 }
 
+interface ChatMessage {
+  id: number;
+  sender: string;
+  role: "teacher" | "student";
+  school: string;
+  grade: number;
+  message: string;
+  isLocked: boolean;
+  password?: string;
+  timestamp: string;
+  fileType?: string;
+  fileUrl?: string;
+  fileName?: string;
+}
+
 const homeworkByGrade: Record<number, Homework[]> = {
   4: [
     { id: 1, title: "English Spelling", description: "Learn spelling words for Friday", dueDate: "2026-04-03", grade: 4, fileUrl: "", fileType: "", subject: "English Home Language" },
@@ -169,6 +184,7 @@ const navItems = [
   { icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", label: "Weekly Timetable" },
   { icon: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253", label: "Study Materials" },
   { icon: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z", label: "My Progress" },
+  { icon: "M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z", label: "Chat" },
 ];
 
 export default function StudentPortal() {
@@ -193,6 +209,14 @@ export default function StudentPortal() {
   const [weeklyTimetableList, setWeeklyTimetableList] = useState<{ day: string; time: string; subject: string; grade: number }[]>([]);
   const [studyMaterialsList, setStudyMaterialsList] = useState<StudyMaterial[]>([]);
   const [coursesList, setCoursesList] = useState<{ name: string; teacher: string; grade: string; progress: number }[]>([]);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>(() => {
+    const stored = localStorage.getItem("chatMessages");
+    return stored ? JSON.parse(stored) : [];
+  });
+  const [newChatMessage, setNewChatMessage] = useState("");
+  const [unlockPassword, setUnlockPassword] = useState("");
+  const [unlockingMessageId, setUnlockingMessageId] = useState<number | null>(null);
+  const [unlockedMessages, setUnlockedMessages] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -363,6 +387,40 @@ export default function StudentPortal() {
       window.open(fileUrl, '_blank');
     } else {
       alert('No file available for download');
+    }
+  };
+
+  const isChatAvailable = () => {
+    const day = new Date().getDay();
+    return day === 5 || day === 6 || day === 0;
+  };
+
+  const handleSendChatMessage = () => {
+    if (!newChatMessage.trim() || !loggedInStudent) return;
+    const msg: ChatMessage = {
+      id: Date.now(),
+      sender: loggedInStudent.name,
+      role: "student",
+      school: loggedInStudent.school,
+      grade: loggedInStudent.grade,
+      message: newChatMessage,
+      isLocked: false,
+      timestamp: new Date().toISOString()
+    };
+    const updated = [...chatMessages, msg];
+    setChatMessages(updated);
+    localStorage.setItem("chatMessages", JSON.stringify(updated));
+    setNewChatMessage("");
+  };
+
+  const handleUnlockMessage = (msgId: number, password: string) => {
+    const msg = chatMessages.find(m => m.id === msgId);
+    if (msg && msg.password === password) {
+      setUnlockedMessages({ ...unlockedMessages, [msgId]: true });
+      setUnlockingMessageId(null);
+      setUnlockPassword("");
+    } else {
+      alert("Incorrect password");
     }
   };
 
