@@ -738,26 +738,17 @@ export default function StudentPortal() {
   };
 
   const renderChat = () => {
-    if (!isChatAvailable()) {
-      return (
-        <div className="flex flex-col items-center justify-center h-96">
-          <svg className="w-16 h-16 text-slate-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-          </svg>
-          <h2 className="text-xl font-semibold text-white mb-2">Chat Locked</h2>
-          <p className="text-slate-400">Group chat is available Friday to Sunday only</p>
-        </div>
-      );
-    }
-
     if (!loggedInStudent) return null;
     const gradeMessages = chatMessages.filter(m => m.grade === loggedInStudent.grade);
+    const canReply = isChatAvailable();
     
     return (
       <div>
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-white font-['Outfit']">Grade {loggedInStudent.grade} Group Chat</h1>
-          <p className="text-slate-400 mt-1">Chat with your classmates and teachers</p>
+          <p className="text-slate-400 mt-1">
+            {canReply ? "You can send messages" : "View messages - replies available Friday to Sunday"}
+          </p>
         </div>
 
         <div className="h-96 overflow-y-auto p-4 rounded-2xl bg-stone-800 border border-white/10 mb-4 space-y-3">
@@ -803,10 +794,16 @@ export default function StudentPortal() {
         </div>
 
         <div className="p-4 rounded-2xl bg-stone-800 border border-white/10">
-          <div className="flex gap-2">
-            <input type="text" value={newChatMessage} onChange={(e) => setNewChatMessage(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleSendChatMessage()} placeholder="Type your message..." className="flex-1 px-4 py-3 rounded-xl bg-slate-700 border border-white/10 text-white focus:outline-none focus:border-blue-500" />
-            <button onClick={handleSendChatMessage} className="px-6 py-3 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-colors">Send</button>
-          </div>
+          {canReply ? (
+            <div className="flex gap-2">
+              <input type="text" value={newChatMessage} onChange={(e) => setNewChatMessage(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleSendChatMessage()} placeholder="Type your message..." className="flex-1 px-4 py-3 rounded-xl bg-slate-700 border border-white/10 text-white focus:outline-none focus:border-blue-500" />
+              <button onClick={handleSendChatMessage} className="px-6 py-3 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-colors">Send</button>
+            </div>
+          ) : (
+            <div className="text-center py-2">
+              <p className="text-slate-400">You can reply to messages on Friday to Sunday</p>
+            </div>
+          )}
         </div>
       </div>
     );
