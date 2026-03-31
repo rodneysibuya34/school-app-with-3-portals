@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import AIAssistant from "@/components/AIAssistant";
 import Logo from "@/components/Logo";
+import Image from "next/image";
 
 interface TeacherData {
   id: number;
@@ -489,7 +490,7 @@ export default function TeacherPortal() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     {student.profilePicture ? (
-                      <img src={student.profilePicture} alt={student.name} className="w-10 h-10 rounded-full object-cover border-2 border-blue-400" />
+                      <Image src={student.profilePicture} alt={student.name} width={40} height={40} className="rounded-full object-cover border-2 border-blue-400" unoptimized />
                     ) : (
                       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-sm font-medium">
                         {getInitials(student.name)}

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import AIAssistant from "@/components/AIAssistant";
 import Logo from "@/components/Logo";
+import Image from "next/image";
 
 interface StudentData {
   id: number;
@@ -511,7 +512,7 @@ export default function StudentPortal() {
         <div className="flex items-center gap-4">
           <div className="relative group">
             {loggedInStudent.profilePicture ? (
-              <img src={loggedInStudent.profilePicture} alt={loggedInStudent.name} className="w-16 h-16 rounded-full object-cover border-2 border-blue-400" />
+              <Image src={loggedInStudent.profilePicture} alt={loggedInStudent.name} width={64} height={64} className="rounded-full object-cover border-2 border-blue-400" unoptimized />
             ) : (
               <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-xl font-bold">
                 {getInitials(loggedInStudent.name)}
@@ -958,7 +959,7 @@ export default function StudentPortal() {
           </div>
           <div className="flex items-center gap-3">
             {loggedInStudent.profilePicture ? (
-              <img src={loggedInStudent.profilePicture} alt={loggedInStudent.name} className="w-12 h-12 rounded-full object-cover border-2 border-blue-400" />
+              <Image src={loggedInStudent.profilePicture} alt={loggedInStudent.name} width={48} height={48} className="rounded-full object-cover border-2 border-blue-400" unoptimized />
             ) : (
               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-semibold">
                 {getInitials(loggedInStudent.name)}
