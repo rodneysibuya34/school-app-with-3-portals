@@ -27,6 +27,7 @@ interface ChatMessage {
   grade: number;
   message: string;
   isLocked: boolean;
+  isHidden?: boolean;
   password?: string;
   timestamp: string;
   fileType?: string;
@@ -739,7 +740,7 @@ export default function StudentPortal() {
 
   const renderChat = () => {
     if (!loggedInStudent) return null;
-    const gradeMessages = chatMessages.filter(m => m.grade === loggedInStudent.grade);
+    const gradeMessages = chatMessages.filter(m => m.grade === loggedInStudent.grade && !m.isHidden);
     const canReply = isChatAvailable();
     
     return (

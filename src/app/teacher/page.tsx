@@ -38,6 +38,7 @@ interface ChatMessage {
   grade: number;
   message: string;
   isLocked: boolean;
+  isHidden?: boolean;
   password?: string;
   timestamp: string;
   fileType?: string;
@@ -153,6 +154,7 @@ export default function TeacherPortal() {
   const [newChatMessage, setNewChatMessage] = useState("");
   const [chatPassword, setChatPassword] = useState("");
   const [chatIsLocked, setChatIsLocked] = useState(false);
+  const [chatIsHidden, setChatIsHidden] = useState(false);
   const [chatFile, setChatFile] = useState<{ name: string; data: string; type: string } | null>(null);
   const [profilePictureFile, setProfilePictureFile] = useState<string | null>(null);
   const [showHomeworkModal, setShowHomeworkModal] = useState(false);
@@ -432,6 +434,7 @@ export default function TeacherPortal() {
       grade: parseInt(chatGrade),
       message: newChatMessage,
       isLocked: chatIsLocked,
+      isHidden: chatIsHidden,
       password: chatIsLocked ? chatPassword : undefined,
       timestamp: new Date().toISOString(),
       fileType: chatFile?.type,
@@ -444,11 +447,18 @@ export default function TeacherPortal() {
     setNewChatMessage("");
     setChatPassword("");
     setChatIsLocked(false);
+    setChatIsHidden(false);
     setChatFile(null);
   };
 
   const handleDeleteChatMessage = (msgId: number) => {
     const updated = chatMessages.filter(m => m.id !== msgId);
+    setChatMessages(updated);
+    localStorage.setItem("chatMessages", JSON.stringify(updated));
+  };
+
+  const handleToggleMessageVisibility = (msgId: number) => {
+    const updated = chatMessages.map(m => m.id === msgId ? { ...m, isHidden: !m.isHidden } : m);
     setChatMessages(updated);
     localStorage.setItem("chatMessages", JSON.stringify(updated));
   };
@@ -1535,7 +1545,7 @@ export default function TeacherPortal() {
                 <p className="text-slate-500 text-center py-8">No messages yet. Send the first message!</p>
               ) : (
                 gradeMessages.map((msg) => (
-                  <div key={msg.id} className={`p-4 rounded-xl ${msg.isLocked ? 'bg-purple-500/10 border border-purple-500/30' : 'bg-slate-700'}`}>
+                  <div key={msg.id} className={`p-4 rounded-xl ${msg.isLocked ? 'bg-purple-500/10 border border-purple-500/30' : msg.isHidden ? 'bg-yellow-500/10 border border-yellow-500/30' : 'bg-slate-700'}`}>
                     <div className="flex justify-between items-start mb-2">
                       <div className="flex items-center gap-2">
                         <span className="text-white font-medium">{msg.sender}</span>
@@ -1543,9 +1553,13 @@ export default function TeacherPortal() {
                           {msg.role === 'teacher' ? 'Teacher' : 'Student'}
                         </span>
                         {msg.isLocked && <span className="text-yellow-400 text-xs">Locked</span>}
+                        {msg.isHidden && <span className="text-yellow-400 text-xs">Hidden</span>}
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-slate-500 text-xs">{new Date(msg.timestamp).toLocaleString()}</span>
+                        <button onClick={() => handleToggleMessageVisibility(msg.id)} className={`text-xs ${msg.isHidden ? 'text-green-400 hover:text-green-300' : 'text-yellow-400 hover:text-yellow-300'}`}>
+                          {msg.isHidden ? 'Show' : 'Hide'}
+                        </button>
                         <button onClick={() => handleDeleteChatMessage(msg.id)} className="text-red-400 hover:text-red-300 text-xs">Delete</button>
                       </div>
                     </div>
@@ -1562,9 +1576,15 @@ export default function TeacherPortal() {
             </div>
 
             <div className="p-4 rounded-2xl bg-stone-800 border border-white/10">
-              <div className="flex items-center gap-2 mb-3">
-                <input type="checkbox" id="lockMsg" checked={chatIsLocked} onChange={(e) => setChatIsLocked(e.target.checked)} className="accent-purple-500" />
-                <label htmlFor="lockMsg" className="text-slate-400 text-sm">Lock message with password</label>
+              <div className="flex items-center gap-4 mb-3">
+                <div className="flex items-center gap-2">
+                  <input type="checkbox" id="lockMsg" checked={chatIsLocked} onChange={(e) => setChatIsLocked(e.target.checked)} className="accent-purple-500" />
+                  <label htmlFor="lockMsg" className="text-slate-400 text-sm">Lock with password</label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input type="checkbox" id="hideMsg" checked={chatIsHidden} onChange={(e) => setChatIsHidden(e.target.checked)} className="accent-yellow-500" />
+                  <label htmlFor="hideMsg" className="text-slate-400 text-sm">Hide from students</label>
+                </div>
               </div>
               {chatIsLocked && (
                 <input type="text" value={chatPassword} onChange={(e) => setChatPassword(e.target.value)} placeholder="Set password for this message" className="w-full px-4 py-2 rounded-xl bg-slate-700 border border-white/10 text-white mb-3 focus:outline-none focus:border-purple-500" />
