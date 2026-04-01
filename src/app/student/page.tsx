@@ -474,6 +474,7 @@ const navItems = [
   { icon: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z", label: "Exam Timetable" },
   { icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", label: "Weekly Timetable" },
   { icon: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253", label: "Study Materials" },
+  { icon: "M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z", label: "Announcements" },
   { icon: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z", label: "My Progress" },
   { icon: "M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z", label: "Chat" },
   { icon: "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z", label: "Settings" },
@@ -501,6 +502,7 @@ export default function StudentPortal() {
   const [weeklyTimetableList, setWeeklyTimetableList] = useState<{ day: string; time: string; subject: string; grade: number }[]>([]);
   const [studyMaterialsList, setStudyMaterialsList] = useState<StudyMaterial[]>([]);
   const [coursesList, setCoursesList] = useState<{ name: string; teacher: string; grade: string; progress: number }[]>([]);
+  const [announcements, setAnnouncements] = useState<{ id: number; title: string; content: string; date: string; priority: "normal" | "important" | "urgent" }[]>([]);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>(() => {
     const stored = localStorage.getItem("chatMessages");
     return stored ? JSON.parse(stored) : [];
@@ -545,6 +547,9 @@ export default function StudentPortal() {
 
     const storedCourses = localStorage.getItem("coursesData");
     if (storedCourses) setCoursesList(JSON.parse(storedCourses));
+
+    const storedAnnouncements = localStorage.getItem("announcementData");
+    if (storedAnnouncements) setAnnouncements(JSON.parse(storedAnnouncements));
 
     const storedResults = localStorage.getItem(`testResults_${parsedStudent.id}`);
     if (storedResults) setCompletedTests(JSON.parse(storedResults));
@@ -1106,6 +1111,40 @@ export default function StudentPortal() {
     </div>
   );
 
+  const renderAnnouncements = () => (
+    <div>
+      <h1 className="text-3xl font-bold text-white mb-6">Announcements</h1>
+      {announcements.length === 0 ? (
+        <p className="text-slate-400 text-center py-8">No announcements yet</p>
+      ) : (
+        <div className="space-y-4">
+          {announcements.map((ann) => (
+            <div key={ann.id} className={`p-6 rounded-2xl border ${
+              ann.priority === "urgent" ? "bg-red-500/10 border-red-500/30" :
+              ann.priority === "important" ? "bg-yellow-500/10 border-yellow-500/30" :
+              "bg-[#1E293B]/5 border-white/10"
+            }`}>
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    ann.priority === "urgent" ? "bg-red-500/20 text-red-300" :
+                    ann.priority === "important" ? "bg-yellow-500/20 text-yellow-300" :
+                    "bg-blue-500/20 text-blue-300"
+                  }`}>
+                    {ann.priority.toUpperCase()}
+                  </span>
+                  <h3 className="text-lg font-semibold text-white">{ann.title}</h3>
+                </div>
+                <span className="text-slate-500 text-sm">{ann.date}</span>
+              </div>
+              <p className="text-slate-300">{ann.content}</p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
   const renderProgress = () => {
     const storedTestResults = localStorage.getItem(`testResults_${loggedInStudent?.id}`);
     const testResults: Record<number, { correct: number; total: number }> = storedTestResults ? JSON.parse(storedTestResults) : {};
@@ -1339,6 +1378,7 @@ export default function StudentPortal() {
         {activeTab === "exam timetable" && renderExamTimetable()}
         {activeTab === "weekly timetable" && renderWeeklyTimetable()}
         {activeTab === "study materials" && renderStudyMaterials()}
+        {activeTab === "announcements" && renderAnnouncements()}
         {activeTab === "my progress" && renderProgress()}
         {activeTab === "chat" && renderChat()}
         {activeTab === "settings" && renderSettings()}

@@ -414,7 +414,9 @@ export default function TeacherPortal() {
         date: new Date().toISOString().split('T')[0],
         priority: newAnnouncement.priority
       };
-      setAnnouncements([...announcements, ann]);
+      const updated = [...announcements, ann];
+      setAnnouncements(updated);
+      localStorage.setItem("announcementData", JSON.stringify(updated));
       setNewAnnouncement({ title: "", content: "", priority: "normal" });
       setShowAnnouncementModal(false);
     }
@@ -486,7 +488,9 @@ export default function TeacherPortal() {
 
   const handleAddExam = () => {
     if (newExam.date && newExam.exam && newExam.time && newExam.venue) {
-      setExamTimetable([...examTimetable, { ...newExam, fileUrl: examFile?.data, fileType: examFile?.type }]);
+      const updated = [...examTimetable, { ...newExam, fileUrl: examFile?.data, fileType: examFile?.type }];
+      setExamTimetable(updated);
+      localStorage.setItem("examTimetableData", JSON.stringify(updated));
       setNewExam({ date: "", exam: "", time: "", venue: "" });
       setExamFile(null);
       setShowExamModal(false);
@@ -500,12 +504,16 @@ export default function TeacherPortal() {
   };
 
   const handleDeleteExam = (index: number) => {
-    setExamTimetable(examTimetable.filter((_, i) => i !== index));
+    const updated = examTimetable.filter((_, i) => i !== index);
+    setExamTimetable(updated);
+    localStorage.setItem("examTimetableData", JSON.stringify(updated));
   };
 
   const handleAddSchedule = () => {
     if (newSchedule.day && newSchedule.time && newSchedule.subject && newSchedule.grade) {
-      setWeeklyTimetable([...weeklyTimetable, { ...newSchedule, grade: parseInt(newSchedule.grade), fileUrl: scheduleFile?.data, fileType: scheduleFile?.type }]);
+      const updated = [...weeklyTimetable, { ...newSchedule, grade: parseInt(newSchedule.grade), fileUrl: scheduleFile?.data, fileType: scheduleFile?.type }];
+      setWeeklyTimetable(updated);
+      localStorage.setItem("weeklyTimetableData", JSON.stringify(updated));
       setNewSchedule({ day: "Monday", time: "08:00 - 09:00", subject: "", grade: "" });
       setScheduleFile(null);
       setShowScheduleModal(false);
@@ -521,7 +529,9 @@ export default function TeacherPortal() {
   const handleDeleteSchedule = (day: string, index: number) => {
     const daySchedules = weeklyTimetable.filter(t => t.day === day);
     const itemToDelete = daySchedules[index];
-    setWeeklyTimetable(weeklyTimetable.filter(t => !(t.day === itemToDelete.day && t.time === itemToDelete.time && t.subject === itemToDelete.subject)));
+    const updated = weeklyTimetable.filter(t => !(t.day === itemToDelete.day && t.time === itemToDelete.time && t.subject === itemToDelete.subject));
+    setWeeklyTimetable(updated);
+    localStorage.setItem("weeklyTimetableData", JSON.stringify(updated));
   };
 
   const handlePublishTest = (testId: number) => {
