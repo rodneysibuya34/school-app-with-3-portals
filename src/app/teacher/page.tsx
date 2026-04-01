@@ -124,18 +124,22 @@ export default function TeacherPortal() {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [paymentWarning, setPaymentWarning] = useState<{ school: string; daysLeft: number } | null>(null);
   const [strugglingStudents, setStrugglingStudents] = useState<{ name: string; topic: string; date: string }[]>(() => {
+    if (typeof window === 'undefined') return [];
     const stored = localStorage.getItem("strugglingStudents");
     return stored ? JSON.parse(stored) : [];
   });
   const [homeworkList, setHomeworkList] = useState<Homework[]>(() => {
+    if (typeof window === 'undefined') return [];
     const stored = localStorage.getItem("homeworkData");
     return stored ? JSON.parse(stored) : [];
   });
   const [testList, setTestList] = useState<Test[]>(() => {
+    if (typeof window === 'undefined') return [];
     const stored = localStorage.getItem("testData");
     return stored ? JSON.parse(stored) : [];
   });
   const [studyMaterialsList, setStudyMaterialsList] = useState<StudyMaterial[]>(() => {
+    if (typeof window === 'undefined') return [];
     const stored = localStorage.getItem("studyMaterialsData");
     return stored ? JSON.parse(stored) : [];
   });
@@ -143,10 +147,12 @@ export default function TeacherPortal() {
   const [newStudyMaterial, setNewStudyMaterial] = useState({ title: "", subject: "", description: "", grade: "" });
   const [studyMaterialFile, setStudyMaterialFile] = useState<{ name: string; data: string; type: string } | null>(null);
   const [announcements, setAnnouncements] = useState<Announcement[]>(() => {
+    if (typeof window === 'undefined') return [];
     const stored = localStorage.getItem("announcementData");
     return stored ? JSON.parse(stored) : [];
   });
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>(() => {
+    if (typeof window === 'undefined') return [];
     const stored = localStorage.getItem("chatMessages");
     return stored ? JSON.parse(stored) : [];
   });

@@ -115,14 +115,17 @@ export default function AdminPortal() {
   const [authError, setAuthError] = useState("");
   const [activeTab, setActiveTab] = useState("dashboard");
   const [schools, setSchools] = useState<School[]>(() => {
+    if (typeof window === 'undefined') return initialSchools;
     const stored = localStorage.getItem("schoolsData");
     return stored ? JSON.parse(stored) : initialSchools;
   });
   const [teachers, setTeachers] = useState<Teacher[]>(() => {
+    if (typeof window === 'undefined') return initialTeachers;
     const stored = localStorage.getItem("teachersData");
     return stored ? JSON.parse(stored) : initialTeachers;
   });
   const [students, setStudents] = useState<Student[]>(() => {
+    if (typeof window === 'undefined') return initialStudents;
     const stored = localStorage.getItem("studentsData");
     return stored ? JSON.parse(stored) : initialStudents;
   });

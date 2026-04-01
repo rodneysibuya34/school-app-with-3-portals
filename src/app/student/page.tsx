@@ -504,6 +504,7 @@ export default function StudentPortal() {
   const [coursesList, setCoursesList] = useState<{ name: string; teacher: string; grade: string; progress: number }[]>([]);
   const [announcements, setAnnouncements] = useState<{ id: number; title: string; content: string; date: string; priority: "normal" | "important" | "urgent" }[]>([]);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>(() => {
+    if (typeof window === 'undefined') return [];
     const stored = localStorage.getItem("chatMessages");
     return stored ? JSON.parse(stored) : [];
   });
