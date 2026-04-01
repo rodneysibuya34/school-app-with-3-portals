@@ -168,37 +168,38 @@ export default function AdminPortal() {
   };
 
   const toggleSchoolActive = (schoolId: number) => {
-    setSchools(schools.map(s => {
+    const updated = schools.map(s => {
       if (s.id === schoolId) {
-        const updated = { ...s, isActive: !s.isActive };
-        if (updated.isActive) {
-          updated.status = "Active";
+        const updatedSchool = { ...s, isActive: !s.isActive };
+        if (updatedSchool.isActive) {
+          updatedSchool.status = "Active";
         } else {
-          updated.status = "Inactive";
+          updatedSchool.status = "Inactive";
         }
-        return updated;
+        return updatedSchool;
       }
       return s;
-    }));
+    });
+    setSchools(updated);
+    localStorage.setItem("schoolsData", JSON.stringify(updated));
   };
 
   const toggleSchoolBlock = (schoolId: number) => {
-    setSchools(schools.map(s => {
-      if (s.id === schoolId) {
-        return { ...s, isBlocked: !s.isBlocked };
-      }
-      return s;
-    }));
+    const updated = schools.map(s => s.id === schoolId ? { ...s, isBlocked: !s.isBlocked } : s);
+    setSchools(updated);
+    localStorage.setItem("schoolsData", JSON.stringify(updated));
   };
 
   const deleteSchool = (schoolId: number) => {
     if (confirm("Are you sure you want to delete this school? This cannot be undone.")) {
-      setSchools(schools.filter(s => s.id !== schoolId));
+      const updated = schools.filter(s => s.id !== schoolId);
+      setSchools(updated);
+      localStorage.setItem("schoolsData", JSON.stringify(updated));
     }
   };
 
   const activateTrial = (schoolId: number) => {
-    setSchools(schools.map(s => {
+    const updated = schools.map(s => {
       if (s.id === schoolId) {
         const trialStart = new Date();
         const trialEnd = new Date();
@@ -213,11 +214,13 @@ export default function AdminPortal() {
         };
       }
       return s;
-    }));
+    });
+    setSchools(updated);
+    localStorage.setItem("schoolsData", JSON.stringify(updated));
   };
 
   const endTrial = (schoolId: number) => {
-    setSchools(schools.map(s => {
+    const updated = schools.map(s => {
       if (s.id === schoolId) {
         return { 
           ...s, 
@@ -227,11 +230,13 @@ export default function AdminPortal() {
         };
       }
       return s;
-    }));
+    });
+    setSchools(updated);
+    localStorage.setItem("schoolsData", JSON.stringify(updated));
   };
 
   const upgradeToPaid = (schoolId: number) => {
-    setSchools(schools.map(s => {
+    const updated = schools.map(s => {
       if (s.id === schoolId) {
         const newExpiry = new Date();
         newExpiry.setFullYear(newExpiry.getFullYear() + 1);
@@ -245,16 +250,20 @@ export default function AdminPortal() {
         };
       }
       return s;
-    }));
+    });
+    setSchools(updated);
+    localStorage.setItem("schoolsData", JSON.stringify(updated));
   };
 
   const updateExpiryDate = (schoolId: number, newDate: string) => {
-    setSchools(schools.map(s => {
+    const updated = schools.map(s => {
       if (s.id === schoolId) {
         return { ...s, expiryDate: newDate, paymentStatus: getPaymentStatus({ ...s, expiryDate: newDate }) };
       }
       return s;
-    }));
+    });
+    setSchools(updated);
+    localStorage.setItem("schoolsData", JSON.stringify(updated));
   };
 
   const handleSubmit = (type: ModalType) => {
