@@ -275,40 +275,45 @@ export default function AdminPortal() {
         alert("Please fill in School Name and Location");
         return;
       }
-      const schoolUsername = formData.name.split(' ')[0].toLowerCase() + "_admin";
-      const schoolPassword = genPassword(formData.name, formData.name);
-      const trialEndDate = new Date();
-      trialEndDate.setDate(trialEndDate.getDate() + 10);
-      const expiryDate = formData.schoolExpiry || trialEndDate.toISOString().split('T')[0];
-      
-      const newSchool: School = {
-        id: schools.length + 1,
-        name: formData.name,
-        location: formData.location,
-        students: 0,
-        teachers: 0,
-        status: "Trial",
-        type: formData.type,
-        adminUsername: schoolUsername,
-        adminPassword: schoolPassword,
-        year: formData.schoolYear,
-        expiryDate,
-        isActive: true,
-        isBlocked: false,
-        paymentStatus: "trial",
-        contact: formData.schoolContact,
-        address: formData.schoolAddress,
-        schoolLogo: schoolLogoFile || undefined
-      };
-      
-      const updatedSchools = [...schools, newSchool];
-      setSchools(updatedSchools);
-      localStorage.setItem("schoolsData", JSON.stringify(updatedSchools));
-      
-      alert(`School created!\n\nUsername: ${schoolUsername}\nPassword: ${schoolPassword}\nTrial Period: 10 days (Expires: ${expiryDate})`);
-      setShowModal(null);
-      setSchoolLogoFile(null);
-      setFormData({ name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', schoolLogo: '', schoolContact: '', schoolAddress: '', teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', subSchool: '', subType: 'Primary', subStartDate: '' });
+      try {
+        const schoolUsername = formData.name.split(' ')[0].toLowerCase() + "_admin";
+        const schoolPassword = genPassword(formData.name, formData.name);
+        const trialEndDate = new Date();
+        trialEndDate.setDate(trialEndDate.getDate() + 10);
+        const expiryDate = formData.schoolExpiry || trialEndDate.toISOString().split('T')[0];
+        
+        const newSchool: School = {
+          id: Date.now(),
+          name: formData.name,
+          location: formData.location,
+          students: 0,
+          teachers: 0,
+          status: "Trial",
+          type: formData.type,
+          adminUsername: schoolUsername,
+          adminPassword: schoolPassword,
+          year: formData.schoolYear,
+          expiryDate,
+          isActive: true,
+          isBlocked: false,
+          paymentStatus: "trial",
+          contact: formData.schoolContact || undefined,
+          address: formData.schoolAddress || undefined,
+          schoolLogo: schoolLogoFile || undefined
+        };
+        
+        const updatedSchools = [...schools, newSchool];
+        setSchools(updatedSchools);
+        localStorage.setItem("schoolsData", JSON.stringify(updatedSchools));
+        
+        alert(`School created!\n\nUsername: ${schoolUsername}\nPassword: ${schoolPassword}\nTrial Period: 10 days (Expires: ${expiryDate})`);
+        setShowModal(null);
+        setSchoolLogoFile(null);
+        setFormData({ name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', schoolLogo: '', schoolContact: '', schoolAddress: '', teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', subSchool: '', subType: 'Primary', subStartDate: '' });
+      } catch (error) {
+        alert("Error creating school. Please try again.");
+        console.error(error);
+      }
     } else if (type === 'teacher') {
       if (!formData.teacherName || !formData.teacherSchool || !formData.teacherSubject) {
         alert("Please fill in Name, School, and Subject");
@@ -319,7 +324,7 @@ export default function AdminPortal() {
       const teacherPassword = genPassword(formData.teacherName, formData.teacherSchool);
       
       const newTeacher: Teacher = {
-        id: teachers.length + 1,
+        id: Date.now(),
         name: formData.teacherName,
         email: formData.teacherEmail || `${teacherUsername}@${formData.teacherSchool.split(' ')[0].toLowerCase()}.edu`,
         school: formData.teacherSchool,
@@ -335,6 +340,7 @@ export default function AdminPortal() {
       
       const updatedSchools = schools.map(s => s.name === formData.teacherSchool ? { ...s, teachers: s.teachers + 1 } : s);
       setSchools(updatedSchools);
+      localStorage.setItem("schoolsData", JSON.stringify(updatedSchools));
       
       alert(`Teacher created!\n\nUsername: ${teacherUsername}\nPassword: ${teacherPassword}`);
       setShowModal(null);
@@ -349,7 +355,7 @@ export default function AdminPortal() {
       const studentPassword = genPassword(formData.studentName, formData.studentSchool);
       
       const newStudent: Student = {
-        id: students.length + 1,
+        id: Date.now(),
         name: formData.studentName,
         email: formData.studentEmail || `${studentUsername}@${formData.studentSchool.split(' ')[0].toLowerCase()}.edu`,
         grade: parseInt(formData.studentGrade),
@@ -365,6 +371,7 @@ export default function AdminPortal() {
       
       const updatedSchools = schools.map(s => s.name === formData.studentSchool ? { ...s, students: s.students + 1 } : s);
       setSchools(updatedSchools);
+      localStorage.setItem("schoolsData", JSON.stringify(updatedSchools));
       
       alert(`Student created!\n\nUsername: ${studentUsername}\nPassword: ${studentPassword}`);
       setShowModal(null);
