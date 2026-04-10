@@ -7,13 +7,15 @@ import { eq, desc } from "drizzle-orm";
 function getDatabase() {
   const database = getDb();
   if (!database) {
-    throw new Error("Database not configured. Please set DB_URL and DB_TOKEN environment variables.");
+    return null;
   }
   return database;
 }
 
 export async function getSchools() {
-  return await getDatabase().select().from(schools).orderBy(desc(schools.id));
+  const database = getDatabase();
+  if (!database) return [];
+  return await database.select().from(schools).orderBy(desc(schools.id));
 }
 
 export async function addSchool(schoolData: {
@@ -28,6 +30,7 @@ export async function addSchool(schoolData: {
   address?: string;
 }) {
   const database = getDatabase();
+  if (!database) throw new Error("Database not configured");
   const result = await database.insert(schools).values({
     name: schoolData.name,
     location: schoolData.location,
@@ -59,18 +62,23 @@ export async function updateSchool(id: number, data: Partial<{
   contact: string;
   address: string;
   status: string;
+  paymentPlan: string;
 }>) {
   const database = getDatabase();
+  if (!database) return;
   await database.update(schools).set(data).where(eq(schools.id, id));
 }
 
 export async function deleteSchool(id: number) {
   const database = getDatabase();
+  if (!database) return;
   await database.delete(schools).where(eq(schools.id, id));
 }
 
 export async function getTeachers() {
-  return await getDatabase().select().from(teachers).orderBy(desc(teachers.id));
+  const database = getDatabase();
+  if (!database) return [];
+  return await database.select().from(teachers).orderBy(desc(teachers.id));
 }
 
 export async function addTeacher(teacherData: {
@@ -82,6 +90,7 @@ export async function addTeacher(teacherData: {
   password: string;
 }) {
   const database = getDatabase();
+  if (!database) throw new Error("Database not configured");
   const result = await database.insert(teachers).values({
     name: teacherData.name,
     email: teacherData.email,
@@ -103,16 +112,20 @@ export async function updateTeacher(id: number, data: Partial<{
   status: string;
 }>) {
   const database = getDatabase();
+  if (!database) return;
   await database.update(teachers).set(data).where(eq(teachers.id, id));
 }
 
 export async function deleteTeacher(id: number) {
   const database = getDatabase();
+  if (!database) return;
   await database.delete(teachers).where(eq(teachers.id, id));
 }
 
 export async function getStudents() {
-  return await getDatabase().select().from(students).orderBy(desc(students.id));
+  const database = getDatabase();
+  if (!database) return [];
+  return await database.select().from(students).orderBy(desc(students.id));
 }
 
 export async function addStudent(studentData: {
@@ -125,6 +138,7 @@ export async function addStudent(studentData: {
   subjects?: string;
 }) {
   const database = getDatabase();
+  if (!database) throw new Error("Database not configured");
   const result = await database.insert(students).values({
     name: studentData.name,
     email: studentData.email,
@@ -148,16 +162,20 @@ export async function updateStudent(id: number, data: Partial<{
   subjects: string;
 }>) {
   const database = getDatabase();
+  if (!database) return;
   await database.update(students).set(data).where(eq(students.id, id));
 }
 
 export async function deleteStudent(id: number) {
   const database = getDatabase();
+  if (!database) return;
   await database.delete(students).where(eq(students.id, id));
 }
 
 export async function getSubscriptions() {
-  return await getDatabase().select().from(subscriptions).orderBy(desc(subscriptions.id));
+  const database = getDatabase();
+  if (!database) return [];
+  return await database.select().from(subscriptions).orderBy(desc(subscriptions.id));
 }
 
 export async function addSubscription(subData: {
@@ -167,19 +185,23 @@ export async function addSubscription(subData: {
   startDate: string;
   status: string;
   renewal: string;
+  planType?: string;
 }) {
   const database = getDatabase();
+  if (!database) throw new Error("Database not configured");
   const result = await database.insert(subscriptions).values(subData).returning();
   return result[0];
 }
 
 export async function deleteSubscription(id: number) {
   const database = getDatabase();
+  if (!database) return;
   await database.delete(subscriptions).where(eq(subscriptions.id, id));
 }
 
 export async function loginStudent(username: string, password: string) {
   const database = getDatabase();
+  if (!database) return { success: false };
   const result = await database.select().from(students).where(eq(students.username, username));
   const student = result[0];
   if (student && student.password === password) {
@@ -190,6 +212,7 @@ export async function loginStudent(username: string, password: string) {
 
 export async function loginTeacher(username: string, password: string) {
   const database = getDatabase();
+  if (!database) return { success: false };
   const result = await database.select().from(teachers).where(eq(teachers.username, username));
   const teacher = result[0];
   if (teacher && teacher.password === password) {
@@ -200,6 +223,7 @@ export async function loginTeacher(username: string, password: string) {
 
 export async function loginSchoolAdmin(username: string, password: string) {
   const database = getDatabase();
+  if (!database) return { success: false };
   const result = await database.select().from(schools).where(eq(schools.adminUsername, username));
   const school = result[0];
   if (school && school.adminPassword === password) {

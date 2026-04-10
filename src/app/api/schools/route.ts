@@ -5,8 +5,11 @@ export async function GET() {
   try {
     const schools = await getSchools();
     return NextResponse.json(schools);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching schools:", error);
+    if (error.message?.includes("not configured")) {
+      return NextResponse.json([]);
+    }
     return NextResponse.json({ error: "Failed to fetch schools" }, { status: 500 });
   }
 }
