@@ -124,7 +124,7 @@ export default function AdminPortal() {
     name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', schoolLogo: '', schoolContact: '', schoolAddress: '',
     teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '',
     studentName: '', studentEmail: '', studentGrade: '', studentSchool: '',
-    subSchool: '', subType: 'Primary', subStartDate: ''
+    subSchool: '', subType: 'Primary', subStartDate: '', subPrice: '', subRenewal: ''
   });
   const [schoolLogoFile, setSchoolLogoFile] = useState<string | null>(null);
 
@@ -323,7 +323,7 @@ export default function AdminPortal() {
         alert(`School created!\n\nUsername: ${schoolUsername}\nPassword: ${schoolPassword}\nTrial Period: 10 days (Expires: ${expiryDate})`);
         setShowModal(null);
         setSchoolLogoFile(null);
-        setFormData({ name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', schoolLogo: '', schoolContact: '', schoolAddress: '', teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', subSchool: '', subType: 'Primary', subStartDate: '' });
+        setFormData({ name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', schoolLogo: '', schoolContact: '', schoolAddress: '', teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', subSchool: '', subType: 'Primary', subStartDate: '', subPrice: '', subRenewal: '' });
       } catch (error) {
         alert("Error creating school. Please try again.");
         console.error(error);
@@ -361,7 +361,7 @@ export default function AdminPortal() {
         
         alert(`Teacher created!\n\nUsername: ${teacherUsername}\nPassword: ${teacherPassword}`);
         setShowModal(null);
-        setFormData({ name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', schoolLogo: '', schoolContact: '', schoolAddress: '', teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', subSchool: '', subType: 'Primary', subStartDate: '' });
+        setFormData({ name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', schoolLogo: '', schoolContact: '', schoolAddress: '', teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', subSchool: '', subType: 'Primary', subStartDate: '', subPrice: '', subRenewal: '' });
       } catch (error) {
         alert("Error creating teacher. Please try again.");
         console.error(error);
@@ -399,9 +399,40 @@ export default function AdminPortal() {
         
         alert(`Student created!\n\nUsername: ${studentUsername}\nPassword: ${studentPassword}`);
         setShowModal(null);
-        setFormData({ name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', schoolLogo: '', schoolContact: '', schoolAddress: '', teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', subSchool: '', subType: 'Primary', subStartDate: '' });
+        setFormData({ name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', schoolLogo: '', schoolContact: '', schoolAddress: '', teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', subSchool: '', subType: 'Primary', subStartDate: '', subPrice: '', subRenewal: '' });
       } catch (error) {
         alert("Error creating student. Please try again.");
+        console.error(error);
+      }
+    } else if (type === 'subscription') {
+      if (!formData.subSchool || !formData.subPrice || !formData.subStartDate || !formData.subRenewal) {
+        alert("Please fill in all subscription fields");
+        return;
+      }
+      try {
+        const response = await fetch('/api/subscriptions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            school: formData.subSchool,
+            schoolType: formData.subType,
+            price: formData.subPrice,
+            startDate: formData.subStartDate,
+            status: "Active",
+            renewal: formData.subRenewal
+          })
+        });
+        
+        if (!response.ok) throw new Error('Failed to create subscription');
+        
+        const newSub = await response.json();
+        setSubscriptions([...subscriptions, newSub]);
+        
+        alert(`Subscription created for ${formData.subSchool}!`);
+        setShowModal(null);
+        setFormData({ name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', schoolLogo: '', schoolContact: '', schoolAddress: '', teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', subSchool: '', subType: 'Primary', subStartDate: '', subPrice: '', subRenewal: '' });
+      } catch (error) {
+        alert("Error creating subscription. Please try again.");
         console.error(error);
       }
     }
@@ -828,6 +859,21 @@ export default function AdminPortal() {
                     <option value="">Select School</option>
                     {schools.map(s => <option key={s.id} value={s.name}>{s.name}</option>)}
                   </select>
+                </>
+              )}
+              {showModal === 'subscription' && (
+                <>
+                  <select value={formData.subSchool} onChange={(e) => setFormData({...formData, subSchool: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white">
+                    <option value="">Select School</option>
+                    {schools.map(s => <option key={s.id} value={s.name}>{s.name}</option>)}
+                  </select>
+                  <select value={formData.subType} onChange={(e) => setFormData({...formData, subType: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white">
+                    <option value="Primary">Primary School</option>
+                    <option value="High School">High School</option>
+                  </select>
+                  <input type="text" value={formData.subPrice || ''} onChange={(e) => setFormData({...formData, subPrice: e.target.value})} placeholder="Price (e.g., R1,500/mo)" className="w-full px-4 py-3 rounded-xl bg-[#1E293B]/5 border border-white/10 text-white" />
+                  <input type="date" value={formData.subStartDate} onChange={(e) => setFormData({...formData, subStartDate: e.target.value})} placeholder="Start Date" className="w-full px-4 py-3 rounded-xl bg-[#1E293B]/5 border border-white/10 text-white" />
+                  <input type="text" value={formData.subRenewal || ''} onChange={(e) => setFormData({...formData, subRenewal: e.target.value})} placeholder="Renewal Date (e.g., Jan 1, 2027)" className="w-full px-4 py-3 rounded-xl bg-[#1E293B]/5 border border-white/10 text-white" />
                 </>
               )}
             </div>
