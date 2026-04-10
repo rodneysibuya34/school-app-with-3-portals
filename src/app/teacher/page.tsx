@@ -251,21 +251,21 @@ export default function TeacherPortal() {
           fetch('/api/announcements?school=' + encodeURIComponent(loggedInTeacher.school)),
           fetch('/api/courses')
         ]);
-        const [hwData, testsData, smData, examData, weeklyData, annData, coursesData] = await Promise.all([
-          hwRes.json(),
-          testsRes.json(),
-          smRes.json(),
-          examRes.json(),
-          weeklyRes.json(),
-          annRes.json(),
-          coursesRes.json()
-        ]);
-        setHomeworkList(hwData || []);
-        setTestList(testsData || []);
-        setStudyMaterialsList(smData || []);
-        setExamTimetable(examData || []);
-        setWeeklyTimetable(weeklyData || []);
-        setAnnouncements(annData || []);
+        
+        const hwData = hwRes.ok ? await hwRes.json() : [];
+        const testsData = testsRes.ok ? await testsRes.json() : [];
+        const smData = smRes.ok ? await smRes.json() : [];
+        const examData = examRes.ok ? await examRes.json() : [];
+        const weeklyData = weeklyRes.ok ? await weeklyRes.json() : [];
+        const annData = annRes.ok ? await annRes.json() : [];
+        const coursesData = coursesRes.ok ? await coursesRes.json() : [];
+        
+        setHomeworkList(Array.isArray(hwData) ? hwData : []);
+        setTestList(Array.isArray(testsData) ? testsData : []);
+        setStudyMaterialsList(Array.isArray(smData) ? smData : []);
+        setExamTimetable(Array.isArray(examData) ? examData : []);
+        setWeeklyTimetable(Array.isArray(weeklyData) ? weeklyData : []);
+        setAnnouncements(Array.isArray(annData) ? annData : []);
       } catch (error) {
         console.error("Error fetching content data:", error);
       }

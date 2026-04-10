@@ -139,16 +139,16 @@ export default function AdminPortal() {
           fetch('/api/students'),
           fetch('/api/subscriptions')
         ]);
-        const [schoolsData, teachersData, studentsData, subsData] = await Promise.all([
-          schoolsRes.json(),
-          teachersRes.json(),
-          studentsRes.json(),
-          subsRes.json()
-        ]);
-        setSchools(schoolsData);
-        setTeachers(teachersData);
-        setStudents(studentsData);
-        setSubscriptions(subsData);
+        
+        const schools = schoolsRes.ok ? await schoolsRes.json() : [];
+        const teachers = teachersRes.ok ? await teachersRes.json() : [];
+        const students = studentsRes.ok ? await studentsRes.json() : [];
+        const subs = subsRes.ok ? await subsRes.json() : [];
+        
+        setSchools(Array.isArray(schools) ? schools : []);
+        setTeachers(Array.isArray(teachers) ? teachers : []);
+        setStudents(Array.isArray(students) ? students : []);
+        setSubscriptions(Array.isArray(subs) ? subs : []);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {

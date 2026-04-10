@@ -39,14 +39,14 @@ export default function LoginPage() {
           fetch('/api/teachers'),
           fetch('/api/students')
         ]);
-        const [schools, teachers, students] = await Promise.all([
-          schoolsRes.json(),
-          teachersRes.json(),
-          studentsRes.json()
-        ]);
-        setSchoolsData(schools.map((s: { name: string; year: number }) => ({ name: s.name, year: s.year || 2026 })));
-        setTeachersData(teachers);
-        setStudentsData(students);
+        
+        const schools = schoolsRes.ok ? await schoolsRes.json() : [];
+        const teachers = teachersRes.ok ? await teachersRes.json() : [];
+        const students = studentsRes.ok ? await studentsRes.json() : [];
+        
+        setSchoolsData(Array.isArray(schools) ? schools.map((s: { name: string; year: number }) => ({ name: s.name, year: s.year || 2026 })) : []);
+        setTeachersData(Array.isArray(teachers) ? teachers : []);
+        setStudentsData(Array.isArray(students) ? students : []);
       } catch (err) {
         console.error("Error fetching data:", err);
       } finally {
