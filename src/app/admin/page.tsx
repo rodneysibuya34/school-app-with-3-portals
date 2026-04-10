@@ -53,6 +53,7 @@ interface School {
   contact?: string;
   address?: string;
   trialStartDate?: string;
+  paymentPlan?: string;
 }
 
 interface Teacher {
@@ -82,6 +83,7 @@ interface Subscription {
   school: string;
   schoolType: string;
   price: string;
+  planType: string;
   startDate: string;
   status: string;
   renewal: string;
@@ -100,10 +102,10 @@ const initialStudents: Student[] = [
 ];
 
 const initialSubscriptions: Subscription[] = [
-  { id: 1, school: "Oakridge Preparatory Academy", schoolType: "High School", price: "R2,500/mo", startDate: "Jan 1, 2026", status: "Active", renewal: "Jan 1, 2027" },
-  { id: 2, school: "Westfield Christian School", schoolType: "Primary", price: "R1,500/mo", startDate: "Mar 15, 2025", status: "Active", renewal: "Mar 15, 2026" },
-  { id: 3, school: "Riverside Elementary", schoolType: "Primary", price: "R1,500/mo", startDate: "Jun 1, 2025", status: "Active", renewal: "Jun 1, 2026" },
-  { id: 4, school: "Highland Academy", schoolType: "High School", price: "Free", startDate: "Mar 1, 2026", status: "Trial", renewal: "Mar 31, 2026" },
+  { id: 1, school: "Oakridge Preparatory Academy", schoolType: "High School", price: "R2,500/mo", planType: "monthly", startDate: "Jan 1, 2026", status: "Active", renewal: "Jan 1, 2027" },
+  { id: 2, school: "Westfield Christian School", schoolType: "Primary", price: "R1,500/mo", planType: "monthly", startDate: "Mar 15, 2025", status: "Active", renewal: "Mar 15, 2026" },
+  { id: 3, school: "Riverside Elementary", schoolType: "Primary", price: "R1,500/mo", planType: "monthly", startDate: "Jun 1, 2025", status: "Active", renewal: "Jun 1, 2026" },
+  { id: 4, school: "Highland Academy", schoolType: "High School", price: "Free", planType: "trial", startDate: "Mar 1, 2026", status: "Trial", renewal: "Mar 31, 2026" },
 ];
 
 type ModalType = 'school' | 'teacher' | 'student' | 'subscription' | 'newYear' | null;
@@ -257,19 +259,96 @@ export default function AdminPortal() {
     }
   };
 
-  const upgradeToPaid = async (schoolId: number) => {
-    const newExpiry = new Date();
-    newExpiry.setFullYear(newExpiry.getFullYear() + 1);
-    const expiryDate = newExpiry.toISOString().split('T')[0];
+  const upgradeToPaid = async (schoolId: number, plan: string = 'monthly') => {
+    const school = schools.find(s => s.id === schoolId);
+    if (!school) return;
+    
+    const isHighSchool = school.type === "High School";
+    let expiryDate: Date;
+    let price: string;
+    let planType: string;
+    
+    switch (plan) {
+      case 'quarterly':
+        expiryDate = new Date();
+        expiryDate.setMonth(expiryDate.getMonth() + 3);
+        price = isHighSchool ? "R7,000/quarter" : "R4,000/quarter";
+        planType = "quarterly";
+        break;
+      case 'annual':
+        expiryDate = new Date();
+        expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+        price = isHighSchool ? "R25,000/year" : "R14,000/year";
+        planType = "annual";
+        break;
+      default:
+        expiryDate = new Date();
+        expiryDate.setMonth(expiryDate.getMonth() + 1);
+        price = isHighSchool ? "R2,500/mo" : "R1,500/mo";
+        planType = "monthly";
+    }
+    
+    const expiryDateStr = expiryDate.toISOString().split('T')[0];
+    
     try {
       await fetch('/api/schools', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: schoolId, paymentStatus: "active", isActive: true, status: "Active", expiryDate })
+        body: JSON.stringify({ 
+          id: schoolId, 
+          paymentStatus: "active", 
+          isActive: true, 
+          status: "Active", 
+          expiryDate: expiryDateStr,
+          paymentPlan: planType
+        })
       });
-      setSchools(schools.map(s => s.id === schoolId ? { ...s, paymentStatus: "active" as const, isActive: true, status: "Active", expiryDate } : s));
+      
+      setSchools(schools.map(s => s.id === schoolId ? { 
+        ...s, 
+        paymentStatus: "active" as const, 
+        isActive: true, 
+        status: "Active", 
+        expiryDate: expiryDateStr,
+        paymentPlan: planType
+      } : s));
+      
+      await fetch('/api/subscriptions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          school: school.name,
+          schoolType: school.type,
+          price: price,
+          planType: planType,
+          startDate: new Date().toISOString().split('T')[0],
+          status: "Active",
+          renewal: expiryDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+        })
+      });
+      
+      alert(`School upgraded to ${planType} plan!\n\nPrice: ${price}\nValid until: ${expiryDate.toLocaleDateString()}`);
     } catch (error) {
       alert("Error upgrading school");
+    }
+  };
+
+  const handleUpgradeClick = (schoolId: number) => {
+    const school = schools.find(s => s.id === schoolId);
+    if (!school) return;
+    
+    const isHighSchool = school.type === "High School";
+    const choice = confirm("Choose payment plan:\n\nOK = Monthly\nCancel = Quarterly\n\nFor annual, click Cancel twice.");
+    
+    if (choice) {
+      upgradeToPaid(schoolId, 'monthly');
+    } else {
+      const secondChoice = confirm("Choose:\n\nOK = Quarterly\nCancel = Annual");
+      if (secondChoice) {
+        upgradeToPaid(schoolId, 'quarterly');
+      } else {
+        upgradeToPaid(schoolId, 'annual');
+      }
     }
   };
 
@@ -662,7 +741,7 @@ export default function AdminPortal() {
                       <div className="flex gap-2 pt-2 flex-wrap">
                         {paymentStatus === 'trial' ? (
                           <>
-                            <button onClick={() => upgradeToPaid(school.id)} className="flex-1 py-2 rounded-lg text-sm bg-green-500/20 text-green-400">Upgrade to Paid</button>
+                            <button onClick={() => handleUpgradeClick(school.id)} className="flex-1 py-2 rounded-lg text-sm bg-green-500/20 text-green-400">Upgrade to Paid</button>
                             <button onClick={() => endTrial(school.id)} className="flex-1 py-2 rounded-lg text-sm bg-red-500/20 text-red-400">End Trial</button>
                           </>
                         ) : (
