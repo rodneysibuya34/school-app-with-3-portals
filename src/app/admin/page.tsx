@@ -394,7 +394,14 @@ export default function AdminPortal() {
           })
         });
         
-        if (!response.ok) throw new Error('Failed to create school');
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          if (response.status === 503 || errorData.error?.includes("not configured")) {
+            alert("Database not connected. Please add DB_URL environment variable in Vercel settings.");
+            return;
+          }
+          throw new Error('Failed to create school');
+        }
         
         const newSchool = await response.json();
         setSchools([...schools, newSchool]);
