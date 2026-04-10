@@ -181,17 +181,17 @@ export default function TeacherPortal() {
   const [newQuestion, setNewQuestion] = useState({ text: "", type: "mcq" as "mcq" | "truefalse", options: ["", "", "", ""], correctAnswer: "" });
   const [bulkQuestionCount, setBulkQuestionCount] = useState(10);
   const [bulkQuestions, setBulkQuestions] = useState<Question[]>([]);
-  const [examTimetable, setExamTimetable] = useState<{ date: string; exam: string; time: string; venue: string; fileUrl?: string; fileType?: string }[]>(() => {
+  const [examTimetable, setExamTimetable] = useState<{ id?: number; date: string; exam: string; time: string; venue: string; fileUrl?: string; fileType?: string }[]>(() => {
     if (typeof window === 'undefined') return [];
     const stored = localStorage.getItem("examTimetableData");
     return stored ? JSON.parse(stored) : [];
   });
-  const [weeklyTimetable, setWeeklyTimetable] = useState<{ day: string; time: string; subject: string; grade: number; fileUrl?: string; fileType?: string }[]>(() => {
+  const [weeklyTimetable, setWeeklyTimetable] = useState<{ id?: number; day: string; time: string; subject: string; grade: number; fileUrl?: string; fileType?: string }[]>(() => {
     if (typeof window === 'undefined') return [];
     const stored = localStorage.getItem("weeklyTimetableData");
     return stored ? JSON.parse(stored) : [];
   });
-  const [newExam, setNewExam] = useState({ date: "", exam: "", time: "", venue: "" });
+  const [newExam, setNewExam] = useState({ date: "", exam: "", time: "", venue: "", grade: "" });
   const [examFile, setExamFile] = useState<{ name: string; data: string; type: string } | null>(null);
   const [newSchedule, setNewSchedule] = useState({ day: "Monday", time: "08:00 - 09:00", subject: "", grade: "" });
   const [scheduleFile, setScheduleFile] = useState<{ name: string; data: string; type: string } | null>(null);
@@ -237,6 +237,43 @@ export default function TeacherPortal() {
       }
     }
   }, [router]);
+
+  useEffect(() => {
+    async function fetchContentData() {
+      if (!loggedInTeacher?.school) return;
+      try {
+        const [hwRes, testsRes, smRes, examRes, weeklyRes, annRes, coursesRes] = await Promise.all([
+          fetch('/api/homework?school=' + encodeURIComponent(loggedInTeacher.school)),
+          fetch('/api/tests'),
+          fetch('/api/study-materials'),
+          fetch('/api/exam-timetable'),
+          fetch('/api/weekly-timetable'),
+          fetch('/api/announcements?school=' + encodeURIComponent(loggedInTeacher.school)),
+          fetch('/api/courses')
+        ]);
+        const [hwData, testsData, smData, examData, weeklyData, annData, coursesData] = await Promise.all([
+          hwRes.json(),
+          testsRes.json(),
+          smRes.json(),
+          examRes.json(),
+          weeklyRes.json(),
+          annRes.json(),
+          coursesRes.json()
+        ]);
+        setHomeworkList(hwData || []);
+        setTestList(testsData || []);
+        setStudyMaterialsList(smData || []);
+        setExamTimetable(examData || []);
+        setWeeklyTimetable(weeklyData || []);
+        setAnnouncements(annData || []);
+      } catch (error) {
+        console.error("Error fetching content data:", error);
+      }
+    }
+    if (loggedInTeacher?.school) {
+      fetchContentData();
+    }
+  }, [loggedInTeacher]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -295,39 +332,59 @@ export default function TeacherPortal() {
     }
   };
 
-  const handleAddHomework = () => {
-    if (newHomework.title && newHomework.dueDate && newHomework.grade && newHomework.subject) {
-      const hw: Homework = {
-        id: Date.now(),
-        title: newHomework.title,
-        description: newHomework.description,
-        dueDate: newHomework.dueDate,
-        grade: parseInt(newHomework.grade),
-        subject: newHomework.subject,
-        fileUrl: homeworkFile?.data || "",
-        fileType: homeworkFile?.type || "unknown"
-      };
-      setHomeworkList([...homeworkList, hw]);
-      localStorage.setItem("homeworkData", JSON.stringify([...homeworkList, hw]));
+  const handleAddHomework = async () => {
+    if (newHomework.title && newHomework.dueDate && newHomework.grade && newHomework.subject && loggedInTeacher) {
+      try {
+        const response = await fetch('/api/homework', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: newHomework.title,
+            description: newHomework.description,
+            dueDate: newHomework.dueDate,
+            grade: parseInt(newHomework.grade),
+            subject: newHomework.subject,
+            school: loggedInTeacher.school,
+            createdBy: loggedInTeacher.name
+          })
+        });
+        if (response.ok) {
+          const hw = await response.json();
+          setHomeworkList([...homeworkList, hw]);
+        }
+      } catch (error) {
+        console.error("Error adding homework:", error);
+        alert("Error creating homework. Please try again.");
+      }
       setNewHomework({ title: "", description: "", dueDate: "", grade: "", subject: "" });
       setHomeworkFile(null);
       setShowHomeworkModal(false);
     }
   };
 
-  const handleAddStudyMaterial = () => {
-    if (newStudyMaterial.title && newStudyMaterial.subject && newStudyMaterial.grade) {
-      const sm: StudyMaterial = {
-        id: Date.now(),
-        title: newStudyMaterial.title,
-        subject: newStudyMaterial.subject,
-        description: newStudyMaterial.description,
-        grade: parseInt(newStudyMaterial.grade),
-        fileUrl: studyMaterialFile?.data || "",
-        fileType: studyMaterialFile?.type || "unknown"
-      };
-      setStudyMaterialsList([...studyMaterialsList, sm]);
-      localStorage.setItem("studyMaterialsData", JSON.stringify([...studyMaterialsList, sm]));
+  const handleAddStudyMaterial = async () => {
+    if (newStudyMaterial.title && newStudyMaterial.subject && newStudyMaterial.grade && loggedInTeacher) {
+      try {
+        const response = await fetch('/api/study-materials', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: newStudyMaterial.title,
+            description: newStudyMaterial.description,
+            subject: newStudyMaterial.subject,
+            grade: parseInt(newStudyMaterial.grade),
+            school: loggedInTeacher.school,
+            createdBy: loggedInTeacher.name
+          })
+        });
+        if (response.ok) {
+          const sm = await response.json();
+          setStudyMaterialsList([...studyMaterialsList, sm]);
+        }
+      } catch (error) {
+        console.error("Error adding study material:", error);
+        alert("Error creating study material. Please try again.");
+      }
       setNewStudyMaterial({ title: "", subject: "", description: "", grade: "" });
       setStudyMaterialFile(null);
       setShowStudyMaterialModal(false);
@@ -340,21 +397,30 @@ export default function TeacherPortal() {
     setHomeworkFile(null);
   };
 
-    const handleAddTest = () => {
-      if (newTest.title && newTest.dueDate && newTest.grade && newTest.subject) {
-        const test: Test = {
-          id: Date.now(),
-          title: newTest.title,
-          description: newTest.description,
-          dueDate: newTest.dueDate,
-          grade: parseInt(newTest.grade),
-          subject: newTest.subject,
-          questions: [],
-          published: false,
-          duration: parseInt(newTest.duration) || 60
-        };
-        setTestList([...testList, test]);
-        localStorage.setItem("testData", JSON.stringify([...testList, test]));
+    const handleAddTest = async () => {
+      if (newTest.title && newTest.dueDate && newTest.grade && newTest.subject && loggedInTeacher) {
+        try {
+          const response = await fetch('/api/tests', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              title: newTest.title,
+              subject: newTest.subject,
+              grade: parseInt(newTest.grade),
+              school: loggedInTeacher.school,
+              date: newTest.dueDate,
+              duration: newTest.duration,
+              createdBy: loggedInTeacher.name
+            })
+          });
+          if (response.ok) {
+            const test = await response.json();
+            setTestList([...testList, test]);
+          }
+        } catch (error) {
+          console.error("Error adding test:", error);
+          alert("Error creating test. Please try again.");
+        }
         setNewTest({ title: "", description: "", dueDate: "", grade: "", subject: "", duration: "60" });
         setShowTestModal(false);
       }
@@ -408,18 +474,27 @@ export default function TeacherPortal() {
     }
   };
 
-  const handleAddAnnouncement = () => {
-    if (newAnnouncement.title && newAnnouncement.content) {
-      const ann: Announcement = {
-        id: Date.now(),
-        title: newAnnouncement.title,
-        content: newAnnouncement.content,
-        date: new Date().toISOString().split('T')[0],
-        priority: newAnnouncement.priority
-      };
-      const updated = [...announcements, ann];
-      setAnnouncements(updated);
-      localStorage.setItem("announcementData", JSON.stringify(updated));
+  const handleAddAnnouncement = async () => {
+    if (newAnnouncement.title && newAnnouncement.content && loggedInTeacher) {
+      try {
+        const response = await fetch('/api/announcements', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: newAnnouncement.title,
+            message: newAnnouncement.content,
+            school: loggedInTeacher.school,
+            createdBy: loggedInTeacher.name
+          })
+        });
+        if (response.ok) {
+          const ann = await response.json();
+          setAnnouncements([...announcements, ann]);
+        }
+      } catch (error) {
+        console.error("Error adding announcement:", error);
+        alert("Error creating announcement. Please try again.");
+      }
       setNewAnnouncement({ title: "", content: "", priority: "normal" });
       setShowAnnouncementModal(false);
     }
@@ -489,12 +564,32 @@ export default function TeacherPortal() {
     }
   };
 
-  const handleAddExam = () => {
-    if (newExam.date && newExam.exam && newExam.time && newExam.venue) {
-      const updated = [...examTimetable, { ...newExam, fileUrl: examFile?.data, fileType: examFile?.type }];
-      setExamTimetable(updated);
-      localStorage.setItem("examTimetableData", JSON.stringify(updated));
-      setNewExam({ date: "", exam: "", time: "", venue: "" });
+  const handleAddExam = async () => {
+    if (newExam.date && newExam.exam && newExam.time && newExam.venue && loggedInTeacher) {
+      try {
+        const response = await fetch('/api/exam-timetable', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: newExam.exam,
+            subject: newExam.exam,
+            grade: parseInt(newExam.grade || "10"),
+            school: loggedInTeacher.school,
+            date: newExam.date,
+            time: newExam.time,
+            venue: newExam.venue,
+            createdBy: loggedInTeacher.name
+          })
+        });
+        if (response.ok) {
+          const exam = await response.json();
+          setExamTimetable([...examTimetable, exam]);
+        }
+      } catch (error) {
+        console.error("Error adding exam:", error);
+        alert("Error creating exam. Please try again.");
+      }
+      setNewExam({ date: "", exam: "", time: "", venue: "", grade: "" });
       setExamFile(null);
       setShowExamModal(false);
     }
@@ -502,21 +597,51 @@ export default function TeacherPortal() {
 
   const handleCloseExamModal = () => {
     setShowExamModal(false);
-    setNewExam({ date: "", exam: "", time: "", venue: "" });
+    setNewExam({ date: "", exam: "", time: "", venue: "", grade: "" });
     setExamFile(null);
   };
 
   const handleDeleteExam = (index: number) => {
-    const updated = examTimetable.filter((_, i) => i !== index);
-    setExamTimetable(updated);
-    localStorage.setItem("examTimetableData", JSON.stringify(updated));
+    const exam = examTimetable[index];
+    if (!exam) return;
+    if (exam.id) {
+      fetch('/api/exam-timetable', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: exam.id })
+      }).then(() => {
+        const updated = examTimetable.filter((_, i) => i !== index);
+        setExamTimetable(updated);
+      }).catch(console.error);
+    } else {
+      const updated = examTimetable.filter((_, i) => i !== index);
+      setExamTimetable(updated);
+    }
   };
 
-  const handleAddSchedule = () => {
-    if (newSchedule.day && newSchedule.time && newSchedule.subject && newSchedule.grade) {
-      const updated = [...weeklyTimetable, { ...newSchedule, grade: parseInt(newSchedule.grade), fileUrl: scheduleFile?.data, fileType: scheduleFile?.type }];
-      setWeeklyTimetable(updated);
-      localStorage.setItem("weeklyTimetableData", JSON.stringify(updated));
+  const handleAddSchedule = async () => {
+    if (newSchedule.subject && newSchedule.grade && loggedInTeacher) {
+      try {
+        const response = await fetch('/api/weekly-timetable', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            grade: parseInt(newSchedule.grade),
+            school: loggedInTeacher.school,
+            dayOfWeek: newSchedule.day,
+            subject: newSchedule.subject,
+            time: newSchedule.time,
+            teacher: loggedInTeacher.name
+          })
+        });
+        if (response.ok) {
+          const schedule = await response.json();
+          setWeeklyTimetable([...weeklyTimetable, schedule]);
+        }
+      } catch (error) {
+        console.error("Error adding schedule:", error);
+        alert("Error creating schedule. Please try again.");
+      }
       setNewSchedule({ day: "Monday", time: "08:00 - 09:00", subject: "", grade: "" });
       setScheduleFile(null);
       setShowScheduleModal(false);
@@ -529,12 +654,22 @@ export default function TeacherPortal() {
     setScheduleFile(null);
   };
 
-  const handleDeleteSchedule = (day: string, index: number) => {
-    const daySchedules = weeklyTimetable.filter(t => t.day === day);
-    const itemToDelete = daySchedules[index];
-    const updated = weeklyTimetable.filter(t => !(t.day === itemToDelete.day && t.time === itemToDelete.time && t.subject === itemToDelete.subject));
-    setWeeklyTimetable(updated);
-    localStorage.setItem("weeklyTimetableData", JSON.stringify(updated));
+  const handleDeleteSchedule = (index: number) => {
+    const schedule = weeklyTimetable[index];
+    if (!schedule) return;
+    if (schedule.id) {
+      fetch('/api/weekly-timetable', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: schedule.id })
+      }).then(() => {
+        const updated = weeklyTimetable.filter((_, i) => i !== index);
+        setWeeklyTimetable(updated);
+      }).catch(console.error);
+    } else {
+      const updated = weeklyTimetable.filter((_, i) => i !== index);
+      setWeeklyTimetable(updated);
+    }
   };
 
   const handlePublishTest = (testId: number) => {
@@ -1228,7 +1363,7 @@ export default function TeacherPortal() {
                   {t.fileUrl && (
                     <a href={t.fileUrl} target="_blank" rel="noopener noreferrer" className="text-purple-400 text-xs block mt-1">View Timetable</a>
                   )}
-                  <button onClick={() => handleDeleteSchedule(day, idx)} className="text-red-400 text-xs opacity-0 group-hover:opacity-100 mt-1">Delete</button>
+                  <button onClick={() => handleDeleteSchedule(idx)} className="text-red-400 text-xs opacity-0 group-hover:opacity-100 mt-1">Delete</button>
                 </div>
               ))}
               {weeklyTimetable.filter(t => t.day === day).length === 0 && (

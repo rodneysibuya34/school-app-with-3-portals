@@ -60,3 +60,84 @@ export const subscriptions = sqliteTable("subscriptions", {
   renewal: text("renewal").notNull(),
   createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
 });
+
+export const homework = sqliteTable("homework", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  subject: text("subject").notNull(),
+  grade: integer("grade").notNull(),
+  school: text("school").notNull(),
+  dueDate: text("due_date").notNull(),
+  createdBy: text("created_by").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
+});
+
+export const tests = sqliteTable("tests", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  title: text("title").notNull(),
+  subject: text("subject").notNull(),
+  grade: integer("grade").notNull(),
+  school: text("school").notNull(),
+  date: text("date").notNull(),
+  duration: text("duration"),
+  createdBy: text("created_by").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
+});
+
+export const studyMaterials = sqliteTable("study_materials", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  title: text("title").notNull(),
+  description: text("description"),
+  subject: text("subject").notNull(),
+  grade: integer("grade").notNull(),
+  school: text("school").notNull(),
+  fileUrl: text("file_url"),
+  fileType: text("file_type"),
+  createdBy: text("created_by").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
+});
+
+export const examTimetable = sqliteTable("exam_timetable", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  title: text("title").notNull(),
+  subject: text("subject").notNull(),
+  grade: integer("grade").notNull(),
+  school: text("school").notNull(),
+  date: text("date").notNull(),
+  time: text("time").notNull(),
+  venue: text("venue"),
+  createdBy: text("created_by").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
+});
+
+export const weeklyTimetable = sqliteTable("weekly_timetable", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  grade: integer("grade").notNull(),
+  school: text("school").notNull(),
+  dayOfWeek: text("day_of_week").notNull(),
+  subject: text("subject").notNull(),
+  time: text("time").notNull(),
+  teacher: text("teacher"),
+  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
+});
+
+export const announcements = sqliteTable("announcements", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  title: text("title").notNull(),
+  message: text("message").notNull(),
+  school: text("school").notNull(),
+  createdBy: text("created_by").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
+});
+
+export const courses = sqliteTable("courses", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  name: text("name").notNull(),
+  description: text("description"),
+  subject: text("subject").notNull(),
+  grade: integer("grade").notNull(),
+  school: text("school").notNull(),
+  createdBy: text("created_by").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
+});
