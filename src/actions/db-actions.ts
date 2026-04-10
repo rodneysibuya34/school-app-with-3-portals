@@ -1,21 +1,12 @@
 "use server";
 
-import { db, getDb } from "@/db";
-import { schools, teachers, students, subscriptions } from "@/db/schema";
-import { eq, desc } from "drizzle-orm";
-
-function getDatabase() {
-  const database = getDb();
-  if (!database) {
-    return null;
-  }
-  return database;
-}
+import { getDatabase } from "@/db";
 
 export async function getSchools() {
   const database = getDatabase();
   if (!database) return [];
-  return await database.select().from(schools).orderBy(desc(schools.id));
+  const stmt = database.prepare("SELECT * FROM schools ORDER BY id DESC");
+  return stmt.all();
 }
 
 export async function addSchool(schoolData: {
@@ -31,24 +22,26 @@ export async function addSchool(schoolData: {
 }) {
   const database = getDatabase();
   if (!database) throw new Error("Database not configured");
-  const result = await database.insert(schools).values({
-    name: schoolData.name,
-    location: schoolData.location,
-    type: schoolData.type,
-    adminUsername: schoolData.adminUsername,
-    adminPassword: schoolData.adminPassword,
-    year: schoolData.year,
-    expiryDate: schoolData.expiryDate,
-    contact: schoolData.contact,
-    address: schoolData.address,
-    students: 0,
-    teachers: 0,
-    status: "Trial",
-    isActive: true,
-    isBlocked: false,
-    paymentStatus: "trial",
-  }).returning();
-  return result[0];
+  
+  const stmt = database.prepare(`
+    INSERT INTO schools (name, location, type, adminUsername, adminPassword, year, expiryDate, contact, address, students, teachers, status, isActive, isBlocked, paymentStatus)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, 'Trial', 1, 0, 'trial')
+  `);
+  
+  const result = stmt.run(
+    schoolData.name,
+    schoolData.location,
+    schoolData.type,
+    schoolData.adminUsername,
+    schoolData.adminPassword,
+    schoolData.year,
+    schoolData.expiryDate,
+    schoolData.contact || null,
+    schoolData.address || null
+  );
+  
+  const newSchool = database.prepare("SELECT * FROM schools WHERE id = ?").get(result.lastInsertRowid);
+  return newSchool;
 }
 
 export async function updateSchool(id: number, data: Partial<{
@@ -66,19 +59,28 @@ export async function updateSchool(id: number, data: Partial<{
 }>) {
   const database = getDatabase();
   if (!database) return;
-  await database.update(schools).set(data).where(eq(schools.id, id));
+  
+  const updates = Object.keys(data).map(k => `${k} = ?`).join(", ");
+  const values = Object.values(data).filter(v => v !== undefined);
+  
+  if (updates) {
+    const stmt = database.prepare(`UPDATE schools SET ${updates} WHERE id = ?`);
+    stmt.run(...values, id);
+  }
 }
 
 export async function deleteSchool(id: number) {
   const database = getDatabase();
   if (!database) return;
-  await database.delete(schools).where(eq(schools.id, id));
+  const stmt = database.prepare("DELETE FROM schools WHERE id = ?");
+  stmt.run(id);
 }
 
 export async function getTeachers() {
   const database = getDatabase();
   if (!database) return [];
-  return await database.select().from(teachers).orderBy(desc(teachers.id));
+  const stmt = database.prepare("SELECT * FROM teachers ORDER BY id DESC");
+  return stmt.all();
 }
 
 export async function addTeacher(teacherData: {
@@ -91,17 +93,23 @@ export async function addTeacher(teacherData: {
 }) {
   const database = getDatabase();
   if (!database) throw new Error("Database not configured");
-  const result = await database.insert(teachers).values({
-    name: teacherData.name,
-    email: teacherData.email,
-    school: teacherData.school,
-    subject: teacherData.subject,
-    username: teacherData.username,
-    password: teacherData.password,
-    status: "Active",
-    schoolYear: 2026,
-  }).returning();
-  return result[0];
+  
+  const stmt = database.prepare(`
+    INSERT INTO teachers (name, email, school, subject, username, password, status, schoolYear)
+    VALUES (?, ?, ?, ?, ?, ?, 'Active', 2026)
+  `);
+  
+  const result = stmt.run(
+    teacherData.name,
+    teacherData.email || null,
+    teacherData.school,
+    teacherData.subject,
+    teacherData.username,
+    teacherData.password
+  );
+  
+  const newTeacher = database.prepare("SELECT * FROM teachers WHERE id = ?").get(result.lastInsertRowid);
+  return newTeacher;
 }
 
 export async function updateTeacher(id: number, data: Partial<{
@@ -113,19 +121,28 @@ export async function updateTeacher(id: number, data: Partial<{
 }>) {
   const database = getDatabase();
   if (!database) return;
-  await database.update(teachers).set(data).where(eq(teachers.id, id));
+  
+  const updates = Object.keys(data).map(k => `${k} = ?`).join(", ");
+  const values = Object.values(data).filter(v => v !== undefined);
+  
+  if (updates) {
+    const stmt = database.prepare(`UPDATE teachers SET ${updates} WHERE id = ?`);
+    stmt.run(...values, id);
+  }
 }
 
 export async function deleteTeacher(id: number) {
   const database = getDatabase();
   if (!database) return;
-  await database.delete(teachers).where(eq(teachers.id, id));
+  const stmt = database.prepare("DELETE FROM teachers WHERE id = ?");
+  stmt.run(id);
 }
 
 export async function getStudents() {
   const database = getDatabase();
   if (!database) return [];
-  return await database.select().from(students).orderBy(desc(students.id));
+  const stmt = database.prepare("SELECT * FROM students ORDER BY id DESC");
+  return stmt.all();
 }
 
 export async function addStudent(studentData: {
@@ -139,18 +156,24 @@ export async function addStudent(studentData: {
 }) {
   const database = getDatabase();
   if (!database) throw new Error("Database not configured");
-  const result = await database.insert(students).values({
-    name: studentData.name,
-    email: studentData.email,
-    grade: studentData.grade,
-    school: studentData.school,
-    username: studentData.username,
-    password: studentData.password,
-    status: "Active",
-    schoolYear: 2026,
-    subjects: studentData.subjects,
-  }).returning();
-  return result[0];
+  
+  const stmt = database.prepare(`
+    INSERT INTO students (name, email, grade, school, username, password, status, schoolYear, subjects)
+    VALUES (?, ?, ?, ?, ?, ?, 'Active', 2026, ?)
+  `);
+  
+  const result = stmt.run(
+    studentData.name,
+    studentData.email || null,
+    studentData.grade,
+    studentData.school,
+    studentData.username,
+    studentData.password,
+    studentData.subjects || null
+  );
+  
+  const newStudent = database.prepare("SELECT * FROM students WHERE id = ?").get(result.lastInsertRowid);
+  return newStudent;
 }
 
 export async function updateStudent(id: number, data: Partial<{
@@ -163,19 +186,28 @@ export async function updateStudent(id: number, data: Partial<{
 }>) {
   const database = getDatabase();
   if (!database) return;
-  await database.update(students).set(data).where(eq(students.id, id));
+  
+  const updates = Object.keys(data).map(k => `${k} = ?`).join(", ");
+  const values = Object.values(data).filter(v => v !== undefined);
+  
+  if (updates) {
+    const stmt = database.prepare(`UPDATE students SET ${updates} WHERE id = ?`);
+    stmt.run(...values, id);
+  }
 }
 
 export async function deleteStudent(id: number) {
   const database = getDatabase();
   if (!database) return;
-  await database.delete(students).where(eq(students.id, id));
+  const stmt = database.prepare("DELETE FROM students WHERE id = ?");
+  stmt.run(id);
 }
 
 export async function getSubscriptions() {
   const database = getDatabase();
   if (!database) return [];
-  return await database.select().from(subscriptions).orderBy(desc(subscriptions.id));
+  const stmt = database.prepare("SELECT * FROM subscriptions ORDER BY id DESC");
+  return stmt.all();
 }
 
 export async function addSubscription(subData: {
@@ -189,21 +221,40 @@ export async function addSubscription(subData: {
 }) {
   const database = getDatabase();
   if (!database) throw new Error("Database not configured");
-  const result = await database.insert(subscriptions).values(subData).returning();
-  return result[0];
+  
+  const stmt = database.prepare(`
+    INSERT INTO subscriptions (school, schoolType, price, planType, startDate, status, renewal)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `);
+  
+  const result = stmt.run(
+    subData.school,
+    subData.schoolType,
+    subData.price,
+    subData.planType || 'monthly',
+    subData.startDate,
+    subData.status,
+    subData.renewal
+  );
+  
+  const newSub = database.prepare("SELECT * FROM subscriptions WHERE id = ?").get(result.lastInsertRowid);
+  return newSub;
 }
 
 export async function deleteSubscription(id: number) {
   const database = getDatabase();
   if (!database) return;
-  await database.delete(subscriptions).where(eq(subscriptions.id, id));
+  const stmt = database.prepare("DELETE FROM subscriptions WHERE id = ?");
+  stmt.run(id);
 }
 
 export async function loginStudent(username: string, password: string) {
   const database = getDatabase();
   if (!database) return { success: false };
-  const result = await database.select().from(students).where(eq(students.username, username));
-  const student = result[0];
+  
+  const stmt = database.prepare("SELECT * FROM students WHERE username = ?");
+  const student = stmt.get(username) as any;
+  
   if (student && student.password === password) {
     return { success: true, user: student, type: "student" };
   }
@@ -213,8 +264,10 @@ export async function loginStudent(username: string, password: string) {
 export async function loginTeacher(username: string, password: string) {
   const database = getDatabase();
   if (!database) return { success: false };
-  const result = await database.select().from(teachers).where(eq(teachers.username, username));
-  const teacher = result[0];
+  
+  const stmt = database.prepare("SELECT * FROM teachers WHERE username = ?");
+  const teacher = stmt.get(username) as any;
+  
   if (teacher && teacher.password === password) {
     return { success: true, user: teacher, type: "teacher" };
   }
@@ -224,8 +277,10 @@ export async function loginTeacher(username: string, password: string) {
 export async function loginSchoolAdmin(username: string, password: string) {
   const database = getDatabase();
   if (!database) return { success: false };
-  const result = await database.select().from(schools).where(eq(schools.adminUsername, username));
-  const school = result[0];
+  
+  const stmt = database.prepare("SELECT * FROM schools WHERE adminUsername = ?");
+  const school = stmt.get(username) as any;
+  
   if (school && school.adminPassword === password) {
     return { success: true, user: school, type: "school_admin" };
   }

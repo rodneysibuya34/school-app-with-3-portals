@@ -1,11 +1,9 @@
-import { runMigrations } from "@kilocode/app-builder-db";
-import { getDb } from "./index";
+import { getDatabase } from "./index";
 
-const database = getDb();
+const database = getDatabase();
 if (!database) {
-  console.log("Database not configured - skipping migrations");
+  console.log("SQLite database initialized automatically");
   process.exit(0);
 }
 
-await runMigrations(database, {}, { migrationsFolder: "./src/db/migrations" });
-console.log("Migrations completed");
+console.log("Database ready");
