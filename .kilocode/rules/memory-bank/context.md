@@ -2,40 +2,38 @@
 
 ## Current State
 
-**Project Status**: ✅ Complete with localStorage data sharing + Primary School support + AI Assistant
+**Project Status**: ✅ Complete with SQLite database + API routes
 
 Geleza Mzansi is a multi-portal school management system with 3 portals (Student, Teacher, Admin).
 Now supports both Primary School (Grades 4-7) and High School (Grades 8-12).
+Database integration complete - data persists in production.
 
 ## Recently Completed
 
-- [x] Fixed student portal TypeScript errors (duplicate declarations)
-- [x] Added localStorage integration to student portal for reading teacher-created content
-- [x] Student portal now reads homework, tests, timetables, study materials, courses from localStorage
-- [x] Added grade-based filtering so students see content for their specific grade
-- [x] Fallback to default data when localStorage is empty
-- [x] Added primary school data (Grades 4-7) for homework, tests, exam timetable, weekly timetable, study materials, and courses
-- [x] Added Religious Studies and Xitsonga subjects to subject lists
-- [x] Added subject field to homework and tests in teacher portal
-- [x] Teacher portal grade selector now includes grades 4-7
-- [x] **NEW: Geleza AI Assistant** - Added to both Student and Teacher portals
-  - Student mode: Helps students understand concepts (not give answers), guides through problems
-  - Teacher mode: Helps create tests (guides, not do it), identifies struggling students
-- [x] Added School Info section to Admin portal - contact and address fields for each school
-- [x] Added Terms & Conditions page at /terms
-- [x] Added Privacy Policy page at /privacy
-- [x] Added footer links to Terms & Privacy on home page
+- [x] Added SQLite database with Drizzle ORM
+- [x] Created API routes: `/api/schools`, `/api/teachers`, `/api/students`, `/api/subscriptions`
+- [x] Updated Admin portal to fetch data from API instead of localStorage
+- [x] Updated Login page to fetch data from API instead of localStorage
+- [x] Added seed data for initial schools, teachers, students, subscriptions
+- [x] Admin password: `Admin.manager@2026!Geleza`
 
 ## Current Structure
 
 | File/Directory | Purpose | Status |
 |----------------|---------|--------|
+| `src/db/schema.ts` | Database schema (schools, teachers, students, subscriptions) | ✅ New |
+| `src/db/index.ts` | Database client | ✅ New |
+| `src/actions/db-actions.ts` | Server actions for database operations | ✅ New |
+| `src/app/api/schools/route.ts` | Schools API endpoint | ✅ New |
+| `src/app/api/teachers/route.ts` | Teachers API endpoint | ✅ New |
+| `src/app/api/students/route.ts` | Students API endpoint | ✅ New |
+| `src/app/api/subscriptions/route.ts` | Subscriptions API endpoint | ✅ New |
 | `src/app/page.tsx` | Landing page with portal selection | ✅ |
-| `src/app/student/page.tsx` | Student portal - READS from localStorage | ✅ Complete |
-| `src/app/teacher/page.tsx` | Teacher portal - WRITES to localStorage | ✅ Complete |
-| `src/app/admin/page.tsx` | Admin portal | ✅ |
-| `src/app/login/page.tsx` | Login page | ✅ |
-| `src/components/AIAssistant.tsx` | AI Assistant component | ✅ New |
+| `src/app/student/page.tsx` | Student portal | ✅ Complete |
+| `src/app/teacher/page.tsx` | Teacher portal | ✅ Complete |
+| `src/app/admin/page.tsx` | Admin portal - uses API | ✅ |
+| `src/app/login/page.tsx` | Login page - uses API | ✅ |
+| `src/components/AIAssistant.tsx` | AI Assistant component | ✅ |
 
 ## Data Flow
 

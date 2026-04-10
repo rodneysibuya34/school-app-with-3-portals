@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { generateUsername, generatePassword, checkDuplicateUser } from "@/utils/auth";
 import Logo from "@/components/Logo";
 
 interface User {
@@ -13,7 +12,7 @@ interface User {
   school: string;
   username: string;
   password: string;
-  subjects?: string[];
+  subjects?: string;
   schoolYear?: number;
 }
 
@@ -21,46 +20,40 @@ interface Teacher extends User {
   subject: string;
 }
 
-const schoolsData = [
-  { id: 1, name: "Oakridge Preparatory Academy", location: "Boston, MA", type: "High School", adminUsername: "oakridge_admin", adminPassword: "Oakridge2026!Admin" },
-  { id: 2, name: "Westfield Christian School", location: "Chicago, IL", type: "Primary", adminUsername: "westfield_admin", adminPassword: "Westfield2026!Admin" },
-  { id: 3, name: "Riverside Elementary", location: "Miami, FL", type: "Primary", adminUsername: "riverside_admin", adminPassword: "Riverside2026!Admin" },
-  { id: 4, name: "Highland Academy", location: "Seattle, WA", type: "High School", adminUsername: "highland_admin", adminPassword: "Highland2026!Admin" },
-];
-
-const getStoredTeachers = (): Teacher[] => {
-  if (typeof window === 'undefined') return [];
-  const stored = localStorage.getItem("teachersData");
-  if (stored) return JSON.parse(stored);
-  
-  return [];
-};
-
-const getStoredStudents = (): User[] => {
-  if (typeof window === 'undefined') return [];
-  const stored = localStorage.getItem("studentsData");
-  if (stored) return JSON.parse(stored);
-  
-  return [];
-};
-
 export default function LoginPage() {
   const router = useRouter();
   const [loginType, setLoginType] = useState<"student" | "teacher">("student");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [teachersData, setTeachersData] = useState<Teacher[]>(() => getStoredTeachers());
-  const [studentsData, setStudentsData] = useState<User[]>(() => getStoredStudents());
+  const [teachersData, setTeachersData] = useState<Teacher[]>([]);
+  const [studentsData, setStudentsData] = useState<User[]>([]);
+  const [schoolsData, setSchoolsData] = useState<{ name: string; year: number }[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!localStorage.getItem("teachersData")) {
-      localStorage.setItem("teachersData", JSON.stringify(teachersData));
+    async function fetchData() {
+      try {
+        const [schoolsRes, teachersRes, studentsRes] = await Promise.all([
+          fetch('/api/schools'),
+          fetch('/api/teachers'),
+          fetch('/api/students')
+        ]);
+        const [schools, teachers, students] = await Promise.all([
+          schoolsRes.json(),
+          teachersRes.json(),
+          studentsRes.json()
+        ]);
+        setSchoolsData(schools.map((s: { name: string; year: number }) => ({ name: s.name, year: s.year || 2026 })));
+        setTeachersData(teachers);
+        setStudentsData(students);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      } finally {
+        setLoading(false);
+      }
     }
-    if (!localStorage.getItem("studentsData")) {
-      localStorage.setItem("studentsData", JSON.stringify(studentsData));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchData();
   }, []);
 
   const handleLogin = () => {
@@ -74,9 +67,7 @@ export default function LoginPage() {
     if (loginType === "student") {
       const student = studentsData.find(s => s.username === username && s.password === password);
       if (student) {
-        const storedSchools = localStorage.getItem("schoolsData");
-        const schools = storedSchools ? JSON.parse(storedSchools) : [];
-        const school = schools.find((s: { name: string; year: number }) => s.name === student.school);
+        const school = schoolsData.find(s => s.name === student.school);
         const schoolYear = school ? school.year : new Date().getFullYear();
         
         localStorage.setItem("loggedInStudent", JSON.stringify({...student, schoolYear}));
@@ -86,9 +77,7 @@ export default function LoginPage() {
     } else {
       const teacher = teachersData.find(t => t.username === username && t.password === password);
       if (teacher) {
-        const storedSchools = localStorage.getItem("schoolsData");
-        const schools = storedSchools ? JSON.parse(storedSchools) : [];
-        const school = schools.find((s: { name: string; year: number }) => s.name === teacher.school);
+        const school = schoolsData.find(s => s.name === teacher.school);
         const schoolYear = school ? school.year : new Date().getFullYear();
         
         localStorage.setItem("loggedInTeacher", JSON.stringify({...teacher, schoolYear}));
@@ -99,6 +88,14 @@ export default function LoginPage() {
     
     setError("Invalid username or password");
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center">
+        <div className="text-slate-500">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center">

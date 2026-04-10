@@ -114,23 +114,12 @@ export default function AdminPortal() {
   const [passwordInput, setPasswordInput] = useState("");
   const [authError, setAuthError] = useState("");
   const [activeTab, setActiveTab] = useState("dashboard");
-  const [schools, setSchools] = useState<School[]>(() => {
-    if (typeof window === 'undefined') return initialSchools;
-    const stored = localStorage.getItem("schoolsData");
-    return stored ? JSON.parse(stored) : initialSchools;
-  });
-  const [teachers, setTeachers] = useState<Teacher[]>(() => {
-    if (typeof window === 'undefined') return initialTeachers;
-    const stored = localStorage.getItem("teachersData");
-    return stored ? JSON.parse(stored) : initialTeachers;
-  });
-  const [students, setStudents] = useState<Student[]>(() => {
-    if (typeof window === 'undefined') return initialStudents;
-    const stored = localStorage.getItem("studentsData");
-    return stored ? JSON.parse(stored) : initialStudents;
-  });
-  const [subscriptions, setSubscriptions] = useState<Subscription[]>(() => initialSubscriptions);
+  const [schools, setSchools] = useState<School[]>([]);
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [students, setStudents] = useState<Student[]>([]);
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [showModal, setShowModal] = useState<ModalType>(null);
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', schoolLogo: '', schoolContact: '', schoolAddress: '',
     teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '',
@@ -140,8 +129,32 @@ export default function AdminPortal() {
   const [schoolLogoFile, setSchoolLogoFile] = useState<string | null>(null);
 
   useEffect(() => {
-    localStorage.setItem("schoolsData", JSON.stringify(schools));
-  }, [schools]);
+    async function fetchData() {
+      try {
+        const [schoolsRes, teachersRes, studentsRes, subsRes] = await Promise.all([
+          fetch('/api/schools'),
+          fetch('/api/teachers'),
+          fetch('/api/students'),
+          fetch('/api/subscriptions')
+        ]);
+        const [schoolsData, teachersData, studentsData, subsData] = await Promise.all([
+          schoolsRes.json(),
+          teachersRes.json(),
+          studentsRes.json(),
+          subsRes.json()
+        ]);
+        setSchools(schoolsData);
+        setTeachers(teachersData);
+        setStudents(studentsData);
+        setSubscriptions(subsData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
 
   const handleLogin = () => {
     if (passwordInput === ADMIN_PASSWORD) {
@@ -170,106 +183,110 @@ export default function AdminPortal() {
     return "active";
   };
 
-  const toggleSchoolActive = (schoolId: number) => {
-    const updated = schools.map(s => {
-      if (s.id === schoolId) {
-        const updatedSchool = { ...s, isActive: !s.isActive };
-        if (updatedSchool.isActive) {
-          updatedSchool.status = "Active";
-        } else {
-          updatedSchool.status = "Inactive";
-        }
-        return updatedSchool;
-      }
-      return s;
-    });
-    setSchools(updated);
-    localStorage.setItem("schoolsData", JSON.stringify(updated));
-  };
-
-  const toggleSchoolBlock = (schoolId: number) => {
-    const updated = schools.map(s => s.id === schoolId ? { ...s, isBlocked: !s.isBlocked } : s);
-    setSchools(updated);
-    localStorage.setItem("schoolsData", JSON.stringify(updated));
-  };
-
-  const deleteSchool = (schoolId: number) => {
-    if (confirm("Are you sure you want to delete this school? This cannot be undone.")) {
-      const updated = schools.filter(s => s.id !== schoolId);
-      setSchools(updated);
-      localStorage.setItem("schoolsData", JSON.stringify(updated));
+  const toggleSchoolActive = async (schoolId: number) => {
+    const school = schools.find(s => s.id === schoolId);
+    if (!school) return;
+    try {
+      await fetch('/api/schools', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: schoolId, isActive: !school.isActive, status: school.isActive ? "Inactive" : "Active" })
+      });
+      setSchools(schools.map(s => s.id === schoolId ? { ...s, isActive: !s.isActive, status: school.isActive ? "Inactive" : "Active" } : s));
+    } catch (error) {
+      alert("Error updating school");
     }
   };
 
-  const activateTrial = (schoolId: number) => {
-    const updated = schools.map(s => {
-      if (s.id === schoolId) {
-        const trialStart = new Date();
-        const trialEnd = new Date();
-        trialEnd.setDate(trialEnd.getDate() + 7);
-        return { 
-          ...s, 
-          trialStartDate: trialStart.toISOString().split('T')[0],
-          expiryDate: trialEnd.toISOString().split('T')[0],
-          paymentStatus: "trial" as const,
-          isActive: true,
-          status: "Trial"
-        };
-      }
-      return s;
-    });
-    setSchools(updated);
-    localStorage.setItem("schoolsData", JSON.stringify(updated));
+  const toggleSchoolBlock = async (schoolId: number) => {
+    const school = schools.find(s => s.id === schoolId);
+    if (!school) return;
+    try {
+      await fetch('/api/schools', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: schoolId, isBlocked: !school.isBlocked })
+      });
+      setSchools(schools.map(s => s.id === schoolId ? { ...s, isBlocked: !s.isBlocked } : s));
+    } catch (error) {
+      alert("Error updating school");
+    }
   };
 
-  const endTrial = (schoolId: number) => {
-    const updated = schools.map(s => {
-      if (s.id === schoolId) {
-        return { 
-          ...s, 
-          paymentStatus: "expired" as const,
-          isActive: false,
-          status: "Inactive"
-        };
+  const deleteSchool = async (schoolId: number) => {
+    if (confirm("Are you sure you want to delete this school? This cannot be undone.")) {
+      try {
+        await fetch('/api/schools', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: schoolId })
+        });
+        setSchools(schools.filter(s => s.id !== schoolId));
+      } catch (error) {
+        alert("Error deleting school");
       }
-      return s;
-    });
-    setSchools(updated);
-    localStorage.setItem("schoolsData", JSON.stringify(updated));
+    }
   };
 
-  const upgradeToPaid = (schoolId: number) => {
-    const updated = schools.map(s => {
-      if (s.id === schoolId) {
-        const newExpiry = new Date();
-        newExpiry.setFullYear(newExpiry.getFullYear() + 1);
-        return { 
-          ...s, 
-          paymentStatus: "active" as const,
-          isActive: true,
-          status: "Active",
-          expiryDate: newExpiry.toISOString().split('T')[0],
-          trialStartDate: undefined
-        };
-      }
-      return s;
-    });
-    setSchools(updated);
-    localStorage.setItem("schoolsData", JSON.stringify(updated));
+  const activateTrial = async (schoolId: number) => {
+    const trialEnd = new Date();
+    trialEnd.setDate(trialEnd.getDate() + 7);
+    const expiryDate = trialEnd.toISOString().split('T')[0];
+    try {
+      await fetch('/api/schools', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: schoolId, expiryDate, paymentStatus: "trial", isActive: true, status: "Trial" })
+      });
+      setSchools(schools.map(s => s.id === schoolId ? { ...s, expiryDate, paymentStatus: "trial" as const, isActive: true, status: "Trial" } : s));
+    } catch (error) {
+      alert("Error activating trial");
+    }
   };
 
-  const updateExpiryDate = (schoolId: number, newDate: string) => {
-    const updated = schools.map(s => {
-      if (s.id === schoolId) {
-        return { ...s, expiryDate: newDate, paymentStatus: getPaymentStatus({ ...s, expiryDate: newDate }) };
-      }
-      return s;
-    });
-    setSchools(updated);
-    localStorage.setItem("schoolsData", JSON.stringify(updated));
+  const endTrial = async (schoolId: number) => {
+    try {
+      await fetch('/api/schools', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: schoolId, paymentStatus: "expired", isActive: false, status: "Inactive" })
+      });
+      setSchools(schools.map(s => s.id === schoolId ? { ...s, paymentStatus: "expired" as const, isActive: false, status: "Inactive" } : s));
+    } catch (error) {
+      alert("Error ending trial");
+    }
   };
 
-  const handleSubmit = (type: ModalType) => {
+  const upgradeToPaid = async (schoolId: number) => {
+    const newExpiry = new Date();
+    newExpiry.setFullYear(newExpiry.getFullYear() + 1);
+    const expiryDate = newExpiry.toISOString().split('T')[0];
+    try {
+      await fetch('/api/schools', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: schoolId, paymentStatus: "active", isActive: true, status: "Active", expiryDate })
+      });
+      setSchools(schools.map(s => s.id === schoolId ? { ...s, paymentStatus: "active" as const, isActive: true, status: "Active", expiryDate } : s));
+    } catch (error) {
+      alert("Error upgrading school");
+    }
+  };
+
+  const updateExpiryDate = async (schoolId: number, newDate: string) => {
+    try {
+      await fetch('/api/schools', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: schoolId, expiryDate: newDate })
+      });
+      setSchools(schools.map(s => s.id === schoolId ? { ...s, expiryDate: newDate, paymentStatus: getPaymentStatus({ ...s, expiryDate: newDate } as School) } : s));
+    } catch (error) {
+      alert("Error updating expiry date");
+    }
+  };
+
+  const handleSubmit = async (type: ModalType) => {
     if (type === 'school') {
       if (!formData.name || !formData.location) {
         alert("Please fill in School Name and Location");
@@ -282,29 +299,26 @@ export default function AdminPortal() {
         trialEndDate.setDate(trialEndDate.getDate() + 10);
         const expiryDate = formData.schoolExpiry || trialEndDate.toISOString().split('T')[0];
         
-        const newSchool: School = {
-          id: Date.now(),
-          name: formData.name,
-          location: formData.location,
-          students: 0,
-          teachers: 0,
-          status: "Trial",
-          type: formData.type,
-          adminUsername: schoolUsername,
-          adminPassword: schoolPassword,
-          year: formData.schoolYear,
-          expiryDate,
-          isActive: true,
-          isBlocked: false,
-          paymentStatus: "trial",
-          contact: formData.schoolContact || undefined,
-          address: formData.schoolAddress || undefined,
-          schoolLogo: schoolLogoFile || undefined
-        };
+        const response = await fetch('/api/schools', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: formData.name,
+            location: formData.location,
+            type: formData.type,
+            adminUsername: schoolUsername,
+            adminPassword: schoolPassword,
+            year: formData.schoolYear,
+            expiryDate,
+            contact: formData.schoolContact || undefined,
+            address: formData.schoolAddress || undefined
+          })
+        });
         
-        const updatedSchools = [...schools, newSchool];
-        setSchools(updatedSchools);
-        localStorage.setItem("schoolsData", JSON.stringify(updatedSchools));
+        if (!response.ok) throw new Error('Failed to create school');
+        
+        const newSchool = await response.json();
+        setSchools([...schools, newSchool]);
         
         alert(`School created!\n\nUsername: ${schoolUsername}\nPassword: ${schoolPassword}\nTrial Period: 10 days (Expires: ${expiryDate})`);
         setShowModal(null);
@@ -323,28 +337,35 @@ export default function AdminPortal() {
       const teacherUsername = genUsername(formData.teacherName, existingUsernames);
       const teacherPassword = genPassword(formData.teacherName, formData.teacherSchool);
       
-      const newTeacher: Teacher = {
-        id: Date.now(),
-        name: formData.teacherName,
-        email: formData.teacherEmail || `${teacherUsername}@${formData.teacherSchool.split(' ')[0].toLowerCase()}.edu`,
-        school: formData.teacherSchool,
-        subject: formData.teacherSubject,
-        status: "Active",
-        username: teacherUsername,
-        password: teacherPassword
-      };
-      
-      const updatedTeachers = [...teachers, newTeacher];
-      setTeachers(updatedTeachers);
-      localStorage.setItem("teachersData", JSON.stringify(updatedTeachers));
-      
-      const updatedSchools = schools.map(s => s.name === formData.teacherSchool ? { ...s, teachers: s.teachers + 1 } : s);
-      setSchools(updatedSchools);
-      localStorage.setItem("schoolsData", JSON.stringify(updatedSchools));
-      
-      alert(`Teacher created!\n\nUsername: ${teacherUsername}\nPassword: ${teacherPassword}`);
-      setShowModal(null);
-      setFormData({ name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', schoolLogo: '', schoolContact: '', schoolAddress: '', teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', subSchool: '', subType: 'Primary', subStartDate: '' });
+      try {
+        const response = await fetch('/api/teachers', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: formData.teacherName,
+            email: formData.teacherEmail || `${teacherUsername}@${formData.teacherSchool.split(' ')[0].toLowerCase()}.edu`,
+            school: formData.teacherSchool,
+            subject: formData.teacherSubject,
+            username: teacherUsername,
+            password: teacherPassword
+          })
+        });
+        
+        if (!response.ok) throw new Error('Failed to create teacher');
+        
+        const newTeacher = await response.json();
+        setTeachers([...teachers, newTeacher]);
+        
+        const updatedSchools = schools.map(s => s.name === formData.teacherSchool ? { ...s, teachers: (s.teachers || 0) + 1 } : s);
+        setSchools(updatedSchools);
+        
+        alert(`Teacher created!\n\nUsername: ${teacherUsername}\nPassword: ${teacherPassword}`);
+        setShowModal(null);
+        setFormData({ name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', schoolLogo: '', schoolContact: '', schoolAddress: '', teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', subSchool: '', subType: 'Primary', subStartDate: '' });
+      } catch (error) {
+        alert("Error creating teacher. Please try again.");
+        console.error(error);
+      }
     } else if (type === 'student') {
       if (!formData.studentName || !formData.studentGrade || !formData.studentSchool) {
         alert("Please fill in Name, Grade, and School");
@@ -354,28 +375,35 @@ export default function AdminPortal() {
       const studentUsername = genUsername(formData.studentName, existingUsernames);
       const studentPassword = genPassword(formData.studentName, formData.studentSchool);
       
-      const newStudent: Student = {
-        id: Date.now(),
-        name: formData.studentName,
-        email: formData.studentEmail || `${studentUsername}@${formData.studentSchool.split(' ')[0].toLowerCase()}.edu`,
-        grade: parseInt(formData.studentGrade),
-        school: formData.studentSchool,
-        status: "Active",
-        username: studentUsername,
-        password: studentPassword
-      };
-      
-      const updatedStudents = [...students, newStudent];
-      setStudents(updatedStudents);
-      localStorage.setItem("studentsData", JSON.stringify(updatedStudents));
-      
-      const updatedSchools = schools.map(s => s.name === formData.studentSchool ? { ...s, students: s.students + 1 } : s);
-      setSchools(updatedSchools);
-      localStorage.setItem("schoolsData", JSON.stringify(updatedSchools));
-      
-      alert(`Student created!\n\nUsername: ${studentUsername}\nPassword: ${studentPassword}`);
-      setShowModal(null);
-      setFormData({ name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', schoolLogo: '', schoolContact: '', schoolAddress: '', teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', subSchool: '', subType: 'Primary', subStartDate: '' });
+      try {
+        const response = await fetch('/api/students', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: formData.studentName,
+            email: formData.studentEmail || `${studentUsername}@${formData.studentSchool.split(' ')[0].toLowerCase()}.edu`,
+            grade: parseInt(formData.studentGrade),
+            school: formData.studentSchool,
+            username: studentUsername,
+            password: studentPassword
+          })
+        });
+        
+        if (!response.ok) throw new Error('Failed to create student');
+        
+        const newStudent = await response.json();
+        setStudents([...students, newStudent]);
+        
+        const updatedSchools = schools.map(s => s.name === formData.studentSchool ? { ...s, students: (s.students || 0) + 1 } : s);
+        setSchools(updatedSchools);
+        
+        alert(`Student created!\n\nUsername: ${studentUsername}\nPassword: ${studentPassword}`);
+        setShowModal(null);
+        setFormData({ name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', schoolLogo: '', schoolContact: '', schoolAddress: '', teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', subSchool: '', subType: 'Primary', subStartDate: '' });
+      } catch (error) {
+        alert("Error creating student. Please try again.");
+        console.error(error);
+      }
     }
   };
 
