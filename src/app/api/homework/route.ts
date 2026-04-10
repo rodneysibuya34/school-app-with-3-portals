@@ -5,8 +5,7 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const school = searchParams.get("school") || undefined;
-    const grade = searchParams.get("grade") ? parseInt(searchParams.get("grade")!) : undefined;
-    const data = await getHomework(school, grade);
+    const data = await getHomework(school);
     return NextResponse.json(data);
   } catch (error: any) {
     console.error("Error fetching homework:", error);

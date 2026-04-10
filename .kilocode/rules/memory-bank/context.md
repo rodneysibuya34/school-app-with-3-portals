@@ -2,32 +2,31 @@
 
 ## Current State
 
-**Project Status**: ✅ Complete with SQLite database + API routes
+**Project Status**: ✅ Build passing with JSON file-based database
 
 Geleza Mzansi is a multi-portal school management system with 3 portals (Student, Teacher, Admin).
 Now supports both Primary School (Grades 4-7) and High School (Grades 8-12).
-Database integration complete - data persists in production.
+Using JSON file storage for Vercel compatibility (localStorage/SQLite don't work in production).
 
-## Recently Completed
+## Previously Completed
 
-- [x] Added SQLite database with Drizzle ORM
-- [x] Created API routes: `/api/schools`, `/api/teachers`, `/api/students`, `/api/subscriptions`
-- [x] Updated Admin portal to fetch data from API instead of localStorage
-- [x] Updated Login page to fetch data from API instead of localStorage
-- [x] Added seed data for initial schools, teachers, students, subscriptions
-- [x] Admin password: `Admin.manager@2026!Geleza`
+- [x] Switched from SQLite to JSON file storage for Vercel compatibility
+- [x] Created `/src/db/data.js` - JSON file-based CRUD operations
+- [x] Updated db-actions.ts to use new data.js
+- [x] Fixed TypeScript errors in content-actions.ts and homework route
+- [x] Seed file moved to backup (seed.ts.bak) - not needed for JSON approach
+- [x] Build passes successfully
 
 ## Current Structure
 
 | File/Directory | Purpose | Status |
 |----------------|---------|--------|
-| `src/db/schema.ts` | Database schema (schools, teachers, students, subscriptions) | ✅ New |
-| `src/db/index.ts` | Database client | ✅ New |
-| `src/actions/db-actions.ts` | Server actions for database operations | ✅ New |
-| `src/app/api/schools/route.ts` | Schools API endpoint | ✅ New |
-| `src/app/api/teachers/route.ts` | Teachers API endpoint | ✅ New |
-| `src/app/api/students/route.ts` | Students API endpoint | ✅ New |
-| `src/app/api/subscriptions/route.ts` | Subscriptions API endpoint | ✅ New |
+| `src/db/data.js` | JSON file-based CRUD operations | ✅ New |
+| `src/actions/db-actions.ts` | Server actions using data.js | ✅ Updated |
+| `src/actions/content-actions.ts` | Content actions using data.js | ✅ Updated |
+| `src/app/api/schools/route.ts` | Schools API endpoint | ✅ |
+| `src/app/api/teachers/route.ts` | Teachers API endpoint | ✅ |
+| `src/app/api/students/route.ts` | Students API endpoint | ✅ |
 | `src/app/page.tsx` | Landing page with portal selection | ✅ |
 | `src/app/student/page.tsx` | Student portal | ✅ Complete |
 | `src/app/teacher/page.tsx` | Teacher portal | ✅ Complete |
