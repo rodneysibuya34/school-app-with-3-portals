@@ -1,5 +1,4 @@
 import Database from "better-sqlite3";
-import * as schema from "./schema";
 
 let dbInstance: Database.Database | null = null;
 
