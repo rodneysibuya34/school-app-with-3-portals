@@ -1,6 +1,6 @@
 "use server";
 
-const db = require("@/db/data");
+const db = require("@/db/redis");
 
 export async function getHomework(school?: string) { return db.getHomework(school); }
 export async function addHomework(data: any) { return db.addHomework(data); }

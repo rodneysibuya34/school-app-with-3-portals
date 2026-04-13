@@ -2,28 +2,26 @@
 
 ## Current State
 
-**Project Status**: ✅ Build passing with JSON file-based database
+**Project Status**: ✅ Build passing with Upstash Redis (production-ready)
 
 Geleza Mzansi is a multi-portal school management system with 3 portals (Student, Teacher, Admin).
 Now supports both Primary School (Grades 4-7) and High School (Grades 8-12).
-Using JSON file storage for Vercel compatibility (localStorage/SQLite don't work in production).
+Using Upstash Redis for Vercel-compatible persistent storage.
 
 ## Previously Completed
 
-- [x] Switched from SQLite to JSON file storage for Vercel compatibility
-- [x] Created `/src/db/data.js` - JSON file-based CRUD operations
-- [x] Updated db-actions.ts to use new data.js
-- [x] Fixed TypeScript errors in content-actions.ts and homework route
-- [x] Seed file moved to backup (seed.ts.bak) - not needed for JSON approach
+- [x] Switched to Upstash Redis for production persistence
+- [x] Created `/src/db/redis.js` - Redis-based CRUD operations
+- [x] Updated db-actions.ts and content-actions.ts to use redis.js
 - [x] Build passes successfully
 
 ## Current Structure
 
 | File/Directory | Purpose | Status |
 |----------------|---------|--------|
-| `src/db/data.js` | JSON file-based CRUD operations | ✅ New |
-| `src/actions/db-actions.ts` | Server actions using data.js | ✅ Updated |
-| `src/actions/content-actions.ts` | Content actions using data.js | ✅ Updated |
+| `src/db/redis.js` | Redis-based CRUD operations | ✅ New |
+| `src/actions/db-actions.ts` | Server actions using redis.js | ✅ Updated |
+| `src/actions/content-actions.ts` | Content actions using redis.js | ✅ Updated |
 | `src/app/api/schools/route.ts` | Schools API endpoint | ✅ |
 | `src/app/api/teachers/route.ts` | Teachers API endpoint | ✅ |
 | `src/app/api/students/route.ts` | Students API endpoint | ✅ |

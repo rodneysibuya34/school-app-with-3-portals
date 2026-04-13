@@ -1,6 +1,6 @@
 "use server";
 
-const db = require("@/db/data");
+const db = require("@/db/redis");
 
 export async function getSchools() {
   return db.getSchools();
