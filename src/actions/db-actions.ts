@@ -15,7 +15,7 @@ export async function updateSchool(id: number, data: any) {
 }
 
 export async function deleteSchool(id: number) {
-  db.deleteSchool(id);
+  return db.deleteSchool(id);
 }
 
 export async function getTeachers() {
@@ -29,7 +29,7 @@ export async function addTeacher(teacherData: any) {
 export async function updateTeacher(id: number, data: any) {}
 
 export async function deleteTeacher(id: number) {
-  db.deleteTeacher(id);
+  return db.deleteTeacher(id);
 }
 
 export async function getStudents() {
@@ -43,7 +43,7 @@ export async function addStudent(studentData: any) {
 export async function updateStudent(id: number, data: any) {}
 
 export async function deleteStudent(id: number) {
-  db.deleteStudent(id);
+  return db.deleteStudent(id);
 }
 
 export async function getSubscriptions() {
@@ -55,7 +55,7 @@ export async function addSubscription(subData: any) {
 }
 
 export async function deleteSubscription(id: number) {
-  db.deleteSubscription(id);
+  return db.deleteSubscription(id);
 }
 
 export async function loginStudent(username: string, password: string) {
