@@ -13,13 +13,31 @@ interface AIAssistantProps {
   studentName?: string;
   grade?: number;
   onStrugglingAlert?: (studentName: string, topic: string) => void;
+  language?: string;
 }
+
+const southAfricanLanguages = [
+  { code: "en", name: "English" },
+  { code: "zu", name: "isiZulu" },
+  { code: "xh", name: "isiXhosa" },
+  { code: "af", name: "Afrikaans" },
+  { code: "tn", name: "Setswana" },
+  { code: "ss", name: "siSwati" },
+  { code: "nr", name: "isiNdebele" },
+  { code: "st", name: "Sesotho" },
+  { code: "so", name: "Xitsonga" },
+  { code: "ve", name: "Tshivenda" },
+];
 
 const studentSystemPrompt = `You are "Geleza AI" - a helpful study assistant for South African students.
 Your role is to HELP students understand concepts, NOT give them answers.
 
+You MUST respond in the student's chosen home language unless they specifically ask for English.
+You can help with ALL subjects including: Mathematics, Physical Sciences, Life Sciences, English Home Language, Afrikaans First Additional, isiZulu, isiXhosa, Setswana, siSwati, isiNdebele, Sesotho, Xitsonga, Geography, History, Business Studies, Accounting, Economics, Information Technology, Religious Studies, Tourism, Consumer Studies, Life Orientation.
+
 Guidelines:
-- Explain concepts step by step
+- Always respond in the language the user is using
+- Explain concepts step by step in their language
 - Ask guiding questions to lead students to the answer
 - Use examples and analogies
 - If a student asks for direct answers, redirect them to understand the process
@@ -54,7 +72,7 @@ const teacherTopics = [
   "Religious Studies", "Tourism", "Business Studies", "Sciences", "Languages"
 ];
 
-export default function AIAssistant({ mode, studentName, grade, onStrugglingAlert }: AIAssistantProps) {
+export default function AIAssistant({ mode, studentName, grade, onStrugglingAlert, language = "en" }: AIAssistantProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     { id: 1, role: "assistant", content: mode === "student" 
@@ -67,6 +85,7 @@ export default function AIAssistant({ mode, studentName, grade, onStrugglingAler
   const [showAlertForm, setShowAlertForm] = useState(false);
   const [alertStudent, setAlertStudent] = useState("");
   const [alertTopic, setAlertTopic] = useState("");
+  const [selectedLanguage, setSelectedLanguage] = useState(language);
 
   const handleSend = async () => {
     if (!input.trim() || isTyping) return;
@@ -88,7 +107,8 @@ export default function AIAssistant({ mode, studentName, grade, onStrugglingAler
         body: JSON.stringify({ 
           messages: history, 
           mode, 
-          grade 
+          grade,
+          language: selectedLanguage
         })
       });
 
@@ -101,18 +121,42 @@ export default function AIAssistant({ mode, studentName, grade, onStrugglingAler
         };
         setMessages(prev => [...prev, assistantMessage]);
       } else {
+        const fallbackMessages: Record<string, string> = {
+          en: "I'm in basic mode right now. I can still help with common questions! What are you working on?",
+          zu: "Ngingaqhubeka nomsebenzi ongemuhle. Ungisize ngani?",
+          xh: "Ndikwazi ukuhlala kwinkqubo esisiseko. Uncedo luni?",
+          af: "Ek kan steeds help met algemene vrae. Waarmee werk jy?",
+          tn: "Ke ka tshepedisa le badirammogo. O dirang?",
+          ss: "Ngitfutfukela emsebenzini. Yini lebenzayo?",
+          nr: "Ngiyeke ngisize ngezinkinga ezijwayelekile. Yini oyenzayo?",
+          st: "Ke tsoa katleho ka ditotobolo. U sebetsa eng?",
+          so: "Ndza ta tsala xiyongo xa基础. Xikongahoxa?",
+          ve: "Ndi nga shanduka na mathetho. Vhadziami?",
+        };
         setMessages(prev => [...prev, { 
           id: Date.now() + 1, 
           role: "assistant", 
-          content: "AI is not configured. Please contact the administrator." 
+          content: fallbackMessages[selectedLanguage] || fallbackMessages.en
         }]);
       }
     } catch (error) {
       console.error("AI error:", error);
+      const fallbackMessages: Record<string, string> = {
+        en: "Sorry, I encountered an error. Please try again.",
+        zu: "Ngenceku, ngikhule yingozi. Ngicela uphinde uzame.",
+        xh: "Ndicela uphinde uzame.",
+        af: "Jammer, iets het verkeerd gegaan. Probeer asseblief weer.",
+        tn: "Tswee, go rarara. Tswee fila gape.",
+        ss: "Sicela uphindze.",
+        nr: "Ngicela uphinde uzame.",
+        st: "Ka kotela hore tsose.",
+        so: "A hi edzi xiyongo.",
+        ve: "Vhadziami, vhafhasi.",
+      };
       setMessages(prev => [...prev, { 
         id: Date.now() + 1, 
         role: "assistant", 
-        content: "Sorry, I encountered an error. Please try again." 
+        content: fallbackMessages[selectedLanguage] || fallbackMessages.en
       }]);
     }
     setIsTyping(false);
@@ -183,6 +227,17 @@ export default function AIAssistant({ mode, studentName, grade, onStrugglingAler
               </svg>
               <span className="font-semibold text-white">Geleza AI</span>
             </div>
+            {mode === "student" && (
+              <select
+                value={selectedLanguage}
+                onChange={(e) => setSelectedLanguage(e.target.value)}
+                className="px-2 py-1 bg-white/20 rounded-lg text-xs text-white border-none cursor-pointer"
+              >
+                {southAfricanLanguages.map(lang => (
+                  <option key={lang.code} value={lang.code} className="bg-slate-800">{lang.name}</option>
+                ))}
+              </select>
+            )}
             <div className="flex items-center gap-2">
               {mode === "teacher" && (
                 <button
