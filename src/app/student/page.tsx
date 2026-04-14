@@ -1283,10 +1283,16 @@ export default function StudentPortal() {
     );
   };
 
-  const grade10Subjects = [
-    "Mathematics", "Mathematical Literacy", "Physical Sciences", "Life Sciences",
-    "Geography", "History", "Business Studies", "Economics", "Information Technology",
-    "English Home Language", "Afrikaans First Add", "Religious Studies", "Xitsonga", "Accounting"
+const grade10Subjects = [
+    // Languages
+    'English Home Language', 'Afrikaans First Add', 'isiZulu Home Language', 'isiXhosa Home Language', 
+    'Setswana Home Language', 'siSwati Home Language', 'isiNdebele Home Language', 
+    'Sesotho Home Language', 'Xitsonga Home Language', 'Tshivenda Home Language',
+    // Other Subjects
+    'Mathematics', 'Mathematical Literacy', 'Physical Sciences', 'Life Sciences',
+    'Geography', 'History', 'Business Studies', 'Economics', 'Information Technology',
+    'Religious Studies', 'Accounting', 'Consumer Studies', 'Life Orientation', 
+    'Tourism', 'Visual Arts', 'Music'
   ];
 
   const handleSubjectToggle = (subject: string) => {
