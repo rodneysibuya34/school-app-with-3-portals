@@ -523,7 +523,7 @@ export default function StudentPortal() {
     const storedSubjects = localStorage.getItem(`studentSubjects_${parsedStudent.id}`);
     if (storedSubjects) {
       setSelectedSubjects(JSON.parse(storedSubjects));
-    } else if (parsedStudent.grade >= 10) {
+    } else {
       setShowSubjectModal(true);
     }
 
@@ -1295,6 +1295,16 @@ const grade10Subjects = [
     'Tourism', 'Visual Arts', 'Music'
   ];
 
+  const primarySubjects = [
+    // Languages (all grades can choose home language)
+    'English Home Language', 'Afrikaans First Add', 'isiZulu Home Language', 'isiXhosa Home Language', 
+    'Setswana Home Language', 'siSwati Home Language', 'isiNdebele Home Language', 
+    'Sesotho Home Language', 'Xitsonga Home Language', 'Tshivenda Home Language',
+    // Primary School Subjects
+    'Mathematics', 'Natural Sciences', 'Social Sciences', 'Life Skills',
+    'English', 'Afrikaans', 'isiZulu', 'isiXhosa', 'Setswana'
+  ];
+
   const handleSubjectToggle = (subject: string) => {
     if (selectedSubjects.includes(subject)) {
       setSelectedSubjects(selectedSubjects.filter(s => s !== subject));
@@ -1302,6 +1312,8 @@ const grade10Subjects = [
       setSelectedSubjects([...selectedSubjects, subject]);
     }
   };
+
+  const subjectsList = loggedInStudent && loggedInStudent.grade >= 8 ? grade10Subjects : primarySubjects;
 
   return (
     <div className="min-h-screen bg-[#0F172A] flex">
@@ -1311,7 +1323,7 @@ const grade10Subjects = [
             <h3 className="text-xl font-semibold text-white mb-4">Select Your Subjects</h3>
             <p className="text-slate-400 text-sm mb-4">Choose the subjects you are taking this year (select at least 4):</p>
             <div className="grid grid-cols-2 gap-3 max-h-64 overflow-y-auto mb-4">
-              {grade10Subjects.map(subject => (
+              {subjectsList.map(subject => (
                 <button
                   key={subject}
                   onClick={() => handleSubjectToggle(subject)}
