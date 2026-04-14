@@ -234,18 +234,25 @@ export default function AdminPortal() {
   };
 
   const activateTrial = async (schoolId: number) => {
-    const trialEnd = new Date();
-    trialEnd.setDate(trialEnd.getDate() + 7);
-    const expiryDate = trialEnd.toISOString().split('T')[0];
-    try {
-      await fetch('/api/schools', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: schoolId, expiryDate, paymentStatus: "trial", isActive: true, status: "Trial" })
-      });
-      setSchools(schools.map(s => s.id === schoolId ? { ...s, expiryDate, paymentStatus: "trial" as const, isActive: true, status: "Trial" } : s));
-    } catch (error) {
-      alert("Error activating trial");
+    const school = schools.find(s => s.id === schoolId);
+    if (!school) return;
+    
+    if (school.paymentStatus === 'trial') {
+      await endTrial(schoolId);
+    } else {
+      const trialEnd = new Date();
+      trialEnd.setDate(trialEnd.getDate() + 7);
+      const expiryDate = trialEnd.toISOString().split('T')[0];
+      try {
+        await fetch('/api/schools', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: schoolId, expiryDate, paymentStatus: "trial", isActive: true, status: "Trial" })
+        });
+        setSchools(schools.map(s => s.id === schoolId ? { ...s, expiryDate, paymentStatus: "trial" as const, isActive: true, status: "Trial" } : s));
+      } catch (error) {
+        alert("Error activating trial");
+      }
     }
   };
 
@@ -752,18 +759,13 @@ export default function AdminPortal() {
                       )}
                       <div className="flex gap-2 pt-2 flex-wrap">
                         {paymentStatus !== 'active' ? (
-                          <>
-                            <button onClick={() => handleUpgradeClick(school.id)} className="flex-1 py-2 rounded-lg text-sm bg-green-500/20 text-green-400">Upgrade to Paid</button>
-                            {paymentStatus === 'trial' && (
-                              <button onClick={() => endTrial(school.id)} className="flex-1 py-2 rounded-lg text-sm bg-red-500/20 text-red-400">End Trial</button>
-                            )}
-                          </>
+                          <button onClick={() => handleUpgradeClick(school.id)} className="flex-1 py-2 rounded-lg text-sm bg-green-500/20 text-green-400">Upgrade to Paid</button>
                         ) : (
-                          <>
-                            <button onClick={() => handleUpgradeClick(school.id)} className="flex-1 py-2 rounded-lg text-sm bg-blue-500/20 text-blue-400">Change Plan</button>
-                          </>
+                          <button onClick={() => handleUpgradeClick(school.id)} className="flex-1 py-2 rounded-lg text-sm bg-blue-500/20 text-blue-400">Change Plan</button>
                         )}
-                        <button onClick={() => activateTrial(school.id)} className="flex-1 py-2 rounded-lg text-sm bg-purple-500/20 text-purple-400">Start Trial</button>
+                        <button onClick={() => activateTrial(school.id)} className={`flex-1 py-2 rounded-lg text-sm ${paymentStatus === 'trial' ? 'bg-red-500/20 text-red-400' : 'bg-purple-500/20 text-purple-400'}`}>
+                          {paymentStatus === 'trial' ? 'Stop Trial' : 'Start Trial'}
+                        </button>
                         <button onClick={() => toggleSchoolActive(school.id)} className={`flex-1 py-2 rounded-lg text-sm ${school.isActive ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'}`}>
                           {school.isActive ? 'Deactivate' : 'Activate'}
                         </button>
