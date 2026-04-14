@@ -542,6 +542,7 @@ export default function StudentPortal() {
         ]);
         
         const hwData = hwRes.ok ? await hwRes.json() : [];
+        console.log("Homework API response:", hwData);
         const testsData = testsRes.ok ? await testsRes.json() : [];
         const smData = smRes.ok ? await smRes.json() : [];
         const examData = examRes.ok ? await examRes.json() : [];

@@ -4,10 +4,13 @@ let redis = null;
 
 function getClient() {
   if (!redis && process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
+    console.log("Initializing Redis client with Upstash");
     redis = new Redis({
       url: process.env.UPSTASH_REDIS_REST_URL,
       token: process.env.UPSTASH_REDIS_REST_TOKEN,
     });
+  } else if (!process.env.UPSTASH_REDIS_REST_URL) {
+    console.log("UPSTASH_REDIS_REST_URL not set - using in-memory fallback");
   }
   return redis;
 }
@@ -29,9 +32,13 @@ const defaultData = {
 
 async function loadData() {
   const client = getClient();
-  if (!client) return defaultData;
+  if (!client) {
+    console.log("No Redis client - using default data");
+    return defaultData;
+  }
   try {
     const data = await client.get('geleza_data');
+    console.log("Redis load: data loaded successfully, entries:", data ? Object.keys(data).map(k => `${k}: ${Array.isArray(data[k]) ? data[k].length : 'object'}`).join(', ') : 'empty');
     return data || defaultData;
   } catch (e) {
     console.error('Redis load error:', e.message);
@@ -41,15 +48,24 @@ async function loadData() {
 
 async function saveData(data) {
   const client = getClient();
-  if (!client) return;
+  if (!client) {
+    console.log("No Redis client - save skipped");
+    return;
+  }
   try {
     await client.set('geleza_data', JSON.stringify(data));
+    console.log("Redis save: data saved successfully");
+    clearCache();
   } catch (e) {
     console.error('Redis save error:', e.message);
   }
 }
 
 let cachedData = null;
+
+function clearCache() {
+  cachedData = null;
+}
 
 async function getData() {
   if (!cachedData) {
