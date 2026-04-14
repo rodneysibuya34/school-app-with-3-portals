@@ -531,26 +531,39 @@ export default function StudentPortal() {
       setShowSubjectModal(true);
     }
 
-    const storedHomework = localStorage.getItem("homeworkData");
-    if (storedHomework) setHomeworkList(JSON.parse(storedHomework));
-    
-    const storedTests = localStorage.getItem("testData");
-    if (storedTests) setTestList(JSON.parse(storedTests));
-
-    const storedExamTimetable = localStorage.getItem("examTimetableData");
-    if (storedExamTimetable) setExamTimetableList(JSON.parse(storedExamTimetable));
-
-    const storedWeeklyTimetable = localStorage.getItem("weeklyTimetableData");
-    if (storedWeeklyTimetable) setWeeklyTimetableList(JSON.parse(storedWeeklyTimetable));
-
-    const storedStudyMaterials = localStorage.getItem("studyMaterialsData");
-    if (storedStudyMaterials) setStudyMaterialsList(JSON.parse(storedStudyMaterials));
-
-    const storedCourses = localStorage.getItem("coursesData");
-    if (storedCourses) setCoursesList(JSON.parse(storedCourses));
-
-    const storedAnnouncements = localStorage.getItem("announcementData");
-    if (storedAnnouncements) setAnnouncements(JSON.parse(storedAnnouncements));
+    async function fetchContentData() {
+      if (!parsedStudent?.school) return;
+      try {
+        const [hwRes, testsRes, smRes, examRes, weeklyRes, annRes, coursesRes] = await Promise.all([
+          fetch('/api/homework?school=' + encodeURIComponent(parsedStudent.school)),
+          fetch('/api/tests'),
+          fetch('/api/study-materials'),
+          fetch('/api/exam-timetable'),
+          fetch('/api/weekly-timetable'),
+          fetch('/api/announcements?school=' + encodeURIComponent(parsedStudent.school)),
+          fetch('/api/courses')
+        ]);
+        
+        const hwData = hwRes.ok ? await hwRes.json() : [];
+        const testsData = testsRes.ok ? await testsRes.json() : [];
+        const smData = smRes.ok ? await smRes.json() : [];
+        const examData = examRes.ok ? await examRes.json() : [];
+        const weeklyData = weeklyRes.ok ? await weeklyRes.json() : [];
+        const annData = annRes.ok ? await annRes.json() : [];
+        const coursesData = coursesRes.ok ? await coursesRes.json() : [];
+        
+        setHomeworkList(Array.isArray(hwData) ? hwData : []);
+        setTestList(Array.isArray(testsData) ? testsData : []);
+        setStudyMaterialsList(Array.isArray(smData) ? smData : []);
+        setExamTimetableList(Array.isArray(examData) ? examData : []);
+        setWeeklyTimetableList(Array.isArray(weeklyData) ? weeklyData : []);
+        setAnnouncements(Array.isArray(annData) ? annData : []);
+        setCoursesList(Array.isArray(coursesData) ? coursesData : []);
+      } catch (error) {
+        console.error("Error fetching content data:", error);
+      }
+    }
+    fetchContentData();
 
     const storedResults = localStorage.getItem(`testResults_${parsedStudent.id}`);
     if (storedResults) setCompletedTests(JSON.parse(storedResults));
