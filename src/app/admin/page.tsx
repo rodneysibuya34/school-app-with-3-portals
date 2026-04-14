@@ -65,6 +65,7 @@ interface Teacher {
   status: string;
   username: string;
   password: string;
+  grades?: number[];
 }
 
 interface Student {
@@ -125,9 +126,14 @@ export default function AdminPortal() {
   const [upgradePlan, setUpgradePlan] = useState<'monthly' | 'quarterly' | 'annual'>('monthly');
   const [upgradeStartDate, setUpgradeStartDate] = useState('');
   const [loading, setLoading] = useState(true);
-  const [formData, setFormData] = useState({
+const [formData, setFormData] = useState<{
+    name: string; location: string; type: string; adminUsername: string; adminPassword: string; schoolYear: number; schoolExpiry: string; schoolLogo: string; schoolContact: string; schoolAddress: string;
+    teacherName: string; teacherEmail: string; teacherSchool: string; teacherSubject: string; teacherGrades: number[];
+    studentName: string; studentEmail: string; studentGrade: string; studentSchool: string;
+    subSchool: string; subType: string; subStartDate: string; subPrice: string; subRenewal: string;
+  }>({
     name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', schoolLogo: '', schoolContact: '', schoolAddress: '',
-    teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '',
+    teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', teacherGrades: [],
     studentName: '', studentEmail: '', studentGrade: '', studentSchool: '',
     subSchool: '', subType: 'Primary', subStartDate: '', subPrice: '', subRenewal: ''
   });
@@ -466,7 +472,7 @@ export default function AdminPortal() {
         alert(`School created!\n\nUsername: ${schoolUsername}\nPassword: ${schoolPassword}\nTrial Period: 10 days (Expires: ${expiryDate})`);
         setShowModal(null);
         setSchoolLogoFile(null);
-        setFormData({ name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', schoolLogo: '', schoolContact: '', schoolAddress: '', teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', subSchool: '', subType: 'Primary', subStartDate: '', subPrice: '', subRenewal: '' });
+        setFormData({ name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', schoolLogo: '', schoolContact: '', schoolAddress: '', teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', teacherGrades: [], studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', subSchool: '', subType: 'Primary', subStartDate: '', subPrice: '', subRenewal: '' });
       } catch (error) {
         alert("Error creating school. Please try again.");
         console.error(error);
@@ -489,6 +495,7 @@ export default function AdminPortal() {
             email: formData.teacherEmail || `${teacherUsername}@${formData.teacherSchool.split(' ')[0].toLowerCase()}.edu`,
             school: formData.teacherSchool,
             subject: formData.teacherSubject,
+            grades: formData.teacherGrades,
             username: teacherUsername,
             password: teacherPassword
           })
@@ -504,7 +511,7 @@ export default function AdminPortal() {
         
         alert(`Teacher created!\n\nUsername: ${teacherUsername}\nPassword: ${teacherPassword}`);
         setShowModal(null);
-        setFormData({ name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', schoolLogo: '', schoolContact: '', schoolAddress: '', teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', subSchool: '', subType: 'Primary', subStartDate: '', subPrice: '', subRenewal: '' });
+        setFormData({ name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', schoolLogo: '', schoolContact: '', schoolAddress: '', teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', teacherGrades: [], studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', subSchool: '', subType: 'Primary', subStartDate: '', subPrice: '', subRenewal: '' });
       } catch (error) {
         alert("Error creating teacher. Please try again.");
         console.error(error);
@@ -542,7 +549,7 @@ export default function AdminPortal() {
         
         alert(`Student created!\n\nUsername: ${studentUsername}\nPassword: ${studentPassword}`);
         setShowModal(null);
-        setFormData({ name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', schoolLogo: '', schoolContact: '', schoolAddress: '', teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', subSchool: '', subType: 'Primary', subStartDate: '', subPrice: '', subRenewal: '' });
+        setFormData({ name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', schoolLogo: '', schoolContact: '', schoolAddress: '', teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', teacherGrades: [], studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', subSchool: '', subType: 'Primary', subStartDate: '', subPrice: '', subRenewal: '' });
       } catch (error) {
         alert("Error creating student. Please try again.");
         console.error(error);
@@ -573,7 +580,7 @@ export default function AdminPortal() {
         
         alert(`Subscription created for ${formData.subSchool}!`);
         setShowModal(null);
-        setFormData({ name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', schoolLogo: '', schoolContact: '', schoolAddress: '', teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', subSchool: '', subType: 'Primary', subStartDate: '', subPrice: '', subRenewal: '' });
+        setFormData({ name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', schoolLogo: '', schoolContact: '', schoolAddress: '', teacherName: '', teacherEmail: '', teacherSchool: '', teacherSubject: '', teacherGrades: [], studentName: '', studentEmail: '', studentGrade: '', studentSchool: '', subSchool: '', subType: 'Primary', subStartDate: '', subPrice: '', subRenewal: '' });
       } catch (error) {
         alert("Error creating subscription. Please try again.");
         console.error(error);
@@ -1000,6 +1007,29 @@ export default function AdminPortal() {
                     {schools.map(s => <option key={s.id} value={s.name}>{s.name}</option>)}
                   </select>
                   <input type="text" value={formData.teacherSubject} onChange={(e) => setFormData({...formData, teacherSubject: e.target.value})} placeholder="Subject(s) - e.g., Mathematics, Physics, Chemistry" className="w-full px-4 py-3 rounded-xl bg-[#1E293B]/5 border border-white/10 text-white" />
+                  <div className="space-y-2">
+                    <label className="text-slate-300 text-sm">Select Grades to Teach (4-12)</label>
+                    <div className="flex flex-wrap gap-2">
+                      {[4,5,6,7,8,9,10,11,12].map(grade => (
+                        <button
+                          key={grade}
+                          type="button"
+                          onClick={() => {
+                            const current = formData.teacherGrades || [];
+                            const updated = current.includes(grade) ? current.filter((g: number) => g !== grade) : [...current, grade];
+                            setFormData({...formData, teacherGrades: updated});
+                          }}
+                          className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                            (formData.teacherGrades || []).includes(grade)
+                              ? 'bg-cyan-600 text-white'
+                              : 'bg-[#1E293B]/5 border border-white/10 text-slate-300 hover:bg-[#1E293B]/10'
+                          }`}
+                        >
+                          Grade {grade}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </>
               )}
               {showModal === 'student' && (
