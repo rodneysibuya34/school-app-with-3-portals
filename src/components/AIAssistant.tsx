@@ -43,13 +43,15 @@ Guidelines:
 - Keep responses practical and actionable`;
 
 const studentTopics = [
-  "Mathematics", "Physical Sciences", "Life Sciences", "English", "Geography", 
-  "History", "Business Studies", "Accounting", "Economics", "Information Technology"
+  "Mathematics", "Physical Sciences", "Life Sciences", "English Home Language", "Afrikaans First Additional",
+  "Geography", "History", "Business Studies", "Accounting", "Economics", "Information Technology",
+  "Religious Studies", "Tourism", "Consumer Studies", "Life Orientation", "Mathematical Literacy"
 ];
 
 const teacherTopics = [
   "Test Design", "Question Types", "Assessment Strategies", "Differentiated Learning",
-  "Remediation", "Student Intervention", "Lesson Planning", "Curriculum Coverage"
+  "Remediation", "Student Intervention", "Lesson Planning", "Curriculum Coverage",
+  "Religious Studies", "Tourism", "Business Studies", "Sciences", "Languages"
 ];
 
 export default function AIAssistant({ mode, studentName, grade, onStrugglingAlert }: AIAssistantProps) {
@@ -310,6 +312,102 @@ Let's plan it out:
 3. How will you conclude?
 
 Once you have your outline, I can give feedback on making your writing stronger. What's your topic?`;
+    }
+
+    // Religious Studies
+    if (lowerInput.includes("religious") || lowerInput.includes("religion") || lowerInput.includes("bible") || lowerInput.includes("quran") || lowerInput.includes("islam") || lowerInput.includes("christian") || lowerInput.includes("faith")) {
+      return `For Religious Studies, I can help you understand concepts and compare different faiths!
+
+Instead of giving you answers, let's work through it:
+1. What specific religion or topic are you studying?
+2. What aspect confuses you - beliefs, practices, history?
+3. What does your textbook or notes say?
+
+I can help explain:
+- Comparison of world religions
+- Key beliefs and practices
+- Ethical teachings and applications
+- Historical context
+
+What question do you need help with?`;
+    }
+
+    // Tourism
+    if (lowerInput.includes("tourism") || lowerInput.includes("travel") || lowerInput.includes("hospitality") || lowerInput.includes("destination")) {
+      return `For Tourism, I can help you understand the industry!
+
+Let's break it down:
+1. Are you studying tourism sectors (transport, accommodation, attractions)?
+2. Are you working on a case study or destination?
+3. Do you need help with tourism concepts or marketing?
+
+I can help with:
+- Tourism components and value chain
+- South African tourist destinations
+- Customer service in hospitality
+- Sustainable tourism practices
+
+What specific topic are you working on?`;
+    }
+
+    // Geography and History
+    if (lowerInput.includes("geography") || lowerInput.includes("climate") || lowerInput.includes("weather") || lowerInput.includes("map")) {
+      return `For Geography, let's work through it together!
+
+Are you studying:
+- Physical geography (climate, weather, landscapes)?
+- Human geography (population, settlement)?
+- Map work and spatial analysis?
+
+Tell me what you're stuck on and I'll guide you through without giving direct answers!`;
+    }
+
+    if (lowerInput.includes("history") || lowerInput.includes("historical") || lowerInput.includes("war") || lowerInput.includes("century")) {
+      return `For History, I can help you analyze events and understand causes & effects!
+
+Instead of memorizing facts, let's understand:
+1. What time period/ event are you studying?
+2. What aspect - causes, events, consequences?
+3. How does this connect to what you've learned before?
+
+I can help you think critically about historical events without just giving you answers!
+
+What topic are you working on?`;
+    }
+
+    // Business and Accounting
+    if (lowerInput.includes("business") || lowerInput.includes("management") || lowerInput.includes("marketing")) {
+      return `For Business Studies, I can help you understand concepts!
+
+Are you studying:
+- Business functions (marketing, finance, HR)?
+- Business environments?
+- Entrepreneurship and forms of ownership?
+
+Tell me the topic and I'll help you understand the key concepts without giving direct answers to your assignments!`;
+    }
+
+    if (lowerInput.includes("accounting") || lowerInput.includes("balance") || lowerInput.includes("journal") || lowerInput.includes("ledger")) {
+      return `For Accounting, let's work through the process together!
+
+Are you working on:
+- Source documents and journals?
+- General Ledger and trial balance?
+- Financial statements?
+
+Show me what you've tried and I'll guide you to the right answer without just giving it to you!`;
+    }
+
+    // Life Sciences / Biology
+    if (lowerInput.includes("life sciences") || lowerInput.includes("biology") || lowerInput.includes("cell") || lowerInput.includes("photosynthesis")) {
+      return `For Life Sciences/Biology, I can help explain concepts!
+
+Are you studying:
+- Cell biology (cells, organelles)?
+- Systems (digestive, circulatory)?
+- Ecology and environments?
+
+Tell me the topic and I'll explain in a way that helps you understand - then you can apply it yourself!`;
     }
 
     if (lowerInput.includes("confused") || lowerInput.includes("don't understand") || lowerInput.includes("help")) {
