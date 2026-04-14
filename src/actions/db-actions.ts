@@ -23,7 +23,10 @@ export async function getTeachers() {
 }
 
 export async function addTeacher(teacherData: any) {
-  return db.addTeacher(teacherData);
+  console.log("db-actions: addTeacher called with:", teacherData);
+  const result = db.addTeacher(teacherData);
+  console.log("db-actions: addTeacher result:", result);
+  return result;
 }
 
 export async function updateTeacher(id: number, data: any) {}

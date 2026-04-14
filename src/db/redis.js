@@ -100,7 +100,9 @@ function getTeachers() {
 }
 
 async function addTeacher(teacherData) {
+  console.log("redis.js: addTeacher called with:", teacherData);
   const d = await getData();
+  console.log("redis.js: current data teachers count:", d.teachers.length);
   const newTeacher = {
     id: Date.now(),
     ...teacherData,
@@ -108,8 +110,10 @@ async function addTeacher(teacherData) {
     schoolYear: 2026,
     createdAt: Date.now()
   };
+  console.log("redis.js: new teacher object:", newTeacher);
   d.teachers.push(newTeacher);
   await saveData(d);
+  console.log("redis.js: teacher saved, total teachers:", d.teachers.length);
   return newTeacher;
 }
 

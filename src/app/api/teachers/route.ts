@@ -17,14 +17,16 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
+    console.log("Creating teacher with data:", body);
     const teacher = await addTeacher(body);
+    console.log("Teacher created:", teacher);
     return NextResponse.json(teacher);
   } catch (error: any) {
     console.error("Error creating teacher:", error);
-    if (error.message?.includes("not configured")) {
+    if (error.message?.includes("not configured") || error.message?.includes("Database not configured")) {
       return NextResponse.json({ error: "Database not configured" }, { status: 503 });
     }
-    return NextResponse.json({ error: "Failed to create teacher" }, { status: 500 });
+    return NextResponse.json({ error: error.message || "Failed to create teacher" }, { status: 500 });
   }
 }
 
