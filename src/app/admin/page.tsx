@@ -233,6 +233,21 @@ export default function AdminPortal() {
     }
   };
 
+  const deleteSubscription = async (subId: number) => {
+    if (confirm("Are you sure you want to delete this subscription?")) {
+      try {
+        await fetch('/api/subscriptions', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: subId })
+        });
+        setSubscriptions(subscriptions.filter(s => s.id !== subId));
+      } catch (error) {
+        alert("Error deleting subscription");
+      }
+    }
+  };
+
   const activateTrial = async (schoolId: number) => {
     const school = schools.find(s => s.id === schoolId);
     if (!school) return;
@@ -880,6 +895,9 @@ export default function AdminPortal() {
                       <td className="py-3 px-4 text-slate-300">{sub.renewal}</td>
                       <td className="py-3 px-4">
                         <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(sub.status)}`}>{sub.status}</span>
+                      </td>
+                      <td className="py-3 px-4">
+                        <button onClick={() => deleteSubscription(sub.id)} className="px-2 py-1 rounded text-xs bg-red-500/20 text-red-400 hover:bg-red-500/30">Delete</button>
                       </td>
                     </tr>
                   ))}
