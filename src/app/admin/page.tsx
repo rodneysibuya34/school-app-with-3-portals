@@ -746,23 +746,26 @@ export default function AdminPortal() {
                         </div>
                       )}
                       <div className="flex gap-2 pt-2 flex-wrap">
-                        {paymentStatus === 'trial' ? (
+                        {paymentStatus !== 'active' ? (
                           <>
                             <button onClick={() => handleUpgradeClick(school.id)} className="flex-1 py-2 rounded-lg text-sm bg-green-500/20 text-green-400">Upgrade to Paid</button>
-                            <button onClick={() => endTrial(school.id)} className="flex-1 py-2 rounded-lg text-sm bg-red-500/20 text-red-400">End Trial</button>
+                            {paymentStatus === 'trial' && (
+                              <button onClick={() => endTrial(school.id)} className="flex-1 py-2 rounded-lg text-sm bg-red-500/20 text-red-400">End Trial</button>
+                            )}
                           </>
                         ) : (
                           <>
-                            <button onClick={() => activateTrial(school.id)} className="flex-1 py-2 rounded-lg text-sm bg-purple-500/20 text-purple-400">Start Trial</button>
-                            <button onClick={() => toggleSchoolActive(school.id)} className={`flex-1 py-2 rounded-lg text-sm ${school.isActive ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'}`}>
-                              {school.isActive ? 'Deactivate' : 'Activate'}
-                            </button>
-                            <button onClick={() => toggleSchoolBlock(school.id)} className={`flex-1 py-2 rounded-lg text-sm ${school.isBlocked ? 'bg-green-500/20 text-green-400' : 'bg-orange-500/20 text-orange-400'}`}>
-                              {school.isBlocked ? 'Unblock' : 'Block'}
-                            </button>
-                            <button onClick={() => deleteSchool(school.id)} className="flex-1 py-2 rounded-lg text-sm bg-red-500/20 text-red-400">Delete</button>
+                            <button onClick={() => handleUpgradeClick(school.id)} className="flex-1 py-2 rounded-lg text-sm bg-blue-500/20 text-blue-400">Change Plan</button>
                           </>
                         )}
+                        <button onClick={() => activateTrial(school.id)} className="flex-1 py-2 rounded-lg text-sm bg-purple-500/20 text-purple-400">Start Trial</button>
+                        <button onClick={() => toggleSchoolActive(school.id)} className={`flex-1 py-2 rounded-lg text-sm ${school.isActive ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'}`}>
+                          {school.isActive ? 'Deactivate' : 'Activate'}
+                        </button>
+                        <button onClick={() => toggleSchoolBlock(school.id)} className={`flex-1 py-2 rounded-lg text-sm ${school.isBlocked ? 'bg-green-500/20 text-green-400' : 'bg-orange-500/20 text-orange-400'}`}>
+                          {school.isBlocked ? 'Unblock' : 'Block'}
+                        </button>
+                        <button onClick={() => deleteSchool(school.id)} className="flex-1 py-2 rounded-lg text-sm bg-red-500/20 text-red-400">Delete</button>
                       </div>
                     </div>
                   </div>
