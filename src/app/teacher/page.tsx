@@ -363,10 +363,16 @@ export default function TeacherPortal() {
             createdBy: loggedInTeacher.name
           })
         });
-        if (response.ok) {
-          const hw = await response.json();
-          setHomeworkList([...homeworkList, hw]);
+        
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+          alert(`Error: ${errorData.error || 'Failed to create homework'}`);
+          return;
         }
+        
+        const hw = await response.json();
+        setHomeworkList([...homeworkList, hw]);
+        alert("Homework created successfully!");
       } catch (error) {
         console.error("Error adding homework:", error);
         alert("Error creating homework. Please try again.");

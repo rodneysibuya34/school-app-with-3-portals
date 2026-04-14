@@ -19,14 +19,16 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
+    console.log("Creating homework with data:", body);
     const item = await addHomework(body);
+    console.log("Homework created:", item);
     return NextResponse.json(item);
   } catch (error: any) {
     console.error("Error creating homework:", error);
-    if (error.message?.includes("not configured")) {
+    if (error.message?.includes("not configured") || error.message?.includes("Database not configured")) {
       return NextResponse.json({ error: "Database not configured" }, { status: 503 });
     }
-    return NextResponse.json({ error: "Failed to create homework" }, { status: 500 });
+    return NextResponse.json({ error: error.message || "Failed to create homework" }, { status: 500 });
   }
 }
 
