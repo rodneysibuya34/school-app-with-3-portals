@@ -11,7 +11,7 @@ export async function addSchool(schoolData: any) {
 }
 
 export async function updateSchool(id: number, data: any) {
-  db.updateSchool(id, data);
+  return db.updateSchool(id, data);
 }
 
 export async function deleteSchool(id: number) {

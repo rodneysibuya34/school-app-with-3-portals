@@ -29,7 +29,9 @@ export async function PUT(request: Request) {
   try {
     const { id, ...data } = await request.json();
     await updateSchool(id, data);
-    return NextResponse.json({ success: true });
+    const schools = await getSchools();
+    const updatedSchool = schools.find((s: any) => s.id === id);
+    return NextResponse.json(updatedSchool || { success: true });
   } catch (error) {
     console.error("Error updating school:", error);
     return NextResponse.json({ error: "Failed to update school" }, { status: 500 });
