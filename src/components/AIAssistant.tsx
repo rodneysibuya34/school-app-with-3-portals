@@ -74,12 +74,46 @@ export default function AIAssistant({ mode, studentName, grade, onStrugglingAler
     setInput("");
     setIsTyping(true);
 
-    setTimeout(() => {
-      const response = generateResponse(input, mode);
-      const assistantMessage: Message = { id: Date.now() + 1, role: "assistant", content: response };
-      setMessages(prev => [...prev, assistantMessage]);
-      setIsTyping(false);
-    }, 1000);
+    try {
+      const history = [...messages, userMessage].map(m => ({
+        role: m.role,
+        content: m.content
+      }));
+
+      const res = await fetch('/api/ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          messages: history, 
+          mode, 
+          grade 
+        })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        const assistantMessage: Message = { 
+          id: Date.now() + 1, 
+          role: "assistant", 
+          content: data.reply 
+        };
+        setMessages(prev => [...prev, assistantMessage]);
+      } else {
+        setMessages(prev => [...prev, { 
+          id: Date.now() + 1, 
+          role: "assistant", 
+          content: "AI is not configured. Please contact the administrator." 
+        }]);
+      }
+    } catch (error) {
+      console.error("AI error:", error);
+      setMessages(prev => [...prev, { 
+        id: Date.now() + 1, 
+        role: "assistant", 
+        content: "Sorry, I encountered an error. Please try again." 
+      }]);
+    }
+    setIsTyping(false);
   };
 
   const handleAlertSubmit = () => {
