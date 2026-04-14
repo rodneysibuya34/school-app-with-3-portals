@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getTests, addTest, deleteTest } from "@/actions/content-actions";
+import { getTests, addTest, updateTest, deleteTest } from "@/actions/content-actions";
 
 export async function GET() {
   try {
@@ -25,6 +25,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Database not configured" }, { status: 503 });
     }
     return NextResponse.json({ error: "Failed to create test" }, { status: 500 });
+  }
+}
+
+export async function PUT(request: Request) {
+  try {
+    const { id, ...data } = await request.json();
+    await updateTest(id, data);
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    console.error("Error updating test:", error);
+    return NextResponse.json({ error: "Failed to update test" }, { status: 500 });
   }
 }
 

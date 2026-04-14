@@ -171,6 +171,7 @@ export default function TeacherPortal() {
   const [showStudentGradesModal, setShowStudentGradesModal] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<StudentData | null>(null);
   const [studentGrades, setStudentGrades] = useState<Record<number, { correct: number; total: number }>>({});
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [newHomework, setNewHomework] = useState({ title: "", description: "", dueDate: "", grade: "", subject: "" });
   const [homeworkFile, setHomeworkFile] = useState<{ name: string; data: string; type: string } | null>(null);
   const [newTest, setNewTest] = useState({ title: "", description: "", dueDate: "", grade: "", subject: "", duration: "60" });
@@ -455,7 +456,7 @@ export default function TeacherPortal() {
     }
   };
 
-  const handleBulkAddQuestions = () => {
+  const handleBulkAddQuestions = async () => {
     if (bulkQuestions.length === 0 || !currentTestId) return;
     
     const validQuestions = bulkQuestions.filter(q => q.text.trim() && q.correctAnswer);
@@ -465,15 +466,38 @@ export default function TeacherPortal() {
       return;
     }
 
-    const updatedTestList = testList.map(t => {
-      if (t.id === currentTestId) {
-        return { ...t, questions: [...t.questions, ...validQuestions] };
-      }
-      return t;
-    });
+    try {
+      const response = await fetch('/api/tests', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: currentTestId,
+          questions: validQuestions
+        })
+      });
+      
+      if (!response.ok) throw new Error('Failed to add questions');
+      
+      const updatedTestList = testList.map(t => {
+        if (t.id === currentTestId) {
+          return { ...t, questions: [...(t.questions || []), ...validQuestions] };
+        }
+        return t;
+      });
+      
+      setTestList(updatedTestList);
+    } catch (error) {
+      console.error("Error adding questions:", error);
+      const updatedTestList = testList.map(t => {
+        if (t.id === currentTestId) {
+          return { ...t, questions: [...(t.questions || []), ...validQuestions] };
+        }
+        return t;
+      });
+      setTestList(updatedTestList);
+    }
     
-    setTestList(updatedTestList);
-    localStorage.setItem("testData", JSON.stringify(updatedTestList));
+    localStorage.setItem("testData", JSON.stringify(testList));
     setBulkQuestions([]);
     setBulkQuestionCount(10);
     setShowQuestionModal(false);
@@ -712,7 +736,20 @@ export default function TeacherPortal() {
     }
   };
 
-  const handlePublishTest = (testId: number) => {
+  const handlePublishTest = async (testId: number) => {
+    const test = testList.find(t => t.id === testId);
+    if (!test) return;
+    
+    try {
+      await fetch('/api/tests', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: testId, published: !test.published })
+      });
+    } catch (error) {
+      console.error("Error publishing test:", error);
+    }
+    
     setTestList(testList.map(t => t.id === testId ? { ...t, published: !t.published } : t));
   };
 
@@ -1884,8 +1921,8 @@ export default function TeacherPortal() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0F172A] flex">
-      <aside className="w-72 bg-[#1E293B] border-r border-white/10 flex flex-col">
+    <div className="min-h-screen bg-[#0F172A] flex flex-col md:flex-row">
+      <aside className="hidden md:flex w-72 bg-[#1E293B] border-r border-white/10 flex-col fixed md:sticky top-0 h-screen z-10">
         <div className="p-6 border-b border-white/10">
           <div className="flex items-center gap-3 mb-6">
             <Logo size={40} />
@@ -1931,7 +1968,15 @@ export default function TeacherPortal() {
         </div>
       </aside>
 
-      <main className="flex-1 p-8 overflow-y-auto">
+      <main className="flex-1 p-4 md:p-8 overflow-y-auto w-full md:ml-0">
+        <div className="md:hidden flex items-center justify-between mb-4">
+          <button onClick={() => setMobileMenuOpen(true)} className="p-2 rounded-lg bg-stone-800 text-white">
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+        
         {paymentWarning && (
           <div className="mb-6 p-4 rounded-xl bg-orange-500/20 border border-orange-500/30 flex items-center gap-3">
             <svg className="w-6 h-6 text-orange-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1959,6 +2004,50 @@ export default function TeacherPortal() {
         {activeTab === "chat" && renderChat()}
         {activeTab === "settings" && renderSettings()}
       </main>
+
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 bg-black/50 z-50 md:hidden">
+          <div className="w-72 bg-[#1E293B] h-full p-4">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <Logo size={40} />
+                <span className="text-xl font-semibold text-white font-['Outfit']">Geleza Mzansi</span>
+              </div>
+              <button onClick={() => setMobileMenuOpen(false)} className="text-slate-400">
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <nav className="space-y-1">
+              {navItems.map((item) => (
+                <button
+                  key={item.label}
+                  onClick={() => { setActiveTab(item.label.toLowerCase()); setMobileMenuOpen(false); }}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                    activeTab === item.label.toLowerCase()
+                      ? "bg-purple-500/20 text-purple-400 border-l-2 border-purple-400"
+                      : "text-slate-400 hover:text-white hover:bg-stone-800"
+                  }`}
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={item.icon} />
+                  </svg>
+                  <span>{item.label}</span>
+                </button>
+              ))}
+            </nav>
+            <div className="mt-auto pt-4 border-t border-white/10">
+              <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/10">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                <span>Log Out</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <AIAssistant mode="teacher" onStrugglingAlert={handleStrugglingAlert} />
     </div>

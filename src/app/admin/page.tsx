@@ -124,9 +124,10 @@ export default function AdminPortal() {
   const [showModal, setShowModal] = useState<ModalType>(null);
   const [upgradeSchool, setUpgradeSchool] = useState<School | null>(null);
   const [upgradePlan, setUpgradePlan] = useState<'monthly' | 'quarterly' | 'annual'>('monthly');
-  const [upgradeStartDate, setUpgradeStartDate] = useState('');
+const [upgradeStartDate, setUpgradeStartDate] = useState('');
   const [loading, setLoading] = useState(true);
-const [formData, setFormData] = useState<{
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [formData, setFormData] = useState<{
     name: string; location: string; type: string; adminUsername: string; adminPassword: string; schoolYear: number; schoolExpiry: string; schoolLogo: string; schoolContact: string; schoolAddress: string;
     teacherName: string; teacherEmail: string; teacherSchool: string; teacherSubject: string; teacherGrades: number[];
     studentName: string; studentEmail: string; studentGrade: string; studentSchool: string;
@@ -649,8 +650,8 @@ const [formData, setFormData] = useState<{
   }
 
   return (
-    <div className="min-h-screen bg-[#1C1917]">
-      <aside className="w-64 bg-[#1E293B] border-r border-white/10 fixed h-full">
+    <div className="min-h-screen bg-[#1C1917] flex flex-col md:flex-row">
+      <aside className="hidden md:flex w-64 bg-[#1E293B] border-r border-white/10 fixed h-screen z-10">
         <div className="p-6 border-b border-white/10">
           <div className="flex items-center gap-3">
             <Logo size={40} />
@@ -678,7 +679,15 @@ const [formData, setFormData] = useState<{
         </div>
       </aside>
 
-      <main className="ml-64 p-8">
+      <main className="md:ml-64 p-4 md:p-8 w-full">
+        <div className="md:hidden flex items-center justify-between mb-4">
+          <button onClick={() => setMobileMenuOpen(true)} className="p-2 rounded-lg bg-stone-800 text-white">
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+        
         {activeTab === "dashboard" && (
           <div>
             <h1 className="text-3xl font-bold text-white mb-6">Dashboard</h1>
@@ -1089,6 +1098,45 @@ const [formData, setFormData] = useState<{
               </button>
               <button onClick={() => showModal === 'upgrade' ? handleUpgradeConfirm() : handleSubmit(showModal)} className="flex-1 px-4 py-3 rounded-xl bg-cyan-600 text-white hover:bg-cyan-700">
                 {showModal === 'upgrade' ? 'Confirm Upgrade' : 'Create'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 bg-black/50 z-50 md:hidden">
+          <div className="w-64 bg-[#1E293B] h-full p-4">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <Logo size={40} />
+                <span className="text-xl font-semibold text-white">Admin</span>
+              </div>
+              <button onClick={() => setMobileMenuOpen(false)} className="text-slate-400">
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <nav className="space-y-1">
+              {navItems.map((item) => (
+                <button key={item.label} onClick={() => { setActiveTab(item.label.toLowerCase()); setMobileMenuOpen(false); }}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                    activeTab === item.label.toLowerCase() ? "bg-cyan-500/20 text-cyan-400 border-l-2 border-cyan-400" : "text-slate-400 hover:text-white hover:bg-[#1E293B]/5"
+                  }`}>
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={item.icon} />
+                  </svg>
+                  <span>{item.label}</span>
+                </button>
+              ))}
+            </nav>
+            <div className="mt-auto pt-4 border-t border-white/10">
+              <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/10">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                <span>Log Out</span>
               </button>
             </div>
           </div>

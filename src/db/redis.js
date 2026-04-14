@@ -246,6 +246,16 @@ async function deleteTest(id) {
   await saveData(d);
 }
 
+async function updateTest(id, updates) {
+  const d = await getData();
+  const idx = d.tests.findIndex(t => t.id === id);
+  if (idx !== -1) {
+    d.tests[idx] = { ...d.tests[idx], ...updates };
+    await saveData(d);
+    return d.tests[idx];
+  }
+}
+
 function getStudyMaterials() {
   return getData().then(d => d.studyMaterials.sort((a, b) => b.id - a.id));
 }
@@ -391,6 +401,7 @@ module.exports = {
   deleteHomework,
   getTests,
   addTest,
+  updateTest,
   deleteTest,
   getStudyMaterials,
   addStudyMaterial,

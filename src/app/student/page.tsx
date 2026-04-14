@@ -495,6 +495,7 @@ export default function StudentPortal() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const [paymentWarning, setPaymentWarning] = useState<{ school: string; daysLeft: number } | null>(null);
   const [completedTests, setCompletedTests] = useState<Record<number, { correct: number; total: number }>>({});
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const [homeworkList, setHomeworkList] = useState<Homework[]>([]);
   const [testList, setTestList] = useState<Test[]>([]);
@@ -1316,9 +1317,9 @@ const grade10Subjects = [
   const subjectsList = loggedInStudent && loggedInStudent.grade >= 8 ? grade10Subjects : primarySubjects;
 
   return (
-    <div className="min-h-screen bg-[#0F172A] flex">
+    <div className="min-h-screen bg-[#0F172A] flex flex-col md:flex-row">
       {showSubjectModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-[#1E293B] rounded-2xl p-6 w-full max-w-lg border border-white/10">
             <h3 className="text-xl font-semibold text-white mb-4">Select Your Subjects</h3>
             <p className="text-slate-400 text-sm mb-4">Choose the subjects you are taking this year (select at least 4):</p>
@@ -1363,7 +1364,7 @@ const grade10Subjects = [
         </div>
       )}
 
-      <aside className="w-72 bg-[#1E293B] border-r border-white/10 flex flex-col">
+      <aside className="hidden md:flex w-72 bg-[#1E293B] border-r border-white/10 flex-col fixed md:sticky top-0 h-screen z-10">
         <div className="p-6 border-b border-white/10">
           <div className="flex items-center gap-3 mb-6">
             <Logo size={40} />
@@ -1398,7 +1399,15 @@ const grade10Subjects = [
         </div>
       </aside>
 
-      <main className="flex-1 p-8 overflow-y-auto">
+      <main className="flex-1 p-4 md:p-8 overflow-y-auto w-full md:ml-0">
+        <div className="md:hidden flex items-center justify-between mb-4">
+          <button onClick={() => setMobileMenuOpen(true)} className="p-2 rounded-lg bg-stone-800 text-white">
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+        
         {paymentWarning && (
           <div className="mb-6 p-4 rounded-xl bg-orange-500/20 border border-orange-500/30 flex items-center gap-3">
             <svg className="w-6 h-6 text-orange-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1427,6 +1436,34 @@ const grade10Subjects = [
         {activeTab === "chat" && renderChat()}
         {activeTab === "settings" && renderSettings()}
       </main>
+
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 bg-black/50 z-50 md:hidden">
+          <div className="w-72 bg-[#1E293B] h-full p-4">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <Logo size={40} />
+                <span className="text-xl font-semibold text-white">Geleza Mzansi</span>
+              </div>
+              <button onClick={() => setMobileMenuOpen(false)} className="text-slate-400">
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <nav className="space-y-1">
+              {navItems.map((item) => (
+                <button key={item.label} onClick={() => { setActiveTab(item.label.toLowerCase()); setMobileMenuOpen(false); }}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                    activeTab === item.label.toLowerCase() ? "bg-blue-500/20 text-blue-400 border-l-2 border-blue-400" : "text-slate-400 hover:text-white hover:bg-[#1E293B]/5"}`}>
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={item.icon} /></svg>
+                  <span>{item.label}</span>
+                </button>
+              ))}
+            </nav>
+          </div>
+        </div>
+      )}
 
       <AIAssistant mode="student" studentName={loggedInStudent?.name} grade={loggedInStudent?.grade} />
     </div>
