@@ -503,11 +503,7 @@ export default function StudentPortal() {
   const [studyMaterialsList, setStudyMaterialsList] = useState<StudyMaterial[]>([]);
   const [coursesList, setCoursesList] = useState<{ name: string; teacher: string; grade: string; progress: number }[]>([]);
   const [announcements, setAnnouncements] = useState<{ id: number; title: string; content: string; date: string; priority: "normal" | "important" | "urgent" }[]>([]);
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>(() => {
-    if (typeof window === 'undefined') return [];
-    const stored = localStorage.getItem("chatMessages");
-    return stored ? JSON.parse(stored) : [];
-  });
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [newChatMessage, setNewChatMessage] = useState("");
   const [unlockPassword, setUnlockPassword] = useState("");
   const [unlockingMessageId, setUnlockingMessageId] = useState<number | null>(null);
@@ -559,6 +555,12 @@ export default function StudentPortal() {
         setWeeklyTimetableList(Array.isArray(weeklyData) ? weeklyData : []);
         setAnnouncements(Array.isArray(annData) ? annData : []);
         setCoursesList(Array.isArray(coursesData) ? coursesData : []);
+        
+        if (parsedStudent.school) {
+          const chatRes = await fetch('/api/chat?school=' + encodeURIComponent(parsedStudent.school) + '&grade=' + parsedStudent.grade);
+          const chatData = chatRes.ok ? await chatRes.json() : [];
+          setChatMessages(Array.isArray(chatData) ? chatData : []);
+        }
       } catch (error) {
         console.error("Error fetching content data:", error);
       }
@@ -707,21 +709,31 @@ export default function StudentPortal() {
     return day === 5 || day === 6 || day === 0;
   };
 
-  const handleSendChatMessage = () => {
+  const handleSendChatMessage = async () => {
     if (!newChatMessage.trim() || !loggedInStudent) return;
-    const msg: ChatMessage = {
-      id: Date.now(),
+    const msgData = {
       sender: loggedInStudent.name,
       role: "student",
       school: loggedInStudent.school,
       grade: loggedInStudent.grade,
       message: newChatMessage,
-      isLocked: false,
-      timestamp: new Date().toISOString()
+      isLocked: false
     };
-    const updated = [...chatMessages, msg];
-    setChatMessages(updated);
-    localStorage.setItem("chatMessages", JSON.stringify(updated));
+    
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(msgData)
+      });
+      if (res.ok) {
+        const newMsg = await res.json();
+        setChatMessages([...chatMessages, newMsg]);
+      }
+    } catch (error) {
+      console.error("Error sending chat message:", error);
+    }
+    
     setNewChatMessage("");
   };
 

@@ -276,6 +276,20 @@ export default function TeacherPortal() {
   }, [loggedInTeacher]);
 
   useEffect(() => {
+    async function fetchChatData() {
+      if (!loggedInTeacher?.school || !chatGrade) return;
+      try {
+        const res = await fetch('/api/chat?school=' + encodeURIComponent(loggedInTeacher.school) + '&grade=' + chatGrade);
+        const data = res.ok ? await res.json() : [];
+        setChatMessages(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error("Error fetching chat:", error);
+      }
+    }
+    fetchChatData();
+  }, [loggedInTeacher, chatGrade]);
+
+  useEffect(() => {
     if (typeof window === 'undefined') return;
     localStorage.setItem("testData", JSON.stringify(testList));
   }, [testList]);
@@ -500,14 +514,13 @@ export default function TeacherPortal() {
     }
   };
 
-  const handleSendChatMessage = () => {
+  const handleSendChatMessage = async () => {
     if (!newChatMessage.trim() || !chatGrade || !loggedInTeacher) return;
     if (chatIsLocked && !chatPassword.trim()) {
       alert("Please set a password for the locked message");
       return;
     }
-    const msg: ChatMessage = {
-      id: Date.now(),
+    const msgData = {
       sender: loggedInTeacher.name,
       role: "teacher",
       school: loggedInTeacher.school,
@@ -516,14 +529,25 @@ export default function TeacherPortal() {
       isLocked: chatIsLocked,
       isHidden: chatIsHidden,
       password: chatIsLocked ? chatPassword : undefined,
-      timestamp: new Date().toISOString(),
       fileType: chatFile?.type,
       fileUrl: chatFile?.data,
       fileName: chatFile?.name
     };
-    const updated = [...chatMessages, msg];
-    setChatMessages(updated);
-    localStorage.setItem("chatMessages", JSON.stringify(updated));
+    
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(msgData)
+      });
+      if (res.ok) {
+        const newMsg = await res.json();
+        setChatMessages([...chatMessages, newMsg]);
+      }
+    } catch (error) {
+      console.error("Error sending chat message:", error);
+    }
+    
     setNewChatMessage("");
     setChatPassword("");
     setChatIsLocked(false);
@@ -531,16 +555,32 @@ export default function TeacherPortal() {
     setChatFile(null);
   };
 
-  const handleDeleteChatMessage = (msgId: number) => {
-    const updated = chatMessages.filter(m => m.id !== msgId);
-    setChatMessages(updated);
-    localStorage.setItem("chatMessages", JSON.stringify(updated));
+  const handleDeleteChatMessage = async (msgId: number) => {
+    try {
+      await fetch('/api/chat', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: msgId })
+      });
+      setChatMessages(chatMessages.filter(m => m.id !== msgId));
+    } catch (error) {
+      console.error("Error deleting chat message:", error);
+    }
   };
 
-  const handleToggleMessageVisibility = (msgId: number) => {
-    const updated = chatMessages.map(m => m.id === msgId ? { ...m, isHidden: !m.isHidden } : m);
-    setChatMessages(updated);
-    localStorage.setItem("chatMessages", JSON.stringify(updated));
+  const handleToggleMessageVisibility = async (msgId: number) => {
+    const msg = chatMessages.find(m => m.id === msgId);
+    if (!msg) return;
+    try {
+      await fetch('/api/chat', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: msgId, isHidden: !msg.isHidden })
+      });
+      setChatMessages(chatMessages.map(m => m.id === msgId ? { ...m, isHidden: !m.isHidden } : m));
+    } catch (error) {
+      console.error("Error toggling message visibility:", error);
+    }
   };
 
   const handleProfilePictureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {

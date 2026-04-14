@@ -29,3 +29,8 @@ export async function deleteAnnouncement(id: number) { db.deleteAnnouncement(id)
 export async function getCourses() { return db.getCourses(); }
 export async function addCourse(data: any) { return db.addCourse(data); }
 export async function deleteCourse(id: number) { db.deleteCourse(id); }
+
+export async function getChat(school?: string, grade?: number) { return db.getChat(school, grade); }
+export async function addChatMessage(data: any) { return db.addChatMessage(data); }
+export async function deleteChatMessage(id: number) { return db.deleteChatMessage(id); }
+export async function updateChatMessage(id: number, data: any) { return db.updateChatMessage(id, data); }

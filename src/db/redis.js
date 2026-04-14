@@ -23,7 +23,8 @@ const defaultData = {
   examTimetable: [],
   weeklyTimetable: [],
   announcements: [],
-  courses: []
+  courses: [],
+  chat: []
 };
 
 async function loadData() {
@@ -330,6 +331,38 @@ async function addCourse(courseData) {
   return newCourse;
 }
 
+function getChat(school, grade) {
+  return getData().then(d => {
+    let messages = d.chat;
+    if (school) messages = messages.filter(m => m.school === school);
+    if (grade) messages = messages.filter(m => m.grade === grade);
+    return messages.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+  });
+}
+
+async function addChatMessage(msgData) {
+  const d = await getData();
+  const newMsg = { id: Date.now(), ...msgData, timestamp: new Date().toISOString() };
+  d.chat.push(newMsg);
+  await saveData(d);
+  return newMsg;
+}
+
+async function deleteChatMessage(id) {
+  const d = await getData();
+  d.chat = d.chat.filter(m => m.id !== id);
+  await saveData(d);
+}
+
+async function updateChatMessage(id, updates) {
+  const d = await getData();
+  const idx = d.chat.findIndex(m => m.id === id);
+  if (idx !== -1) {
+    d.chat[idx] = { ...d.chat[idx], ...updates };
+    await saveData(d);
+  }
+}
+
 module.exports = {
   getSchools,
   addSchool,
@@ -368,5 +401,9 @@ module.exports = {
   addAnnouncement,
   deleteAnnouncement,
   getCourses,
-  addCourse
+  addCourse,
+  getChat,
+  addChatMessage,
+  deleteChatMessage,
+  updateChatMessage
 };
