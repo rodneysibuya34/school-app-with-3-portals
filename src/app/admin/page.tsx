@@ -501,7 +501,11 @@ const [formData, setFormData] = useState<{
           })
         });
         
-        if (!response.ok) throw new Error('Failed to create teacher');
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+          alert(`Error: ${errorData.error || 'Failed to create teacher'}`);
+          throw new Error(errorData.error || 'Failed to create teacher');
+        }
         
         const newTeacher = await response.json();
         setTeachers([...teachers, newTeacher]);
@@ -539,7 +543,11 @@ const [formData, setFormData] = useState<{
           })
         });
         
-        if (!response.ok) throw new Error('Failed to create student');
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+          alert(`Error: ${errorData.error || 'Failed to create student'}`);
+          throw new Error(errorData.error || 'Failed to create student');
+        }
         
         const newStudent = await response.json();
         setStudents([...students, newStudent]);
