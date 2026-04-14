@@ -108,7 +108,7 @@ const initialSubscriptions: Subscription[] = [
   { id: 4, school: "Highland Academy", schoolType: "High School", price: "Free", planType: "trial", startDate: "Mar 1, 2026", status: "Trial", renewal: "Mar 31, 2026" },
 ];
 
-type ModalType = 'school' | 'teacher' | 'student' | 'subscription' | 'newYear' | null;
+type ModalType = 'school' | 'teacher' | 'student' | 'subscription' | 'newYear' | 'upgrade' | null;
 
 export default function AdminPortal() {
   const router = useRouter();
@@ -121,6 +121,9 @@ export default function AdminPortal() {
   const [students, setStudents] = useState<Student[]>([]);
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [showModal, setShowModal] = useState<ModalType>(null);
+  const [upgradeSchool, setUpgradeSchool] = useState<School | null>(null);
+  const [upgradePlan, setUpgradePlan] = useState<'monthly' | 'quarterly' | 'annual'>('monthly');
+  const [upgradeStartDate, setUpgradeStartDate] = useState('');
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     name: '', location: '', type: 'Primary', adminUsername: '', adminPassword: '', schoolYear: 2026, schoolExpiry: '', schoolLogo: '', schoolContact: '', schoolAddress: '',
@@ -259,7 +262,7 @@ export default function AdminPortal() {
     }
   };
 
-  const upgradeToPaid = async (schoolId: number, plan: string = 'monthly') => {
+  const upgradeToPaid = async (schoolId: number, plan: string = 'monthly', startDate?: string) => {
     const school = schools.find(s => s.id === schoolId);
     if (!school) return;
     
@@ -268,21 +271,23 @@ export default function AdminPortal() {
     let price: string;
     let planType: string;
     
+    const baseDate = startDate ? new Date(startDate) : new Date();
+    
     switch (plan) {
       case 'quarterly':
-        expiryDate = new Date();
+        expiryDate = new Date(baseDate);
         expiryDate.setMonth(expiryDate.getMonth() + 3);
         price = isHighSchool ? "R7,000/quarter" : "R4,000/quarter";
         planType = "quarterly";
         break;
       case 'annual':
-        expiryDate = new Date();
+        expiryDate = new Date(baseDate);
         expiryDate.setFullYear(expiryDate.getFullYear() + 1);
         price = isHighSchool ? "R25,000/year" : "R14,000/year";
         planType = "annual";
         break;
       default:
-        expiryDate = new Date();
+        expiryDate = new Date(baseDate);
         expiryDate.setMonth(expiryDate.getMonth() + 1);
         price = isHighSchool ? "R2,500/mo" : "R1,500/mo";
         planType = "monthly";
@@ -336,20 +341,20 @@ export default function AdminPortal() {
   const handleUpgradeClick = (schoolId: number) => {
     const school = schools.find(s => s.id === schoolId);
     if (!school) return;
-    
-    const isHighSchool = school.type === "High School";
-    const choice = confirm("Choose payment plan:\n\nOK = Monthly\nCancel = Quarterly\n\nFor annual, click Cancel twice.");
-    
-    if (choice) {
-      upgradeToPaid(schoolId, 'monthly');
-    } else {
-      const secondChoice = confirm("Choose:\n\nOK = Quarterly\nCancel = Annual");
-      if (secondChoice) {
-        upgradeToPaid(schoolId, 'quarterly');
-      } else {
-        upgradeToPaid(schoolId, 'annual');
-      }
+    setUpgradeSchool(school);
+    setUpgradePlan('monthly');
+    setUpgradeStartDate(new Date().toISOString().split('T')[0]);
+    setShowModal('upgrade');
+  };
+
+  const handleUpgradeConfirm = async () => {
+    if (!upgradeSchool || !upgradeStartDate) {
+      alert("Please select a start date");
+      return;
     }
+    await upgradeToPaid(upgradeSchool.id, upgradePlan, upgradeStartDate);
+    setShowModal(null);
+    setUpgradeSchool(null);
   };
 
   const updateExpiryDate = async (schoolId: number, newDate: string) => {
@@ -965,10 +970,30 @@ export default function AdminPortal() {
                   <input type="text" value={formData.subRenewal || ''} onChange={(e) => setFormData({...formData, subRenewal: e.target.value})} placeholder="Renewal Date (e.g., Jan 1, 2027)" className="w-full px-4 py-3 rounded-xl bg-[#1E293B]/5 border border-white/10 text-white" />
                 </>
               )}
+              {showModal === 'upgrade' && upgradeSchool && (
+                <>
+                  <div className="text-center mb-4">
+                    <h3 className="text-xl font-bold text-white">{upgradeSchool.name}</h3>
+                    <p className="text-slate-400">{upgradeSchool.type}</p>
+                  </div>
+                  <label className="text-slate-300 text-sm">Select Plan</label>
+                  <select value={upgradePlan} onChange={(e) => setUpgradePlan(e.target.value as 'monthly' | 'quarterly' | 'annual')} className="w-full px-4 py-3 rounded-xl bg-stone-800 border border-white/10 text-white mb-4">
+                    <option value="monthly">Monthly - {upgradeSchool.type === 'High School' ? 'R2,500/mo' : 'R1,500/mo'}</option>
+                    <option value="quarterly">Quarterly - {upgradeSchool.type === 'High School' ? 'R7,000/quarter' : 'R4,000/quarter'}</option>
+                    <option value="annual">Annual - {upgradeSchool.type === 'High School' ? 'R25,000/year' : 'R14,000/year'}</option>
+                  </select>
+                  <label className="text-slate-300 text-sm">Start Date</label>
+                  <input type="date" value={upgradeStartDate} onChange={(e) => setUpgradeStartDate(e.target.value)} className="w-full px-4 py-3 rounded-xl bg-[#1E293B]/5 border border-white/10 text-white" />
+                </>
+              )}
             </div>
             <div className="flex gap-3 mt-6">
-              <button onClick={() => setShowModal(null)} className="flex-1 px-4 py-3 rounded-xl bg-[#1E293B]/10 text-white hover:bg-[#1E293B]/20">Cancel</button>
-              <button onClick={() => handleSubmit(showModal)} className="flex-1 px-4 py-3 rounded-xl bg-cyan-600 text-white hover:bg-cyan-700">Create</button>
+              <button onClick={() => { setShowModal(null); setUpgradeSchool(null); }} className="flex-1 px-4 py-3 rounded-xl bg-[#1E293B]/10 text-white hover:bg-[#1E293B]/20">
+                {showModal === 'upgrade' ? 'Cancel' : 'Cancel'}
+              </button>
+              <button onClick={() => showModal === 'upgrade' ? handleUpgradeConfirm() : handleSubmit(showModal)} className="flex-1 px-4 py-3 rounded-xl bg-cyan-600 text-white hover:bg-cyan-700">
+                {showModal === 'upgrade' ? 'Confirm Upgrade' : 'Create'}
+              </button>
             </div>
           </div>
         </div>
