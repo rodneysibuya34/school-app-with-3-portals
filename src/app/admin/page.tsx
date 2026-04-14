@@ -248,6 +248,36 @@ export default function AdminPortal() {
     }
   };
 
+  const deleteTeacher = async (teacherId: number) => {
+    if (confirm("Are you sure you want to delete this teacher?")) {
+      try {
+        await fetch('/api/teachers', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: teacherId })
+        });
+        setTeachers(teachers.filter(t => t.id !== teacherId));
+      } catch (error) {
+        alert("Error deleting teacher");
+      }
+    }
+  };
+
+  const deleteStudent = async (studentId: number) => {
+    if (confirm("Are you sure you want to delete this student?")) {
+      try {
+        await fetch('/api/students', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: studentId })
+        });
+        setStudents(students.filter(s => s.id !== studentId));
+      } catch (error) {
+        alert("Error deleting student");
+      }
+    }
+  };
+
   const activateTrial = async (schoolId: number) => {
     const school = schools.find(s => s.id === schoolId);
     if (!school) return;
@@ -812,6 +842,7 @@ export default function AdminPortal() {
                     <th className="text-left py-3 px-4 text-slate-400">School</th>
                     <th className="text-left py-3 px-4 text-slate-400">Subject</th>
                     <th className="text-left py-3 px-4 text-slate-400">Status</th>
+                    <th className="text-left py-3 px-4 text-slate-400">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -823,6 +854,9 @@ export default function AdminPortal() {
                       <td className="py-3 px-4 text-slate-300">{teacher.subject}</td>
                       <td className="py-3 px-4">
                         <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(teacher.status)}`}>{teacher.status}</span>
+                      </td>
+                      <td className="py-3 px-4">
+                        <button onClick={() => deleteTeacher(teacher.id)} className="px-2 py-1 rounded text-xs bg-red-500/20 text-red-400 hover:bg-red-500/30">Delete</button>
                       </td>
                     </tr>
                   ))}
@@ -847,6 +881,7 @@ export default function AdminPortal() {
                     <th className="text-left py-3 px-4 text-slate-400">Grade</th>
                     <th className="text-left py-3 px-4 text-slate-400">School</th>
                     <th className="text-left py-3 px-4 text-slate-400">Status</th>
+                    <th className="text-left py-3 px-4 text-slate-400">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -858,6 +893,9 @@ export default function AdminPortal() {
                       <td className="py-3 px-4 text-slate-300">{student.school}</td>
                       <td className="py-3 px-4">
                         <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(student.status)}`}>{student.status}</span>
+                      </td>
+                      <td className="py-3 px-4">
+                        <button onClick={() => deleteStudent(student.id)} className="px-2 py-1 rounded text-xs bg-red-500/20 text-red-400 hover:bg-red-500/30">Delete</button>
                       </td>
                     </tr>
                   ))}
