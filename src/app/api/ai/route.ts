@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY;
 
 const languageNames: Record<string, string> = {
   en: "English",
@@ -50,57 +50,55 @@ Guidelines:
 - Help teachers identify knowledge gaps from student performance
 - Keep responses practical and actionable`;
 
-    if (!OPENAI_API_KEY || OPENAI_API_KEY === '') {
+    // Convert messages to Gemini format
+    const conversationHistory = messages.slice(-5).map((msg: any) => ({
+      role: msg.role === 'user' ? 'user' : 'model',
+      parts: [{ text: msg.content }]
+    }));
+
+    const systemInstruction = {
+      role: 'system' as const,
+      parts: [{ text: studentSystemPrompt }]
+    };
+
+    if (!GOOGLE_API_KEY || GOOGLE_API_KEY === '') {
       const fallbackReplies: Record<string, string> = {
         student: `Hello! I'm Geleza AI, your study assistant.
 
-Right now I'm in basic mode - I can help guide your learning in these South African languages:
-• English (English)
-• isiZulu (Zulu)
-• isiXhosa (Xhosa)
-• Afrikaans 
-• Setswana
-• siSwati (Swati)
-• isiNdebele (Ndebele)
-• Sesotho
-• Xitsonga
-• Tshivenda
+Right now I'm in basic mode. To unlock full AI assistance:
+
+1. Get a FREE Google Gemini API key at: https://aistudio.google.com/app/apikeys
+2. Sign in with Google
+3. Click "Create API Key"
+4. Copy it
+
+Add to Vercel as environment variable:
+- Name: GOOGLE_API_KEY
+- Value: (your key)
 
 **What I can help with:**
--Maths: Algebra, Geometry, Numbers, Statistics
--Sciences: Physics, Chemistry, Biology
--Languages: English, Afrikaans, Zulu, Xhosa, etc.
--Humanities: History, Geography
--Business: Accounting, Economics, Business Studies
+- Maths: Algebra, Geometry, Numbers, Statistics
+- Sciences: Physics, Chemistry, Biology
+- Languages: English, Afrikaans, Zulu, Xhosa, etc.
+- Humanities: History, Geography
+- Business: Accounting, Economics, Business Studies
 
-**How to get more help:**
-Ask me in your home language! Example: "Help me understand fractions" or "Explain photosynthesis"
-
-To unlock full AI assistance, please contact your school administrator to set up the AI.`,
+Ask in your home language! Example: "Help me understand fractions"`,
         teacher: `Hello! I'm Geleza AI, your teaching assistant.
 
-Right now I'm in basic mode - I can help with:
+To unlock full AI assistance:
 
-**Creating Tests:**
-- Suggest question types for your subject
-- Explain assessment strategies
-- Help identify common learner mistakes
+1. Get a FREE Google Gemini API key at: https://aistudio.google.com/app/apikeys
+2. Sign in with Google
+3. Click "Create API Key"  
+4. Copy it
 
-** Helping Struggling Students:**
-- Suggest intervention strategies
-- Recommend remediation approaches
-- Guide on differentiated teaching
+Add to Vercel as GOOGLE_API_KEY
 
-**Subjects I know:**
-- Mathematics, Physical Sciences, Life Sciences
-- English Home Language, Afrikaans First Additional
-- All SA Home Languages (Zulu, Xhosa, etc.)
-- Geography, History, Business Studies, Accounting
-
-**How to get more help:**
-Ask me in English! Example: "How do I assess algebraic expressions?"
-
-To unlock full AI assistance, please contact administrator to set up OpenAI.`
+**What I can help with:**
+- Creating Tests
+- Helping Struggling Students
+- All SA subjects`
       };
       
       return NextResponse.json({ 
@@ -108,35 +106,35 @@ To unlock full AI assistance, please contact administrator to set up OpenAI.`
       });
     }
 
-    console.log("OpenAI API Key exists, making request...");
+    console.log("Google Gemini API Key exists, making request...");
     
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_API_KEY}`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${OPENAI_API_KEY}`
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
-        messages: [
-          { role: 'system', content: studentSystemPrompt },
-          ...messages
-        ],
-        temperature: 0.7,
-        max_tokens: 500
+        contents: conversationHistory,
+        systemInstruction: systemInstruction,
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 500,
+          topP: 0.95,
+          topK: 40
+        }
       })
     });
 
     if (!response.ok) {
       const error = await response.json();
-      console.error("OpenAI error:", error);
+      console.error("Gemini API error:", error);
       return NextResponse.json({ 
-        reply: "AI is having issues. Please contact your administrator to check the OpenAI API settings."
+        reply: "AI is having issues. Please contact your administrator to check the Google Gemini API key."
       });
     }
 
     const data = await response.json();
-    const reply = data.choices[0]?.message?.content || "I apologize, but I couldn't generate a response.";
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "I apologize, but I couldn't generate a response.";
 
     return NextResponse.json({ reply });
   } catch (error) {
