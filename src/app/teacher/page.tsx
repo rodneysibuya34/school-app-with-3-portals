@@ -367,7 +367,9 @@ export default function TeacherPortal() {
         grade: parseInt(newHomework.grade),
         subject: newHomework.subject,
         school: loggedInTeacher.school,
-        createdBy: loggedInTeacher.name
+        createdBy: loggedInTeacher.name,
+        fileUrl: homeworkFile?.data || '',
+        fileType: homeworkFile?.type || ''
       };
       
       try {
@@ -1077,11 +1079,11 @@ export default function TeacherPortal() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm text-slate-400 mb-2">Upload File (PDF/Image)</label>
+                <label className="block text-sm text-slate-400 mb-2">Upload File (PDF, Word, Images)</label>
                 <input 
                   type="file" 
                   id="homework-file"
-                  accept="image/*,application/pdf"
+                  accept="image/*,.pdf,.doc,.docx,.txt,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                   onChange={handleFileChange}
                   className="hidden"
                 />
@@ -1514,7 +1516,7 @@ export default function TeacherPortal() {
                 <input 
                   type="file" 
                   id="exam-file"
-                  accept="image/*,application/pdf"
+                  accept="image/*,.pdf,.doc,.docx,.txt"
                   onChange={(e) => { const file = e.target.files?.[0]; if (file) { const reader = new FileReader(); reader.onloadend = () => setExamFile({ name: file.name, data: reader.result as string, type: file.type }); reader.readAsDataURL(file); }}}
                   className="hidden"
                 />
@@ -1606,7 +1608,7 @@ export default function TeacherPortal() {
                 <input 
                   type="file" 
                   id="schedule-file"
-                  accept="image/*,application/pdf"
+                  accept="image/*,.pdf,.doc,.docx,.txt"
                   onChange={(e) => { const file = e.target.files?.[0]; if (file) { const reader = new FileReader(); reader.onloadend = () => setScheduleFile({ name: file.name, data: reader.result as string, type: file.type }); reader.readAsDataURL(file); }}}
                   className="hidden"
                 />
@@ -1843,7 +1845,7 @@ export default function TeacherPortal() {
               </div>
               <div>
                 <label className="block text-sm text-slate-400 mb-2">File</label>
-                <input type="file" onChange={(e) => {
+                <input type="file" accept="image/*,.pdf,.doc,.docx,.txt" onChange={(e) => {
                   const file = e.target.files?.[0];
                   if (file) {
                     const reader = new FileReader();
