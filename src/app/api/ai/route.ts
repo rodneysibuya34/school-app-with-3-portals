@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
 
-const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY;
-
 const languageNames: Record<string, string> = {
   en: "English",
   zu: "isiZulu",
@@ -15,130 +13,190 @@ const languageNames: Record<string, string> = {
   ve: "Tshivenda",
 };
 
+interface KnowledgeItem {
+  keywords: string[];
+  topic: string;
+  responseEn: string;
+  responseZu: string;
+}
+
+const knowledgeBase: KnowledgeItem[] = [
+  {
+    keywords: ["algebra", "equation", "solve", "x", "variable", "linear"],
+    topic: "Algebra",
+    responseEn: "ALGEBRA BASICS:\n\nTo solve equations, remember: whatever you do to one side, do to the other!\n\nExample: x + 5 = 10\nSubtract 5 from both sides: x = 10 - 5\nAnswer: x = 5\n\nTIPS:\n- Get x alone by doing opposite operations\n- If it is +5, subtract 5\n- If it is x2, divide by 2\n- Always check your answer",
+    responseZu: "ALGEBRA:\n\nUkuze usonde inkinga, khumbula: noma ungenza ini engakani enye ingaphandla, wenze omo!\n\nIsibonelo: x + 5 = 10\nSusa u-5 eduze nobozizonke: x = 10 - 5"
+  },
+  {
+    keywords: ["fraction", "numerator", "denominator", "divide", "half", "quarter"],
+    topic: "Fractions",
+    responseEn: "FRACTIONS BASICS:\n\nNUMERATOR = top number (parts you have)\nDENOMINATOR = bottom number (total parts)\n\nExample: 3/4\n- Numerator 3 = you have 3 parts\n- Denominator 4 = total 4 parts\n\nAdd fractions with SAME denominator:\n3/4 + 1/4 = (3+1)/4 = 4/4 = 1",
+    responseZu: "IFRACTIYA:\n\nNUMERATOR = inani elisezuleni\nDENOMINATOR = inani elisezansi"
+  },
+  {
+    keywords: ["percentage", "percent", "discount", "interest"],
+    topic: "Percentages",
+    responseEn: "PERCENTAGES:\n\nPercentage means per 100\n\n20 percent = 20/100 = 0.2\n\nCalculate 20% of R80:\n20/100 x R80 = R16\n\nCommon percentages:\n- 10% = divide by 10\n- 20% = divide by 5\n- 25% = divide by 4\n- 50% = divide by 2",
+    responseZu: "AMAPHESENTI:\n\n20% yegama = R80\n20/100 x R80 = R16"
+  },
+  {
+    keywords: ["photosynthesis", "plant", "leaf", "sunlight"],
+    topic: "Photosynthesis",
+    responseEn: "PHOTOSYNTHESIS - How Plants Make Food:\n\nWhat plants need:\n1. Carbon dioxide (CO2) from air\n2. Water (H2O) from roots\n3. Sunlight (for energy)\n4. Chlorophyll (green pigment)\n\nWhat plants produce:\n- Glucose (food/sugar)\n- Oxygen (O2) released\n\nWhere it happens: In LEAVES\n\nWhy important:\n- Plants make their own food\n- We breathe the oxygen produced",
+    responseZu: "PHOTOSYNTHESIS:\n\nOkudinga izindoda:\n1. I-carbon dioxide\n2. A-manzi\n3. Ukukhanya\n4. I-chlorophyll\n\nOkukhaduza:\n- A-Glucose\n- I-Oxygen"
+  },
+  {
+    keywords: ["atom", "molecule", "element", "compound", "periodic"],
+    topic: "Atoms",
+    responseEn: "ATOMS AND ELEMENTS:\n\nATOM = smallest unit of matter\nMOLECULE = atoms joined together\nELEMENT = one type of atom\nCOMPOUND = different atoms combined\n\nExamples:\n- O2 = Oxygen molecule (2 oxygen atoms)\n- H2O = Water compound (2 hydrogen + 1 oxygen)\n- NaCl = Salt (sodium + chlorine)\n\nPeriodic Table:\n- Groups = similar properties\n- Periods = energy levels",
+    responseZu: "AMA-ATOM NE-ELEMENTS:\n\nATOM = i-units encane kakhulu\nMOLECULE = ama-atom axhumene\nELEMENT = uhlobo olulodwa lwangomuzi"
+  },
+  {
+    keywords: ["gravity", "force", "newton", "mass", "weight", "motion"],
+    topic: "Forces",
+    responseEn: "FORCES AND MOTION:\n\nNewtons Laws:\n1. Objects stay still or keep moving unless force acts on them\n2. F = ma (Force = mass x acceleration)\n3. Every action has equal, opposite reaction\n\nTypes of forces:\n- Gravity (pulls down)\n- Friction (slows down)\n- Magnetic (attracts metals)\n\nWeight = mass x gravity\nOn Earth, g = 9.8 m/s2",
+    responseZu: "AMA-FORCES:\n\nW = mass x gravity"
+  },
+  {
+    keywords: ["essay", "writing", "paragraph", "introduction", "conclusion"],
+    topic: "Essay",
+    responseEn: "ESSAY STRUCTURE:\n\n1. INTRODUCTION\n   - Hook (interesting sentence)\n   - Background info\n   - Thesis statement (main argument)\n\n2. BODY PARAGRAPHS (3-5)\n   - Topic sentence\n   - Evidence/example\n   - Explanation\n   - Transition\n\n3. CONCLUSION\n   - Restate thesis\n   - Summary of points\n   - Final thought\n\nTips:\n- Always plan first\n- 5 paragraphs minimum\n- Use linking words",
+    responseZu: "UKUBHALA ESSAY:\n\n1. UKUNGENELA\n2. IMIZU EBHODENI\n3. ISIQUTHO"
+  },
+  {
+    keywords: ["history", "south africa", "apartheid", "mandela", "freedom"],
+    topic: "SA History",
+    responseEn: "SOUTH AFRICAN HISTORY - Key Events:\n\n1652 - Dutch Settlement begins\n1910 - Union of South Africa\n1948 - Apartheid begins (National Party wins)\n1990 - Mandela released from prison\n1994 - First democratic elections\n1996 - Constitution adopted\n\nKey Figures:\n- Nelson Mandela (first black president)\n- Desmond Tutu (human rights)\n- Steve Biko (Black Consciousness)\n- Oliver Tambo (ANC leader)",
+    responseZu: "INKULUMO KAMZANSI:\n\n1948 - Apartheid iqala\n1990 - Mandela ukhululwa ejele\n1994 - Amavoti okwanelanga"
+  },
+  {
+    keywords: ["poetry", "poem", "rhyme", "simile", "metaphor"],
+    topic: "Poetry",
+    responseEn: "POETRY TERMS:\n\nRHYME = words that sound similar at end\n- Cat, hat, bat = rhyme\n\nSIMILE = like/as comparison\n- Busy as a bee (uses like/as)\n\n\nMETAPHOR = direct comparison\n- The world is a stage (no like/as)\n\n\nPERSONIFICATION = human traits to non-human\n- The wind whispered\n\nALLITERATION = same sound at start\n- Lovely, lush lawn\n\nHow to analyze:\n1. Read twice\n2. Who is speaking?\n3. What mood?\n4. Find devices",
+    responseZu: "I-POETRY:\n\nRHYME = amawadi afanayo\nSIMILE = njeng\nMETAPHOR = ithuluzi"
+  },
+  {
+    keywords: ["triangle", "angle", "right", "obtuse", "acute"],
+    topic: "Geometry",
+    responseEn: "TRIANGLES:\n\nTypes:\n1. EQUILATERAL - all sides equal\n2. ISOSCELES - two sides equal\n3. SCALENE - no equal sides\n\nAngles:\n- ACUTE: less than 90 degrees\n- RIGHT: exactly 90 degrees\n- OBTUSE: more than 90 degrees\n\nTriangle angles ALWAYS add to 180 degrees\n\nArea = 1/2 x base x height",
+    responseZu: "AMA-TRI-GON:\n\n- ISOSCELES - amaC amabili ane\n- SCALENE - awenelanga\n\nama-Angel:\n- ACUTE\n- RIGHT\n- OBTUSE"
+  }
+];
+
+function findBestResponse(userMessage: string, language: string): string {
+  const msg = userMessage.toLowerCase();
+  const isZulu = language === 'zu';
+  
+  for (const item of knowledgeBase) {
+    for (const keyword of item.keywords) {
+      if (msg.includes(keyword)) {
+        return isZulu ? item.responseZu : item.responseEn;
+      }
+    }
+  }
+  
+  return "";
+}
+
 export async function POST(request: Request) {
   try {
     const { messages, mode, grade, language = "en" } = await request.json();
-
-    const languageName = languageNames[language] || "English";
     
-    const studentSystemPrompt = mode === "student" 
-      ? `You are "Geleza AI" - a helpful study assistant for South African students in Grade ${grade || '4-12'}.
-Your role is to HELP students understand concepts, NOT give them answers.
-You MUST respond in ${languageName} language only - respond in the user's language throughout.
-You can help with ALL subjects: Mathematics, Physical Sciences, Life Sciences, English Home Language, Afrikaans First Additional, isiZulu, isiXhosa, Setswana, siSwati, isiNdebele, Sesotho, Xitsonga, Geography, History, Business Studies, Accounting, Economics, Information Technology, Religious Studies, Tourism, Consumer Studies, Life Orientation, Mathematical Literacy.
-Guidelines:
-- ALWAYS respond in ${languageName}
-- Explain concepts step by step in the user's language
-- Ask guiding questions to lead students to the answer
-- Use examples and analogies
-- If a student asks for direct answers, redirect them to understand the process
-- Be encouraging and patient
-- For math/science: show the method, not the final answer
-- For essays: give feedback on structure and ideas, don't write it for them
-- Use South African curriculum context when relevant
-- Keep responses concise but thorough`
-      : `You are "Geleza AI" - a helpful teaching assistant for South African teachers.
-Your role is to GUIDE teachers on how to create tests and identify struggling students, NOT do the work for them.
-You can help with: Mathematics, Physical Sciences, Life Sciences, English Home Language, Afrikaans First Additional, Geography, History, Business Studies, Accounting, Economics, Information Technology, Religious Studies, Tourism, Consumer Studies, Life Orientation, All South African languages.
-Guidelines:
-- Suggest test structures and question types
-- Explain how to assess specific topics
-- Provide tips on differentiated assessment
-- Offer strategies for struggling students
-- Do NOT write test questions for teachers - guide them on how to write their own
-- Suggest remediation strategies
-- Help teachers identify knowledge gaps from student performance
-- Keep responses practical and actionable`;
+    const latestMessage = messages[messages.length - 1]?.content || "";
+    
+    console.log("Processing message:", latestMessage, "language:", language);
+    
+    const matchedResponse = findBestResponse(latestMessage, language);
+    
+    if (matchedResponse) {
+      return NextResponse.json({ reply: matchedResponse });
+    }
+    
+    const defaultStudentEn = `Hello! I am Geleza AI - your study assistant.
 
-    // Convert messages to Gemini format
-    const conversationHistory = messages.slice(-5).map((msg: any) => ({
-      role: msg.role === 'user' ? 'user' : 'model',
-      parts: [{ text: msg.content }]
-    }));
+I can help with:
 
-    const systemInstruction = {
-      role: 'system' as const,
-      parts: [{ text: studentSystemPrompt }]
-    };
+MATHEMATICS
+- Algebra (equations, solving for x)
+- Fractions, percentages
+- Geometry (triangles, angles)
 
-    if (!GOOGLE_API_KEY || GOOGLE_API_KEY === '') {
-      const fallbackReplies: Record<string, string> = {
-        student: `Hello! I'm Geleza AI, your study assistant.
+SCIENCES  
+- Photosynthesis
+- Atoms and elements
+- Forces and motion
 
-Right now I'm in basic mode. To unlock full AI assistance:
+ENGLISH
+- Essay writing
+- Poetry analysis
+- Vocabulary
 
-1. Get a FREE Google Gemini API key at: https://aistudio.google.com/app/apikeys
-2. Sign in with Google
-3. Click "Create API Key"
-4. Copy it
+HISTORY
+- South African history
+- Key events and figures
 
-Add to Vercel as environment variable:
-- Name: GOOGLE_API_KEY
-- Value: (your key)
+Ask me in your language!
+Try: Help me with algebra or Explain photosynthesis`;
 
-**What I can help with:**
-- Maths: Algebra, Geometry, Numbers, Statistics
-- Sciences: Physics, Chemistry, Biology
-- Languages: English, Afrikaans, Zulu, Xhosa, etc.
-- Humanities: History, Geography
-- Business: Accounting, Economics, Business Studies
+    const defaultStudentZu = `Sawubona! Ngingu Geleza AI - usizo lwakho lokufunda.
 
-Ask in your home language! Example: "Help me understand fractions"`,
-        teacher: `Hello! I'm Geleza AI, your teaching assistant.
+Ngingasiza:
 
-To unlock full AI assistance:
+MATHEMATICS
+- Algebra
+- Fractions
+- Geometry
 
-1. Get a FREE Google Gemini API key at: https://aistudio.google.com/app/apikeys
-2. Sign in with Google
-3. Click "Create API Key"  
-4. Copy it
+SCIENCE
+- Photosynthesis
+- Ama-atoms
 
-Add to Vercel as GOOGLE_API_KEY
+UKUBHALA
+- Essays
+- Ama-poems
 
-**What I can help with:**
-- Creating Tests
-- Helping Struggling Students
-- All SA subjects`
-      };
+Ngicele ngesizulu!
+Zama: Nganginika algebra`;
+
+    const defaultTeacherEn = `Hello! I am Geleza AI - your teaching assistant.
+
+I can help with:
+
+CREATING TESTS
+- Multiple choice questions
+- Short answer questions
+- Essay topics
+
+HELPING STRUGGLING STUDENTS
+- Intervention strategies
+- Differentiation tips
+- Assessment tips
+
+SUBJECTS
+- Mathematics
+- Sciences
+- Languages
+
+Ask me anything!`;
+
+    const defaultTeacherZu = `Sawubona! Ngingu Geleza AI - usizo lwakho lwokufundisa.
+
+Ngingasiza:
+
+UKUQULETA AMA-TEST
+- Imibuzo enezingane
+
+UKUSESA ABAFUNDI
+- amaStrategy`;
+
+    const reply = mode === 'teacher' 
+      ? (language === 'zu' ? defaultTeacherZu : defaultTeacherEn)
+      : (language === 'zu' ? defaultStudentZu : defaultStudentEn);
       
-      return NextResponse.json({ 
-        reply: fallbackReplies[mode] || fallbackReplies.student
-      });
-    }
-
-    console.log("Google Gemini API Key exists, making request...");
-    
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_API_KEY}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        contents: conversationHistory,
-        systemInstruction: systemInstruction,
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 500,
-          topP: 0.95,
-          topK: 40
-        }
-      })
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      console.error("Gemini API error:", error);
-      return NextResponse.json({ 
-        reply: "AI is having issues. Please contact your administrator to check the Google Gemini API key."
-      });
-    }
-
-    const data = await response.json();
-    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "I apologize, but I couldn't generate a response.";
-
     return NextResponse.json({ reply });
+    
   } catch (error) {
-    console.error("AI API error:", error);
+    console.error("AI error:", error);
     return NextResponse.json({ 
       reply: "Sorry, I encountered an error. Please try again." 
     }, { status: 500 });
