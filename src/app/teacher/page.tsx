@@ -981,7 +981,6 @@ export default function TeacherPortal() {
                   type="file" 
                   id="homework-file"
                   accept="image/*,application/pdf"
-                  capture="environment"
                   onChange={handleFileChange}
                   className="hidden"
                 />
@@ -1415,7 +1414,6 @@ export default function TeacherPortal() {
                   type="file" 
                   id="exam-file"
                   accept="image/*,application/pdf"
-                  capture="environment"
                   onChange={(e) => { const file = e.target.files?.[0]; if (file) { const reader = new FileReader(); reader.onloadend = () => setExamFile({ name: file.name, data: reader.result as string, type: file.type }); reader.readAsDataURL(file); }}}
                   className="hidden"
                 />
@@ -1508,7 +1506,6 @@ export default function TeacherPortal() {
                   type="file" 
                   id="schedule-file"
                   accept="image/*,application/pdf"
-                  capture="environment"
                   onChange={(e) => { const file = e.target.files?.[0]; if (file) { const reader = new FileReader(); reader.onloadend = () => setScheduleFile({ name: file.name, data: reader.result as string, type: file.type }); reader.readAsDataURL(file); }}}
                   className="hidden"
                 />
