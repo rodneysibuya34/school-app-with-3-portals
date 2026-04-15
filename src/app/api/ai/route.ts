@@ -51,8 +51,60 @@ Guidelines:
 - Keep responses practical and actionable`;
 
     if (!OPENAI_API_KEY) {
+      const fallbackReplies: Record<string, string> = {
+        student: `Hello! I'm Geleza AI, your study assistant.
+
+Right now I'm in basic mode - I can help guide your learning in these South African languages:
+• English (English)
+• isiZulu (Zulu)
+• isiXhosa (Xhosa)
+• Afrikaans 
+• Setswana
+• siSwati (Swati)
+• isiNdebele (Ndebele)
+• Sesotho
+• Xitsonga
+• Tshivenda
+
+**What I can help with:**
+-Maths: Algebra, Geometry, Numbers, Statistics
+-Sciences: Physics, Chemistry, Biology
+-Languages: English, Afrikaans, Zulu, Xhosa, etc.
+-Humanities: History, Geography
+-Business: Accounting, Economics, Business Studies
+
+**How to get more help:**
+Ask me in your home language! Example: "Help me understand fractions" or "Explain photosynthesis"
+
+To unlock full AI assistance, please contact your school administrator to set up the AI.`,
+        teacher: `Hello! I'm Geleza AI, your teaching assistant.
+
+Right now I'm in basic mode - I can help with:
+
+**Creating Tests:**
+- Suggest question types for your subject
+- Explain assessment strategies
+- Help identify common learner mistakes
+
+** Helping Struggling Students:**
+- Suggest intervention strategies
+- Recommend remediation approaches
+- Guide on differentiated teaching
+
+**Subjects I know:**
+- Mathematics, Physical Sciences, Life Sciences
+- English Home Language, Afrikaans First Additional
+- All SA Home Languages (Zulu, Xhosa, etc.)
+- Geography, History, Business Studies, Accounting
+
+**How to get more help:**
+Ask me in English! Example: "How do I assess algebraic expressions?"
+
+To unlock full AI assistance, please contact administrator to set up OpenAI.`
+      };
+      
       return NextResponse.json({ 
-        reply: "AI is currently in basic mode. For full AI assistance, please contact the administrator to set up OpenAI."
+        reply: fallbackReplies[mode] || fallbackReplies.student
       });
     }
 
