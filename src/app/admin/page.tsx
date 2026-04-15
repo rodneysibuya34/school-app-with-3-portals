@@ -679,19 +679,21 @@ const [upgradeStartDate, setUpgradeStartDate] = useState('');
         </div>
       </aside>
 
-      <main className="md:ml-64 p-4 md:p-8 w-full">
-        <div className="md:hidden flex items-center justify-between mb-4">
-          <button onClick={() => setMobileMenuOpen(true)} className="p-2 rounded-lg bg-stone-800 text-white">
+      <main className="md:ml-64 p-3 md:p-8 w-full">
+        <div className="md:hidden flex items-center justify-between mb-4 p-2 bg-stone-800 rounded-lg">
+          <button onClick={() => setMobileMenuOpen(true)} className="p-2 rounded-lg text-white flex items-center gap-2">
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
+            <span className="font-semibold">Menu</span>
           </button>
+          <span className="text-white font-semibold">{navItems.find(n => n.label.toLowerCase() === activeTab)?.label || 'Admin'}</span>
         </div>
         
         {activeTab === "dashboard" && (
           <div>
-            <h1 className="text-3xl font-bold text-white mb-6">Dashboard</h1>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <h1 className="text-2xl md:text-3xl font-bold text-white mb-4 md:mb-6">Dashboard</h1>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
               <div className="p-6 rounded-2xl bg-[#1E293B]/5 border border-white/10">
                 <p className="text-3xl font-bold text-white">{schools.length}</p>
                 <p className="text-slate-400 text-sm">Schools</p>
