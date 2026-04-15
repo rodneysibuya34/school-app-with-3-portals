@@ -50,7 +50,7 @@ Guidelines:
 - Help teachers identify knowledge gaps from student performance
 - Keep responses practical and actionable`;
 
-    if (!OPENAI_API_KEY) {
+    if (!OPENAI_API_KEY || OPENAI_API_KEY === '') {
       const fallbackReplies: Record<string, string> = {
         student: `Hello! I'm Geleza AI, your study assistant.
 
@@ -108,6 +108,8 @@ To unlock full AI assistance, please contact administrator to set up OpenAI.`
       });
     }
 
+    console.log("OpenAI API Key exists, making request...");
+    
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -129,7 +131,7 @@ To unlock full AI assistance, please contact administrator to set up OpenAI.`
       const error = await response.json();
       console.error("OpenAI error:", error);
       return NextResponse.json({ 
-        reply: "Sorry, I encountered an error. Please try again." 
+        reply: "AI is having issues. Please contact your administrator to check the OpenAI API settings."
       });
     }
 
