@@ -436,5 +436,7 @@ module.exports = {
   getChat,
   addChatMessage,
   deleteChatMessage,
-  updateChatMessage
+  updateChatMessage,
+  getData,
+  clearCache
 };

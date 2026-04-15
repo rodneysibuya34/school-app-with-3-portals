@@ -529,7 +529,11 @@ export default function StudentPortal() {
     }
 
     async function fetchContentData() {
-      if (!parsedStudent?.school) return;
+      if (!parsedStudent?.school) {
+        console.log("No school found for student");
+        return;
+      }
+      console.log("Fetching content for school:", parsedStudent.school, "grade:", parsedStudent.grade);
       try {
         const [hwRes, testsRes, smRes, examRes, weeklyRes, annRes, coursesRes] = await Promise.all([
           fetch('/api/homework?school=' + encodeURIComponent(parsedStudent.school)),

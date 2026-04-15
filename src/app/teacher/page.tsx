@@ -349,6 +349,7 @@ export default function TeacherPortal() {
 
   const handleAddHomework = async () => {
     if (newHomework.title && newHomework.dueDate && newHomework.grade && newHomework.subject && loggedInTeacher) {
+      console.log("Creating homework for school:", loggedInTeacher.school);
       try {
         const response = await fetch('/api/homework', {
           method: 'POST',
@@ -364,13 +365,17 @@ export default function TeacherPortal() {
           })
         });
         
+        console.log("Response status:", response.status);
+        
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+          console.log("Error response:", errorData);
           alert(`Error: ${errorData.error || 'Failed to create homework'}`);
           return;
         }
         
         const hw = await response.json();
+        console.log("Created homework:", hw);
         setHomeworkList([...homeworkList, hw]);
         alert("Homework created successfully!");
       } catch (error) {
