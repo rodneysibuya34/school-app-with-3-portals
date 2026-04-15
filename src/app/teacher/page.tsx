@@ -74,22 +74,29 @@ interface StudyMaterial {
   id: number;
   title: string;
   subject: string;
-  description: string;
-  fileUrl: string;
-  fileType: string;
+  description?: string;
+  fileUrl?: string;
+  fileType?: string;
   grade: number;
+  school?: string;
+  createdBy?: string;
+  createdAt?: number;
 }
 
 interface Test {
   id: number;
   title: string;
-  description: string;
-  dueDate: string;
+  description?: string;
+  dueDate?: string;
+  date?: string;
   grade: number;
   subject: string;
   questions: Question[];
   published: boolean;
   duration?: number;
+  school?: string;
+  createdBy?: string;
+  createdAt?: number;
 }
 
 interface Question {
@@ -185,7 +192,7 @@ export default function TeacherPortal() {
   const [newQuestion, setNewQuestion] = useState({ text: "", type: "mcq" as "mcq" | "truefalse", options: ["", "", "", ""], correctAnswer: "" });
   const [bulkQuestionCount, setBulkQuestionCount] = useState(10);
   const [bulkQuestions, setBulkQuestions] = useState<Question[]>([]);
-  const [examTimetable, setExamTimetable] = useState<{ id?: number; date: string; exam: string; time: string; venue: string; fileUrl?: string; fileType?: string }[]>(() => {
+  const [examTimetable, setExamTimetable] = useState<{ id?: number; date: string; exam: string; time: string; venue: string; fileUrl?: string; fileType?: string; title?: string; subject?: string; grade?: number; school?: string; createdBy?: string; createdAt?: number }[]>(() => {
     if (typeof window === 'undefined') return [];
     const stored = localStorage.getItem("examTimetableData");
     return stored ? JSON.parse(stored) : [];
@@ -404,26 +411,44 @@ export default function TeacherPortal() {
 
   const handleAddStudyMaterial = async () => {
     if (newStudyMaterial.title && newStudyMaterial.subject && newStudyMaterial.grade && loggedInTeacher) {
+      const smData = {
+        title: newStudyMaterial.title,
+        description: newStudyMaterial.description,
+        subject: newStudyMaterial.subject,
+        grade: parseInt(newStudyMaterial.grade),
+        school: loggedInTeacher.school,
+        createdBy: loggedInTeacher.name,
+        fileUrl: studyMaterialFile?.data,
+        fileType: studyMaterialFile?.type
+      };
+      
       try {
         const response = await fetch('/api/study-materials', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            title: newStudyMaterial.title,
-            description: newStudyMaterial.description,
-            subject: newStudyMaterial.subject,
-            grade: parseInt(newStudyMaterial.grade),
-            school: loggedInTeacher.school,
-            createdBy: loggedInTeacher.name
-          })
+          body: JSON.stringify(smData)
         });
+        
         if (response.ok) {
           const sm = await response.json();
-          setStudyMaterialsList([...studyMaterialsList, sm]);
+          const updatedList = [...studyMaterialsList, sm];
+          setStudyMaterialsList(updatedList);
+          localStorage.setItem("studyMaterialsData", JSON.stringify(updatedList));
+          alert("Study material created successfully!");
+        } else {
+          const localSm = { id: Date.now(), ...smData, createdAt: Date.now() };
+          const updatedList = [...studyMaterialsList, localSm];
+          setStudyMaterialsList(updatedList);
+          localStorage.setItem("studyMaterialsData", JSON.stringify(updatedList));
+          alert("Saved locally!");
         }
       } catch (error) {
         console.error("Error adding study material:", error);
-        alert("Error creating study material. Please try again.");
+        const localSm = { id: Date.now(), ...smData, createdAt: Date.now() };
+        const updatedList = [...studyMaterialsList, localSm];
+        setStudyMaterialsList(updatedList);
+        localStorage.setItem("studyMaterialsData", JSON.stringify(updatedList));
+        alert("Saved locally!");
       }
       setNewStudyMaterial({ title: "", subject: "", description: "", grade: "" });
       setStudyMaterialFile(null);
@@ -439,27 +464,46 @@ export default function TeacherPortal() {
 
     const handleAddTest = async () => {
       if (newTest.title && newTest.dueDate && newTest.grade && newTest.subject && loggedInTeacher) {
+        const testData = {
+          title: newTest.title,
+          subject: newTest.subject,
+          grade: parseInt(newTest.grade),
+          school: loggedInTeacher.school,
+          date: newTest.dueDate,
+          duration: newTest.duration,
+          createdBy: loggedInTeacher.name,
+          description: newTest.description,
+          questions: [],
+          published: false
+        };
+        
         try {
           const response = await fetch('/api/tests', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              title: newTest.title,
-              subject: newTest.subject,
-              grade: parseInt(newTest.grade),
-              school: loggedInTeacher.school,
-              date: newTest.dueDate,
-              duration: newTest.duration,
-              createdBy: loggedInTeacher.name
-            })
+            body: JSON.stringify(testData)
           });
+          
           if (response.ok) {
             const test = await response.json();
-            setTestList([...testList, test]);
+            const updatedList = [...testList, test as unknown as Test];
+            setTestList(updatedList);
+            localStorage.setItem("testData", JSON.stringify(updatedList));
+            alert("Test created successfully!");
+          } else {
+            const localTest = { id: Date.now(), ...testData, createdAt: Date.now() } as unknown as Test;
+            const updatedList = [...testList, localTest];
+            setTestList(updatedList);
+            localStorage.setItem("testData", JSON.stringify(updatedList));
+            alert("Saved locally!");
           }
         } catch (error) {
           console.error("Error adding test:", error);
-          alert("Error creating test. Please try again.");
+          const localTest = { id: Date.now(), ...testData, createdAt: Date.now() } as unknown as Test;
+          const updatedList = [...testList, localTest];
+          setTestList(updatedList);
+          localStorage.setItem("testData", JSON.stringify(updatedList));
+          alert("Saved locally!");
         }
         setNewTest({ title: "", description: "", dueDate: "", grade: "", subject: "", duration: "60" });
         setShowTestModal(false);
@@ -539,24 +583,43 @@ export default function TeacherPortal() {
 
   const handleAddAnnouncement = async () => {
     if (newAnnouncement.title && newAnnouncement.content && loggedInTeacher) {
+      const annData = {
+        title: newAnnouncement.title,
+        message: newAnnouncement.content,
+        content: newAnnouncement.content,
+        school: loggedInTeacher.school,
+        createdBy: loggedInTeacher.name,
+        priority: newAnnouncement.priority,
+        date: new Date().toISOString().split('T')[0]
+      };
+      
       try {
         const response = await fetch('/api/announcements', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            title: newAnnouncement.title,
-            message: newAnnouncement.content,
-            school: loggedInTeacher.school,
-            createdBy: loggedInTeacher.name
-          })
+          body: JSON.stringify(annData)
         });
+        
         if (response.ok) {
           const ann = await response.json();
-          setAnnouncements([...announcements, ann]);
+          const updatedList = [...announcements, ann];
+          setAnnouncements(updatedList);
+          localStorage.setItem("announcementsData", JSON.stringify(updatedList));
+          alert("Announcement posted successfully!");
+        } else {
+          const localAnn = { id: Date.now(), ...annData, createdAt: Date.now() };
+          const updatedList = [...announcements, localAnn];
+          setAnnouncements(updatedList);
+          localStorage.setItem("announcementsData", JSON.stringify(updatedList));
+          alert("Saved locally!");
         }
       } catch (error) {
         console.error("Error adding announcement:", error);
-        alert("Error creating announcement. Please try again.");
+        const localAnn = { id: Date.now(), ...annData, createdAt: Date.now() };
+        const updatedList = [...announcements, localAnn];
+        setAnnouncements(updatedList);
+        localStorage.setItem("announcementsData", JSON.stringify(updatedList));
+        alert("Saved locally!");
       }
       setNewAnnouncement({ title: "", content: "", priority: "normal" });
       setShowAnnouncementModal(false);
@@ -655,28 +718,47 @@ export default function TeacherPortal() {
 
   const handleAddExam = async () => {
     if (newExam.date && newExam.exam && newExam.time && newExam.venue && loggedInTeacher) {
+      const examData = {
+        title: newExam.exam,
+        subject: newExam.exam,
+        exam: newExam.exam,
+        grade: parseInt(newExam.grade || "10"),
+        school: loggedInTeacher.school,
+        date: newExam.date,
+        time: newExam.time,
+        venue: newExam.venue,
+        createdBy: loggedInTeacher.name,
+        fileUrl: examFile?.data,
+        fileType: examFile?.type
+      };
+      
       try {
         const response = await fetch('/api/exam-timetable', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            title: newExam.exam,
-            subject: newExam.exam,
-            grade: parseInt(newExam.grade || "10"),
-            school: loggedInTeacher.school,
-            date: newExam.date,
-            time: newExam.time,
-            venue: newExam.venue,
-            createdBy: loggedInTeacher.name
-          })
+          body: JSON.stringify(examData)
         });
+        
         if (response.ok) {
           const exam = await response.json();
-          setExamTimetable([...examTimetable, exam]);
+          const updatedList = [...examTimetable, exam];
+          setExamTimetable(updatedList);
+          localStorage.setItem("examTimetableData", JSON.stringify(updatedList));
+          alert("Exam created successfully!");
+        } else {
+          const localExam = { id: Date.now(), ...examData, createdAt: Date.now() };
+          const updatedList = [...examTimetable, localExam];
+          setExamTimetable(updatedList);
+          localStorage.setItem("examTimetableData", JSON.stringify(updatedList));
+          alert("Saved locally!");
         }
       } catch (error) {
         console.error("Error adding exam:", error);
-        alert("Error creating exam. Please try again.");
+        const localExam = { id: Date.now(), ...examData, createdAt: Date.now() };
+        const updatedList = [...examTimetable, localExam];
+        setExamTimetable(updatedList);
+        localStorage.setItem("examTimetableData", JSON.stringify(updatedList));
+        alert("Saved locally!");
       }
       setNewExam({ date: "", exam: "", time: "", venue: "", grade: "" });
       setExamFile(null);
@@ -710,26 +792,45 @@ export default function TeacherPortal() {
 
   const handleAddSchedule = async () => {
     if (newSchedule.subject && newSchedule.grade && loggedInTeacher) {
+      const scheduleData = {
+        grade: parseInt(newSchedule.grade),
+        school: loggedInTeacher.school,
+        dayOfWeek: newSchedule.day,
+        subject: newSchedule.subject,
+        time: newSchedule.time,
+        teacher: loggedInTeacher.name,
+        day: newSchedule.day,
+        fileUrl: scheduleFile?.data,
+        fileType: scheduleFile?.type
+      };
+      
       try {
         const response = await fetch('/api/weekly-timetable', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            grade: parseInt(newSchedule.grade),
-            school: loggedInTeacher.school,
-            dayOfWeek: newSchedule.day,
-            subject: newSchedule.subject,
-            time: newSchedule.time,
-            teacher: loggedInTeacher.name
-          })
+          body: JSON.stringify(scheduleData)
         });
+        
         if (response.ok) {
           const schedule = await response.json();
-          setWeeklyTimetable([...weeklyTimetable, schedule]);
+          const updatedList = [...weeklyTimetable, schedule];
+          setWeeklyTimetable(updatedList);
+          localStorage.setItem("weeklyTimetableData", JSON.stringify(updatedList));
+          alert("Schedule created successfully!");
+        } else {
+          const localSchedule = { id: Date.now(), ...scheduleData, createdAt: Date.now() };
+          const updatedList = [...weeklyTimetable, localSchedule];
+          setWeeklyTimetable(updatedList);
+          localStorage.setItem("weeklyTimetableData", JSON.stringify(updatedList));
+          alert("Saved locally!");
         }
       } catch (error) {
         console.error("Error adding schedule:", error);
-        alert("Error creating schedule. Please try again.");
+        const localSchedule = { id: Date.now(), ...scheduleData, createdAt: Date.now() };
+        const updatedList = [...weeklyTimetable, localSchedule];
+        setWeeklyTimetable(updatedList);
+        localStorage.setItem("weeklyTimetableData", JSON.stringify(updatedList));
+        alert("Saved locally!");
       }
       setNewSchedule({ day: "Monday", time: "08:00 - 09:00", subject: "", grade: "" });
       setScheduleFile(null);

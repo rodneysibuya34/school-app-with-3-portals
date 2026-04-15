@@ -573,6 +573,22 @@ export default function StudentPortal() {
           const localTests = localStorage.getItem("testData");
           if (localTests) testsData = JSON.parse(localTests);
         }
+        if (smData.length === 0) {
+          const localSm = localStorage.getItem("studyMaterialsData");
+          if (localSm) smData = JSON.parse(localSm);
+        }
+        if (examData.length === 0) {
+          const localExam = localStorage.getItem("examTimetableData");
+          if (localExam) examData = JSON.parse(localExam);
+        }
+        if (weeklyData.length === 0) {
+          const localWeekly = localStorage.getItem("weeklyTimetableData");
+          if (localWeekly) weeklyData = JSON.parse(localWeekly);
+        }
+        if (annData.length === 0) {
+          const localAnn = localStorage.getItem("announcementsData");
+          if (localAnn) annData = JSON.parse(localAnn);
+        }
         
         setHomeworkList(hwData);
         setTestList(testsData);
