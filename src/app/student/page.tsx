@@ -565,29 +565,42 @@ export default function StudentPortal() {
         
         console.log("API Response - homework:", hwData.length, "tests:", testsData.length);
         
-        if (hwData.length === 0) {
-          const localHw = localStorage.getItem("homeworkData");
-          if (localHw) hwData = JSON.parse(localHw);
+        const localHw = localStorage.getItem("homeworkData");
+        const localTests = localStorage.getItem("testData");
+        const localSm = localStorage.getItem("studyMaterialsData");
+        const localExam = localStorage.getItem("examTimetableData");
+        const localWeekly = localStorage.getItem("weeklyTimetableData");
+        const localAnn = localStorage.getItem("announcementsData");
+        
+        if (localHw) {
+          const localHwData = JSON.parse(localHw);
+          const hwIds = new Set(hwData.map((h: any) => h.id));
+          localHwData.forEach((h: any) => { if (!hwIds.has(h.id)) hwData.push(h); });
         }
-        if (testsData.length === 0) {
-          const localTests = localStorage.getItem("testData");
-          if (localTests) testsData = JSON.parse(localTests);
+        if (localTests) {
+          const localTestsData = JSON.parse(localTests);
+          const testIds = new Set(testsData.map((t: any) => t.id));
+          localTestsData.forEach((t: any) => { if (!testIds.has(t.id)) testsData.push(t); });
         }
-        if (smData.length === 0) {
-          const localSm = localStorage.getItem("studyMaterialsData");
-          if (localSm) smData = JSON.parse(localSm);
+        if (localSm) {
+          const localSmData = JSON.parse(localSm);
+          const smIds = new Set(smData.map((s: any) => s.id));
+          localSmData.forEach((s: any) => { if (!smIds.has(s.id)) smData.push(s); });
         }
-        if (examData.length === 0) {
-          const localExam = localStorage.getItem("examTimetableData");
-          if (localExam) examData = JSON.parse(localExam);
+        if (localExam) {
+          const localExamData = JSON.parse(localExam);
+          const examIds = new Set(examData.map((e: any) => e.id));
+          localExamData.forEach((e: any) => { if (!examIds.has(e.id)) examData.push(e); });
         }
-        if (weeklyData.length === 0) {
-          const localWeekly = localStorage.getItem("weeklyTimetableData");
-          if (localWeekly) weeklyData = JSON.parse(localWeekly);
+        if (localWeekly) {
+          const localWeeklyData = JSON.parse(localWeekly);
+          const weeklyIds = new Set(weeklyData.map((w: any) => w.id));
+          localWeeklyData.forEach((w: any) => { if (!weeklyIds.has(w.id)) weeklyData.push(w); });
         }
-        if (annData.length === 0) {
-          const localAnn = localStorage.getItem("announcementsData");
-          if (localAnn) annData = JSON.parse(localAnn);
+        if (localAnn) {
+          const localAnnData = JSON.parse(localAnn);
+          const annIds = new Set(annData.map((a: any) => a.id));
+          localAnnData.forEach((a: any) => { if (!annIds.has(a.id)) annData.push(a); });
         }
         
         setHomeworkList(hwData);
