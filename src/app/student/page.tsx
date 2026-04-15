@@ -575,32 +575,32 @@ export default function StudentPortal() {
         if (localHw) {
           const localHwData = JSON.parse(localHw);
           const hwIds = new Set(hwData.map((h: any) => h.id));
-          localHwData.forEach((h: any) => { if (!hwIds.has(h.id)) hwData.push(h); });
+          localHwData.filter((h: any) => h.school === parsedStudent.school && h.grade === parsedStudent.grade).forEach((h: any) => { if (!hwIds.has(h.id)) hwData.push(h); });
         }
         if (localTests) {
           const localTestsData = JSON.parse(localTests);
           const testIds = new Set(testsData.map((t: any) => t.id));
-          localTestsData.forEach((t: any) => { if (!testIds.has(t.id)) testsData.push(t); });
+          localTestsData.filter((t: any) => t.school === parsedStudent.school && t.grade === parsedStudent.grade).forEach((t: any) => { if (!testIds.has(t.id)) testsData.push(t); });
         }
         if (localSm) {
           const localSmData = JSON.parse(localSm);
           const smIds = new Set(smData.map((s: any) => s.id));
-          localSmData.forEach((s: any) => { if (!smIds.has(s.id)) smData.push(s); });
+          localSmData.filter((s: any) => s.school === parsedStudent.school && s.grade === parsedStudent.grade).forEach((s: any) => { if (!smIds.has(s.id)) smData.push(s); });
         }
         if (localExam) {
           const localExamData = JSON.parse(localExam);
           const examIds = new Set(examData.map((e: any) => e.id));
-          localExamData.forEach((e: any) => { if (!examIds.has(e.id)) examData.push(e); });
+          localExamData.filter((e: any) => e.school === parsedStudent.school && e.grade === parsedStudent.grade).forEach((e: any) => { if (!examIds.has(e.id)) examData.push(e); });
         }
         if (localWeekly) {
           const localWeeklyData = JSON.parse(localWeekly);
           const weeklyIds = new Set(weeklyData.map((w: any) => w.id));
-          localWeeklyData.forEach((w: any) => { if (!weeklyIds.has(w.id)) weeklyData.push(w); });
+          localWeeklyData.filter((w: any) => w.school === parsedStudent.school && w.grade === parsedStudent.grade).forEach((w: any) => { if (!weeklyIds.has(w.id)) weeklyData.push(w); });
         }
         if (localAnn) {
           const localAnnData = JSON.parse(localAnn);
           const annIds = new Set(annData.map((a: any) => a.id));
-          localAnnData.forEach((a: any) => { if (!annIds.has(a.id)) annData.push(a); });
+          localAnnData.filter((a: any) => a.school === parsedStudent.school).forEach((a: any) => { if (!annIds.has(a.id)) annData.push(a); });
         }
         
         setHomeworkList(hwData);

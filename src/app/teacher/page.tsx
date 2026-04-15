@@ -291,22 +291,22 @@ export default function TeacherPortal() {
         if (localSm) {
           const localSmData = JSON.parse(localSm);
           const smIds = new Set(smData.map((s: any) => s.id));
-          localSmData.forEach((s: any) => { if (!smIds.has(s.id)) smData.push(s); });
+          localSmData.filter((s: any) => s.school === loggedInTeacher.school).forEach((s: any) => { if (!smIds.has(s.id)) smData.push(s); });
         }
         if (localExam) {
           const localExamData = JSON.parse(localExam);
           const examIds = new Set(examData.map((e: any) => e.id));
-          localExamData.forEach((e: any) => { if (!examIds.has(e.id)) examData.push(e); });
+          localExamData.filter((e: any) => e.school === loggedInTeacher.school).forEach((e: any) => { if (!examIds.has(e.id)) examData.push(e); });
         }
         if (localWeekly) {
           const localWeeklyData = JSON.parse(localWeekly);
           const weeklyIds = new Set(weeklyData.map((w: any) => w.id));
-          localWeeklyData.forEach((w: any) => { if (!weeklyIds.has(w.id)) weeklyData.push(w); });
+          localWeeklyData.filter((w: any) => w.school === loggedInTeacher.school).forEach((w: any) => { if (!weeklyIds.has(w.id)) weeklyData.push(w); });
         }
         if (localAnn) {
           const localAnnData = JSON.parse(localAnn);
           const annIds = new Set(annData.map((a: any) => a.id));
-          localAnnData.forEach((a: any) => { if (!annIds.has(a.id)) annData.push(a); });
+          localAnnData.filter((a: any) => a.school === loggedInTeacher.school).forEach((a: any) => { if (!annIds.has(a.id)) annData.push(a); });
         }
         
         setHomeworkList(Array.isArray(hwData) ? hwData : []);
