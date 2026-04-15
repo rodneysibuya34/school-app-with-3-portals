@@ -531,6 +531,8 @@ export default function StudentPortal() {
     async function fetchContentData() {
       if (!parsedStudent?.school) {
         console.log("No school found for student");
+        const localHw = localStorage.getItem("homeworkData");
+        if (localHw) setHomeworkList(JSON.parse(localHw).filter((h: any) => h.grade === parsedStudent.grade));
         return;
       }
       console.log("Fetching content for school:", parsedStudent.school, "grade:", parsedStudent.grade);
@@ -545,22 +547,40 @@ export default function StudentPortal() {
           fetch('/api/courses')
         ]);
         
-        const hwData = hwRes.ok ? await hwRes.json() : [];
-        console.log("Homework API response:", hwData);
-        const testsData = testsRes.ok ? await testsRes.json() : [];
-        const smData = smRes.ok ? await smRes.json() : [];
-        const examData = examRes.ok ? await examRes.json() : [];
-        const weeklyData = weeklyRes.ok ? await weeklyRes.json() : [];
-        const annData = annRes.ok ? await annRes.json() : [];
-        const coursesData = coursesRes.ok ? await coursesRes.json() : [];
+        let hwData = hwRes.ok ? await hwRes.json() : [];
+        let testsData = testsRes.ok ? await testsRes.json() : [];
+        let smData = smRes.ok ? await smRes.json() : [];
+        let examData = examRes.ok ? await examRes.json() : [];
+        let weeklyData = weeklyRes.ok ? await weeklyRes.json() : [];
+        let annData = annRes.ok ? await annRes.json() : [];
+        let coursesData = coursesRes.ok ? await coursesRes.json() : [];
         
-        setHomeworkList(Array.isArray(hwData) ? hwData : []);
-        setTestList(Array.isArray(testsData) ? testsData : []);
-        setStudyMaterialsList(Array.isArray(smData) ? smData : []);
-        setExamTimetableList(Array.isArray(examData) ? examData : []);
-        setWeeklyTimetableList(Array.isArray(weeklyData) ? weeklyData : []);
-        setAnnouncements(Array.isArray(annData) ? annData : []);
-        setCoursesList(Array.isArray(coursesData) ? coursesData : []);
+        if (!Array.isArray(hwData)) hwData = [];
+        if (!Array.isArray(testsData)) testsData = [];
+        if (!Array.isArray(smData)) smData = [];
+        if (!Array.isArray(examData)) examData = [];
+        if (!Array.isArray(weeklyData)) weeklyData = [];
+        if (!Array.isArray(annData)) annData = [];
+        if (!Array.isArray(coursesData)) coursesData = [];
+        
+        console.log("API Response - homework:", hwData.length, "tests:", testsData.length);
+        
+        if (hwData.length === 0) {
+          const localHw = localStorage.getItem("homeworkData");
+          if (localHw) hwData = JSON.parse(localHw);
+        }
+        if (testsData.length === 0) {
+          const localTests = localStorage.getItem("testData");
+          if (localTests) testsData = JSON.parse(localTests);
+        }
+        
+        setHomeworkList(hwData);
+        setTestList(testsData);
+        setStudyMaterialsList(smData);
+        setExamTimetableList(examData);
+        setWeeklyTimetableList(weeklyData);
+        setAnnouncements(annData);
+        setCoursesList(coursesData);
         
         if (parsedStudent.school) {
           const chatRes = await fetch('/api/chat?school=' + encodeURIComponent(parsedStudent.school) + '&grade=' + parsedStudent.grade);

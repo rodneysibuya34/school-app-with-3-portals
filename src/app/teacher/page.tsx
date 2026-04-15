@@ -62,9 +62,12 @@ interface Homework {
   description: string;
   dueDate: string;
   grade: number;
-  fileUrl: string;
-  fileType: string;
+  fileUrl?: string;
+  fileType?: string;
   subject: string;
+  school?: string;
+  createdBy?: string;
+  createdAt?: number;
 }
 
 interface StudyMaterial {
@@ -350,37 +353,48 @@ export default function TeacherPortal() {
   const handleAddHomework = async () => {
     if (newHomework.title && newHomework.dueDate && newHomework.grade && newHomework.subject && loggedInTeacher) {
       console.log("Creating homework for school:", loggedInTeacher.school);
+      const hwData = {
+        title: newHomework.title,
+        description: newHomework.description,
+        dueDate: newHomework.dueDate,
+        grade: parseInt(newHomework.grade),
+        subject: newHomework.subject,
+        school: loggedInTeacher.school,
+        createdBy: loggedInTeacher.name
+      };
+      
       try {
         const response = await fetch('/api/homework', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            title: newHomework.title,
-            description: newHomework.description,
-            dueDate: newHomework.dueDate,
-            grade: parseInt(newHomework.grade),
-            subject: newHomework.subject,
-            school: loggedInTeacher.school,
-            createdBy: loggedInTeacher.name
-          })
+          body: JSON.stringify(hwData)
         });
         
         console.log("Response status:", response.status);
         
-        if (!response.ok) {
+        if (response.ok) {
+          const hw = await response.json();
+          console.log("Created homework:", hw);
+          const updatedList = [...homeworkList, hw as Homework];
+          setHomeworkList(updatedList);
+          localStorage.setItem("homeworkData", JSON.stringify(updatedList));
+          alert("Homework created successfully!");
+        } else {
           const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
           console.log("Error response:", errorData);
-          alert(`Error: ${errorData.error || 'Failed to create homework'}`);
-          return;
+          const localHw = { id: Date.now(), ...hwData, createdAt: Date.now() } as Homework;
+          const updatedList = [...homeworkList, localHw];
+          setHomeworkList(updatedList);
+          localStorage.setItem("homeworkData", JSON.stringify(updatedList));
+          alert("Saved locally (API unavailable)");
         }
-        
-        const hw = await response.json();
-        console.log("Created homework:", hw);
-        setHomeworkList([...homeworkList, hw]);
-        alert("Homework created successfully!");
       } catch (error) {
         console.error("Error adding homework:", error);
-        alert("Error creating homework. Please try again.");
+        const localHw = { id: Date.now(), ...hwData, createdAt: Date.now() } as Homework;
+        const updatedList = [...homeworkList, localHw];
+        setHomeworkList(updatedList);
+        localStorage.setItem("homeworkData", JSON.stringify(updatedList));
+        alert("Saved locally (offline mode)");
       }
       setNewHomework({ title: "", description: "", dueDate: "", grade: "", subject: "" });
       setHomeworkFile(null);
@@ -898,8 +912,8 @@ export default function TeacherPortal() {
             <div className="flex items-center justify-between text-sm">
               <span className="text-slate-500">Due: {hw.dueDate}</span>
               {hw.fileUrl ? (
-                <button onClick={() => handleDownload(hw.fileUrl, hw.title, hw.fileType)} className="text-purple-400 hover:text-purple-300">
-                  {hw.fileType.startsWith('image/') ? 'View/Download' : 'Download'}
+                <button onClick={() => handleDownload(hw.fileUrl || '', hw.title, hw.fileType || '')} className="text-purple-400 hover:text-purple-300">
+                  {(hw.fileType || '').startsWith('image/') ? 'View/Download' : 'Download'}
                 </button>
               ) : (
                 <span className="text-slate-500">No file</span>
