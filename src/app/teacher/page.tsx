@@ -2270,6 +2270,7 @@ export default function TeacherPortal() {
         {activeTab === "homework" && renderHomework()}
         {activeTab === "tests" && renderTests()}
         {activeTab === "students" && renderStudents()}
+        {activeTab === "school staff" && renderSchoolStaff()}
         {activeTab === "exam timetable" && renderExamTimetable()}
         {activeTab === "weekly timetable" && renderWeeklyTimetable()}
         {activeTab === "announcements" && renderAnnouncements()}

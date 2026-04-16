@@ -777,16 +777,25 @@ const PRIMARY_SUBJECTS = useMemo(() => [
     if (!activeTest) return;
     let correct = 0;
     activeTest.questions.forEach((q) => { if (answers[q.id] === q.correctAnswer) correct++; });
-    setTestScore({ correct, total: activeTest.questions.length });
+    const score = { correct, total: activeTest.questions.length };
+    const percentage = score.total > 0 ? (score.correct / score.total) * 100 : 0;
+    setTestScore(score);
     setTestSubmitted(true);
     if (timerRef.current) clearTimeout(timerRef.current);
     
     if (loggedInStudent) {
       const storedResults = localStorage.getItem(`testResults_${loggedInStudent.id}`);
       const testResults: Record<number, { correct: number; total: number }> = storedResults ? JSON.parse(storedResults) : {};
-      testResults[activeTest.id] = { correct, total: activeTest.questions.length };
+      testResults[activeTest.id] = score;
       localStorage.setItem(`testResults_${loggedInStudent.id}`, JSON.stringify(testResults));
       setCompletedTests(testResults);
+      
+      if (percentage < 30) {
+        const strugglingKey = `strugglingStudents_${activeTest.subject || 'General'}`;
+        const existingStruggling = JSON.parse(localStorage.getItem(strugglingKey) || '[]');
+        const newStruggling = [...existingStruggling, { name: loggedInStudent.name, grade: loggedInStudent.grade, score: percentage, date: new Date().toISOString().split('T')[0] }];
+        localStorage.setItem(strugglingKey, JSON.stringify(newStruggling));
+      }
     }
   };
 
