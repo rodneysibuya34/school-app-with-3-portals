@@ -502,6 +502,7 @@ export default function StudentPortal() {
   const [weeklyTimetableList, setWeeklyTimetableList] = useState<{ day: string; time: string; subject: string; grade: number }[]>([]);
   const [studyMaterialsList, setStudyMaterialsList] = useState<StudyMaterial[]>([]);
   const [coursesList, setCoursesList] = useState<{ name: string; teacher: string; grade: string; progress: number }[]>([]);
+  const [teachersList, setTeachersList] = useState<{ id: number; name: string; subject: string; grade: number; school: string }[]>([]);
   const [announcements, setAnnouncements] = useState<{ id: number; title: string; content: string; date: string; priority: "normal" | "important" | "urgent" }[]>([]);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [newChatMessage, setNewChatMessage] = useState("");
@@ -581,14 +582,15 @@ const PRIMARY_SUBJECTS = useMemo(() => [
       }
       console.log("Fetching content for school:", parsedStudent.school, "grade:", parsedStudent.grade);
       try {
-        const [hwRes, testsRes, smRes, examRes, weeklyRes, annRes, coursesRes] = await Promise.all([
+        const [hwRes, testsRes, smRes, examRes, weeklyRes, annRes, coursesRes, teachersRes] = await Promise.all([
           fetch('/api/homework?school=' + encodeURIComponent(parsedStudent.school)),
           fetch('/api/tests'),
           fetch('/api/study-materials'),
           fetch('/api/exam-timetable'),
           fetch('/api/weekly-timetable'),
           fetch('/api/announcements?school=' + encodeURIComponent(parsedStudent.school)),
-          fetch('/api/courses')
+          fetch('/api/courses'),
+          fetch('/api/teachers')
         ]);
         
         let hwData = hwRes.ok ? await hwRes.json() : [];
@@ -598,6 +600,7 @@ const PRIMARY_SUBJECTS = useMemo(() => [
         let weeklyData = weeklyRes.ok ? await weeklyRes.json() : [];
         let annData = annRes.ok ? await annRes.json() : [];
         let coursesData = coursesRes.ok ? await coursesRes.json() : [];
+        let teachersData = teachersRes.ok ? await teachersRes.json() : [];
         
         if (!Array.isArray(hwData)) hwData = [];
         if (!Array.isArray(testsData)) testsData = [];
@@ -606,6 +609,7 @@ const PRIMARY_SUBJECTS = useMemo(() => [
         if (!Array.isArray(weeklyData)) weeklyData = [];
         if (!Array.isArray(annData)) annData = [];
         if (!Array.isArray(coursesData)) coursesData = [];
+        if (!Array.isArray(teachersData)) teachersData = [];
         
         console.log("API Response - homework:", hwData.length, "tests:", testsData.length);
         
@@ -654,6 +658,7 @@ const PRIMARY_SUBJECTS = useMemo(() => [
         setWeeklyTimetableList(weeklyData);
         setAnnouncements(annData);
         setCoursesList(coursesData);
+        setTeachersList(teachersData);
         
         if (parsedStudent.school) {
           const chatRes = await fetch('/api/chat?school=' + encodeURIComponent(parsedStudent.school) + '&grade=' + parsedStudent.grade);
@@ -751,12 +756,26 @@ const PRIMARY_SUBJECTS = useMemo(() => [
     return items.filter(item => !isSubjectSpecific(item.subject) || selectedSubjects.includes(item.subject));
   };
 
+  const getTeacherBySubject = (subject: string): string => {
+    const storedTeachers = localStorage.getItem("teachersData");
+    const localTeachers = storedTeachers ? JSON.parse(storedTeachers) : [];
+    const schoolTeachers = teachersList.filter((t: any) => t.school === loggedInStudent.school);
+    const allTeachers = [...schoolTeachers, ...localTeachers.filter((t: any) => !schoolTeachers.some((st: any) => st.id === t.id))];
+    const teacher = allTeachers.find((t: any) => t.subject && t.subject.split(',').map((s: string) => s.trim()).includes(subject) && t.grade === loggedInStudent.grade);
+    return teacher ? teacher.name : coursesByGrade[loggedInStudent.grade]?.find((c: any) => c.name === subject)?.teacher || "TBA";
+  };
+
+  const coursesWithRealTeachers = allCourses.map((course: any) => ({
+    ...course,
+    teacher: getTeacherBySubject(course.name)
+  }));
+
   const homework = filterBySubjects(allHomework.filter(hw => hw.grade === loggedInStudent.grade));
   const tests = filterBySubjects(allTests.filter(t => t.grade === loggedInStudent.grade));
   const examTimetable = allExamTimetable.filter(et => et.grade === loggedInStudent.grade);
   const weeklyTimetable = allWeeklyTimetable.filter(wt => wt.grade === loggedInStudent.grade);
   const studyMaterials = filterBySubjects(allStudyMaterials.filter(sm => sm.grade === loggedInStudent.grade));
-  const courses = allCourses;
+  const courses = coursesList.length > 0 ? coursesWithRealTeachers : coursesByGrade[loggedInStudent.grade] || [];
 
   const gpaValues: Record<string, string> = { "A": "4.0", "A-": "3.7", "B+": "3.3", "B": "3.0", "B-": "2.7", "C+": "2.3", "C": "2.0" };
   const avgGrade = courses.length > 0 ? courses.reduce((acc, c) => acc + (gpaValues[c.grade] ? parseFloat(gpaValues[c.grade]) : 0), 0) / courses.length : 0;
