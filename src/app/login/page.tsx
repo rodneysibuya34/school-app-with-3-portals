@@ -232,16 +232,31 @@ export default function LoginPage() {
           <div className="flex gap-2 mb-6">
             <button
               onClick={() => {
+                setLoginType("student");
                 setPinMode("credentials");
                 setPinAttempts(0);
               }}
               className={`flex-1 py-3 rounded-xl font-medium transition-colors ${
                 loginType === "student" 
                   ? "bg-amber-500 text-white" 
-                  : "bg-red-500 text-white"
+                  : "bg-slate-100 text-slate-600"
               }`}
             >
-              {loginType === "student" ? "Student" : "Teacher"}
+              Student
+            </button>
+            <button
+              onClick={() => {
+                setLoginType("teacher");
+                setPinMode("credentials");
+                setPinAttempts(0);
+              }}
+              className={`flex-1 py-3 rounded-xl font-medium transition-colors ${
+                loginType === "teacher" 
+                  ? "bg-red-500 text-white" 
+                  : "bg-slate-100 text-slate-600"
+              }`}
+            >
+              Teacher
             </button>
           </div>
 
