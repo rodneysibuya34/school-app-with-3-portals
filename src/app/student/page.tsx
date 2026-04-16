@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import AIAssistant from "@/components/AIAssistant";
 import Logo from "@/components/Logo";
@@ -511,6 +511,26 @@ export default function StudentPortal() {
   const [unlockedMessages, setUnlockedMessages] = useState<Record<number, boolean>>({});
   const [profilePictureFile, setProfilePictureFile] = useState<string | null>(null);
 
+  const PRIMARY_SUBJECTS = useMemo(() => [
+    'English Home Language',
+    'Afrikaans First Additional Language',
+    'isiZulu First Additional Language',
+    'isiXhosa First Additional Language',
+    'Setswana First Additional Language',
+    'siSwati First Additional Language',
+    'isiNdebele First Additional Language',
+    'Sesotho First Additional Language',
+    'Xitsonga First Additional Language',
+    'Tshivenda First Additional Language',
+    'Mathematics',
+    'Natural Sciences and Technology',
+    'Social Sciences',
+    'Life Skills (Grades 1-6)',
+    'Creative Arts',
+    'Physical Education',
+    'Religious Education'
+  ], []);
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const student = localStorage.getItem("loggedInStudent");
@@ -524,8 +544,13 @@ export default function StudentPortal() {
     const storedSubjects = localStorage.getItem(`studentSubjects_${parsedStudent.id}`);
     if (storedSubjects) {
       setSelectedSubjects(JSON.parse(storedSubjects));
-    } else {
+    } else if (parsedStudent.grade >= 7) {
+      // High school (Grade 7-12): must select subjects
       setShowSubjectModal(true);
+    } else {
+      // Primary school (Grade 1-6): auto-select all subjects
+      setSelectedSubjects(PRIMARY_SUBJECTS);
+      localStorage.setItem(`studentSubjects_${parsedStudent.id}`, JSON.stringify(PRIMARY_SUBJECTS));
     }
 
     async function fetchContentData() {
@@ -654,7 +679,7 @@ export default function StudentPortal() {
         }
       }
     }
-  }, [router]);
+  }, [router, PRIMARY_SUBJECTS]);
 
   const saveSubjects = (subjects: string[]) => {
     setSelectedSubjects(subjects);

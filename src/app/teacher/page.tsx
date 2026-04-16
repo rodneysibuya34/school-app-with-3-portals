@@ -215,7 +215,6 @@ export default function TeacherPortal() {
       return;
     }
     const parsedTeacher = JSON.parse(teacher);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoggedInTeacher(parsedTeacher);
 
     const storedSchools = localStorage.getItem("schoolsData");
