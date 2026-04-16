@@ -1452,7 +1452,7 @@ const grade10Subjects = [
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-[#1E293B] rounded-2xl p-6 w-full max-w-lg border border-white/10">
             <h3 className="text-xl font-semibold text-white mb-4">Select Your Subjects</h3>
-            <p className="text-slate-400 text-sm mb-4">Choose the subjects you are taking this year (select at least 4):</p>
+            <p className="text-slate-400 text-sm mb-4">Choose the subjects you are taking this year (select at least 7):</p>
             <div className="grid grid-cols-2 gap-3 max-h-64 overflow-y-auto mb-4">
               {subjectsList.map(subject => (
                 <button
@@ -1471,10 +1471,10 @@ const grade10Subjects = [
             <div className="flex gap-3">
               <button
                 onClick={() => {
-                  if (selectedSubjects.length >= 4) {
+                  if (selectedSubjects.length >= 7) {
                     saveSubjects(selectedSubjects);
                   } else {
-                    alert("Please select at least 4 subjects");
+                    alert("Please select at least 7 subjects");
                   }
                 }}
                 className="flex-1 px-4 py-3 rounded-xl bg-blue-600 text-white hover:bg-blue-700"
