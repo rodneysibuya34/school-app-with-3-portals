@@ -66,11 +66,28 @@ export default function LoginPage() {
   }, []);
 
   useEffect(() => {
-    const storedPin = loginType === "student" ? localStorage.getItem("studentPin") : localStorage.getItem("teacherPin");
-    if (storedPin) {
-      setPinMode("pin");
-    } else {
+    const now = new Date();
+    const currentMonth = `${now.getFullYear()}-${now.getMonth()}`;
+    const storedMonth = loginType === "student" 
+      ? localStorage.getItem("studentPinMonth") 
+      : localStorage.getItem("teacherPinMonth");
+    
+    if (storedMonth !== currentMonth) {
+      if (loginType === "student") {
+        localStorage.removeItem("studentPin");
+        localStorage.removeItem("studentPinUser");
+      } else {
+        localStorage.removeItem("teacherPin");
+        localStorage.removeItem("teacherPinUser");
+      }
       setPinMode("credentials");
+    } else {
+      const storedPin = loginType === "student" ? localStorage.getItem("studentPin") : localStorage.getItem("teacherPin");
+      if (storedPin) {
+        setPinMode("pin");
+      } else {
+        setPinMode("credentials");
+      }
     }
     setPinAttempts(0);
     setPin("");
@@ -164,12 +181,17 @@ export default function LoginPage() {
       setPinError("PINs do not match");
       return;
     }
+    const now = new Date();
+    const currentMonth = `${now.getFullYear()}-${now.getMonth()}`;
+    
     if (loginType === "student") {
       localStorage.setItem("studentPin", pin);
       localStorage.setItem("studentPinUser", JSON.stringify(currentUser));
+      localStorage.setItem("studentPinMonth", currentMonth);
     } else {
       localStorage.setItem("teacherPin", pin);
       localStorage.setItem("teacherPinUser", JSON.stringify(currentUser));
+      localStorage.setItem("teacherPinMonth", currentMonth);
     }
     const school = schoolsData.find(s => s.name === currentUser!.school);
     const schoolYear = school ? school.year : new Date().getFullYear();
