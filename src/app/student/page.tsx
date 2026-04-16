@@ -511,8 +511,17 @@ export default function StudentPortal() {
   const [unlockedMessages, setUnlockedMessages] = useState<Record<number, boolean>>({});
   const [profilePictureFile, setProfilePictureFile] = useState<string | null>(null);
 
-  const PRIMARY_SUBJECTS = useMemo(() => [
-    // Auto-selected for Grade 4-9
+const PRIMARY_SUBJECTS = useMemo(() => [
+    // Auto-selected for Grade 4-6 (no EMS, Technology, Natural/Social Sciences)
+    'Mathematics',
+    'Life Orientation',
+    'Creative Arts',
+    'Physical Education',
+    'Religious Education'
+  ], []);
+
+  const INTERMEDIATE_SUBJECTS = useMemo(() => [
+    // Auto-selected for Grade 7-9 (includes EMS, Technology, Natural/Social Sciences)
     'Mathematics',
     'EMS (Economic and Management Sciences)',
     'Technology',
@@ -550,10 +559,14 @@ export default function StudentPortal() {
     const storedSubjects = localStorage.getItem(`studentSubjects_${parsedStudent.id}`);
     if (storedSubjects) {
       setSelectedSubjects(JSON.parse(storedSubjects));
-    } else if (parsedStudent.grade >= 4 && parsedStudent.grade <= 9) {
-      // Grade 4-9: Auto-select all subjects (students only choose home language)
+    } else if (parsedStudent.grade >= 4 && parsedStudent.grade <= 6) {
+      // Grade 4-6: Auto-select core subjects only (no EMS, Technology, Natural/Social Sciences)
       setSelectedSubjects(PRIMARY_SUBJECTS);
       localStorage.setItem(`studentSubjects_${parsedStudent.id}`, JSON.stringify(PRIMARY_SUBJECTS));
+    } else if (parsedStudent.grade >= 7 && parsedStudent.grade <= 9) {
+      // Grade 7-9: Auto-select all subjects including EMS, Technology, Natural/Social Sciences
+      setSelectedSubjects(INTERMEDIATE_SUBJECTS);
+      localStorage.setItem(`studentSubjects_${parsedStudent.id}`, JSON.stringify(INTERMEDIATE_SUBJECTS));
     } else {
       // Grade 10-12: Must select subjects via modal
       setShowSubjectModal(true);
@@ -685,7 +698,7 @@ export default function StudentPortal() {
         }
       }
     }
-  }, [router, PRIMARY_SUBJECTS]);
+  }, [router, PRIMARY_SUBJECTS, INTERMEDIATE_SUBJECTS]);
 
   const saveSubjects = (subjects: string[]) => {
     setSelectedSubjects(subjects);
@@ -1431,7 +1444,7 @@ const grade10Subjects = [
     if (grade >= 4 && grade <= 9) return HOME_LANGUAGES;
     return grade10Subjects;
   };
-  const subjectsList = loggedInStudent ? getSubjectsList(loggedInStudent.grade) : HOME_LANGUAGES;
+  const subjectsList = loggedInStudent && loggedInStudent.grade <= 9 ? HOME_LANGUAGES : grade10Subjects;
 
   return (
     <div className="min-h-screen bg-[#0F172A] flex flex-col md:flex-row">
