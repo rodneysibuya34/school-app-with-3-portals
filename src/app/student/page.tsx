@@ -517,14 +517,11 @@ const PRIMARY_SUBJECTS = useMemo(() => [
     'Mathematics',
     'Natural Science and Technology',
     'Social Science',
-    'Life Skills',
-    'Creative Arts',
-    'Physical Education',
-    'Religious Education'
+    'Life Skills'
   ], []);
 
   const INTERMEDIATE_SUBJECTS = useMemo(() => [
-    // Auto-selected for Grade 7-9 (same subjects as Grade 4-6 + EMS + Technology)
+    // Auto-selected for Grade 7-9
     'English',
     'Mathematics',
     'Natural Sciences',
@@ -532,9 +529,7 @@ const PRIMARY_SUBJECTS = useMemo(() => [
     'Technology',
     'EMS (Economic and Management Sciences)',
     'Life Orientation',
-    'Creative Arts',
-    'Physical Education',
-    'Religious Education'
+    'Creative Arts'
   ], []);
 
   const HOME_LANGUAGES = useMemo(() => [
