@@ -6,7 +6,7 @@ export default function Privacy() {
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold text-white mb-6 font-['Outfit']">Privacy Policy</h1>
         <div className="prose prose-invert prose-amber">
-          <p className="text-slate-300 mb-4">Last updated: March 2026</p>
+          <p className="text-slate-300 mb-4">Last updated: April 2026</p>
           
           <h2 className="text-xl font-semibold text-white mt-6 mb-3">1. Introduction</h2>
           <p className="text-slate-400">
@@ -18,6 +18,12 @@ export default function Privacy() {
           <p className="text-slate-400">
             We collect personal information including but not limited to: name, email address, 
             school affiliation, grade level, and academic data when you register and use our platform.
+          </p>
+          
+          <h2 className="text-xl font-semibold text-white mt-6 mb-3">3. About the Creator</h2>
+          <p className="text-slate-400">
+            Geleza Mzansi was created and developed by Rodney Thando Sibuyi. 
+            The application is dedicated to improving educational outcomes for South African students.
           </p>
           
           <h2 className="text-xl font-semibold text-white mt-6 mb-3">3. How We Use Your Information</h2>

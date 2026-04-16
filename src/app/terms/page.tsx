@@ -6,7 +6,7 @@ export default function Terms() {
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold text-white mb-6 font-['Outfit']">Terms & Conditions</h1>
         <div className="prose prose-invert prose-amber">
-          <p className="text-slate-300 mb-4">Last updated: March 2026</p>
+          <p className="text-slate-300 mb-4">Last updated: April 2026</p>
           
           <h2 className="text-xl font-semibold text-white mt-6 mb-3">1. Acceptance of Terms</h2>
           <p className="text-slate-400">
@@ -40,7 +40,7 @@ export default function Terms() {
           
           <h2 className="text-xl font-semibold text-white mt-6 mb-3">6. Intellectual Property</h2>
           <p className="text-slate-400">
-            All content, features, and functionality of Geleza Mzansi are owned by Enzokuhle Holdings 
+            All content, features, and functionality of Geleza Mzansi are owned by Rodney Thando Sibuyi 
             and are protected by South African and international copyright laws.
           </p>
           
