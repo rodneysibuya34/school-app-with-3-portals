@@ -1,204 +1,107 @@
 import { NextResponse } from "next/server";
 
-const languageNames: Record<string, string> = {
-  en: "English",
-  zu: "isiZulu",
-  xh: "isiXhosa",
-  af: "Afrikaans",
-  tn: "Setswana",
-  ss: "siSwati",
-  nr: "isiNdebele",
-  st: "Sesotho",
-  so: "Xitsonga",
-  ve: "Tshivenda",
-};
-
-interface KnowledgeItem {
+interface TopicItem {
   keywords: string[];
-  topic: string;
+  subject: string;
   responseEn: string;
   responseZu: string;
 }
 
-const knowledgeBase: KnowledgeItem[] = [
-  {
-    keywords: ["algebra", "equation", "solve", "x", "variable", "linear"],
-    topic: "Algebra",
-    responseEn: "ALGEBRA BASICS:\n\nTo solve equations, remember: whatever you do to one side, do to the other!\n\nExample: x + 5 = 10\nSubtract 5 from both sides: x = 10 - 5\nAnswer: x = 5\n\nTIPS:\n- Get x alone by doing opposite operations\n- If it is +5, subtract 5\n- If it is x2, divide by 2\n- Always check your answer",
-    responseZu: "ALGEBRA:\n\nUkuze usonde inkinga, khumbula: noma ungenza ini engakani enye ingaphandla, wenze omo!\n\nIsibonelo: x + 5 = 10\nSusa u-5 eduze nobozizonke: x = 10 - 5"
-  },
-  {
-    keywords: ["fraction", "numerator", "denominator", "divide", "half", "quarter"],
-    topic: "Fractions",
-    responseEn: "FRACTIONS BASICS:\n\nNUMERATOR = top number (parts you have)\nDENOMINATOR = bottom number (total parts)\n\nExample: 3/4\n- Numerator 3 = you have 3 parts\n- Denominator 4 = total 4 parts\n\nAdd fractions with SAME denominator:\n3/4 + 1/4 = (3+1)/4 = 4/4 = 1",
-    responseZu: "IFRACTIYA:\n\nNUMERATOR = inani elisezuleni\nDENOMINATOR = inani elisezansi"
-  },
-  {
-    keywords: ["percentage", "percent", "discount", "interest"],
-    topic: "Percentages",
-    responseEn: "PERCENTAGES:\n\nPercentage means per 100\n\n20 percent = 20/100 = 0.2\n\nCalculate 20% of R80:\n20/100 x R80 = R16\n\nCommon percentages:\n- 10% = divide by 10\n- 20% = divide by 5\n- 25% = divide by 4\n- 50% = divide by 2",
-    responseZu: "AMAPHESENTI:\n\n20% yegama = R80\n20/100 x R80 = R16"
-  },
-  {
-    keywords: ["photosynthesis", "plant", "leaf", "sunlight"],
-    topic: "Photosynthesis",
-    responseEn: "PHOTOSYNTHESIS - How Plants Make Food:\n\nWhat plants need:\n1. Carbon dioxide (CO2) from air\n2. Water (H2O) from roots\n3. Sunlight (for energy)\n4. Chlorophyll (green pigment)\n\nWhat plants produce:\n- Glucose (food/sugar)\n- Oxygen (O2) released\n\nWhere it happens: In LEAVES\n\nWhy important:\n- Plants make their own food\n- We breathe the oxygen produced",
-    responseZu: "PHOTOSYNTHESIS:\n\nOkudinga izindoda:\n1. I-carbon dioxide\n2. A-manzi\n3. Ukukhanya\n4. I-chlorophyll\n\nOkukhaduza:\n- A-Glucose\n- I-Oxygen"
-  },
-  {
-    keywords: ["atom", "molecule", "element", "compound", "periodic"],
-    topic: "Atoms",
-    responseEn: "ATOMS AND ELEMENTS:\n\nATOM = smallest unit of matter\nMOLECULE = atoms joined together\nELEMENT = one type of atom\nCOMPOUND = different atoms combined\n\nExamples:\n- O2 = Oxygen molecule (2 oxygen atoms)\n- H2O = Water compound (2 hydrogen + 1 oxygen)\n- NaCl = Salt (sodium + chlorine)\n\nPeriodic Table:\n- Groups = similar properties\n- Periods = energy levels",
-    responseZu: "AMA-ATOM NE-ELEMENTS:\n\nATOM = i-units encane kakhulu\nMOLECULE = ama-atom axhumene\nELEMENT = uhlobo olulodwa lwangomuzi"
-  },
-  {
-    keywords: ["gravity", "force", "newton", "mass", "weight", "motion"],
-    topic: "Forces",
-    responseEn: "FORCES AND MOTION:\n\nNewtons Laws:\n1. Objects stay still or keep moving unless force acts on them\n2. F = ma (Force = mass x acceleration)\n3. Every action has equal, opposite reaction\n\nTypes of forces:\n- Gravity (pulls down)\n- Friction (slows down)\n- Magnetic (attracts metals)\n\nWeight = mass x gravity\nOn Earth, g = 9.8 m/s2",
-    responseZu: "AMA-FORCES:\n\nW = mass x gravity"
-  },
-  {
-    keywords: ["essay", "writing", "paragraph", "introduction", "conclusion"],
-    topic: "Essay",
-    responseEn: "ESSAY STRUCTURE:\n\n1. INTRODUCTION\n   - Hook (interesting sentence)\n   - Background info\n   - Thesis statement (main argument)\n\n2. BODY PARAGRAPHS (3-5)\n   - Topic sentence\n   - Evidence/example\n   - Explanation\n   - Transition\n\n3. CONCLUSION\n   - Restate thesis\n   - Summary of points\n   - Final thought\n\nTips:\n- Always plan first\n- 5 paragraphs minimum\n- Use linking words",
-    responseZu: "UKUBHALA ESSAY:\n\n1. UKUNGENELA\n2. IMIZU EBHODENI\n3. ISIQUTHO"
-  },
-  {
-    keywords: ["history", "south africa", "apartheid", "mandela", "freedom"],
-    topic: "SA History",
-    responseEn: "SOUTH AFRICAN HISTORY - Key Events:\n\n1652 - Dutch Settlement begins\n1910 - Union of South Africa\n1948 - Apartheid begins (National Party wins)\n1990 - Mandela released from prison\n1994 - First democratic elections\n1996 - Constitution adopted\n\nKey Figures:\n- Nelson Mandela (first black president)\n- Desmond Tutu (human rights)\n- Steve Biko (Black Consciousness)\n- Oliver Tambo (ANC leader)",
-    responseZu: "INKULUMO KAMZANSI:\n\n1948 - Apartheid iqala\n1990 - Mandela ukhululwa ejele\n1994 - Amavoti okwanelanga"
-  },
-  {
-    keywords: ["poetry", "poem", "rhyme", "simile", "metaphor"],
-    topic: "Poetry",
-    responseEn: "POETRY TERMS:\n\nRHYME = words that sound similar at end\n- Cat, hat, bat = rhyme\n\nSIMILE = like/as comparison\n- Busy as a bee (uses like/as)\n\n\nMETAPHOR = direct comparison\n- The world is a stage (no like/as)\n\n\nPERSONIFICATION = human traits to non-human\n- The wind whispered\n\nALLITERATION = same sound at start\n- Lovely, lush lawn\n\nHow to analyze:\n1. Read twice\n2. Who is speaking?\n3. What mood?\n4. Find devices",
-    responseZu: "I-POETRY:\n\nRHYME = amawadi afanayo\nSIMILE = njeng\nMETAPHOR = ithuluzi"
-  },
-  {
-    keywords: ["triangle", "angle", "right", "obtuse", "acute"],
-    topic: "Geometry",
-    responseEn: "TRIANGLES:\n\nTypes:\n1. EQUILATERAL - all sides equal\n2. ISOSCELES - two sides equal\n3. SCALENE - no equal sides\n\nAngles:\n- ACUTE: less than 90 degrees\n- RIGHT: exactly 90 degrees\n- OBTUSE: more than 90 degrees\n\nTriangle angles ALWAYS add to 180 degrees\n\nArea = 1/2 x base x height",
-    responseZu: "AMA-TRI-GON:\n\n- ISOSCELES - amaC amabili ane\n- SCALENE - awenelanga\n\nama-Angel:\n- ACUTE\n- RIGHT\n- OBTUSE"
-  }
+const knowledgeBase: TopicItem[] = [
+  // MATHEMATICS
+  { keywords: ["algebra", "equation", "solve", "x", "variable", "linear"], subject: "Mathematics", responseEn: "ALGEBRA: Whatever you do to ONE side, do to the OTHER. Example: x + 7 = 12, subtract 7: x = 5", responseZu: "ALGEBRA: Wenzani ngakunye ngakunye. x + 7 = 12, susa u-7: x = 5" },
+  { keywords: ["fraction", "numerator", "denominator", "divide", "half"], subject: "Mathematics", responseEn: "FRACTIONS: Numerator (top) = parts you have, Denominator (bottom) = total parts. 1/2 + 1/4 = 2/4 + 1/4 = 3/4", responseZu: "IFRACTION: Numerator = phezulu, Denominator = phezansi" },
+  { keywords: ["percentage", "percent", "vat", "discount"], subject: "Mathematics", responseEn: "PERCENTAGES: 20% of R80 = 20/100 x 80 = R16. 10% = divide by 10, 25% = divide by 4", responseZu: "AMAPHESENTI: 20% ka-R80 = R16" },
+  { keywords: ["triangle", "angle", "geometry", "area", "perimeter"], subject: "Mathematics", responseEn: "GEOMETRY: All triangle angles = 180 degrees. Area = 1/2 x base x height. Types: Equilateral, Isosceles, Scalene", responseZu: "GEOMETRY: Wonke amaAngle = nge-180. Isidingo: Equilateral, Isosceles, Scalene" },
+  { keywords: ["number", "prime", "factor", "multiple", "lcm", "hcf"], subject: "Mathematics", responseEn: "PRIME NUMBERS: Only divisible by 1 and itself. 2,3,5,7,11,13,17,19,23,29", responseZu: "I-PRIME: Yadlulelwa nge-1 nangeso" },
+  { keywords: ["ratio", "proportion", "rate"], subject: "Mathematics", responseEn: "RATIO: Compares quantities. a:b means a/b. Simplify by dividing by common factor", responseZu: "RATIO: Qathanisa izinto" },
+  { keywords: ["statistics", "mean", "median", "mode", "range", "graph"], subject: "Mathematics", responseEn: "STATISTICS: Mean = sum/count, Median = middle, Mode = most frequent, Range = max - min", responseZu: "STATISTICS: Mean = qaka/hlulela" },
+  // PHYSICAL SCIENCES
+  { keywords: ["photosynthesis", "plant", "leaf", "chlorophyll"], subject: "Physical Sciences", responseEn: "PHOTOSYNTHESIS: CO2 + H2O + Light = Glucose + O2. Needs: CO2, H2O, Sunlight, Chlorophyll", responseZu: "PHOTOSYNTHESIS: Dinga CO2, H2O, Ukukhanya, Chlorophyll" },
+  { keywords: ["atom", "molecule", "element", "compound", "periodic"], subject: "Physical Sciences", responseEn: "ATOMS: Proton (positive), Neutron (neutral), Electron (negative). Element = one type of atom", responseZu: "AMA-ATOM: Proton, Neutron, Electron" },
+  { keywords: ["force", "gravity", "newton", "mass", "weight", "motion"], subject: "Physical Sciences", responseEn: "FORCES: F = ma (Force = mass x acceleration). Weight = mass x 9.8. Newtons 3 laws", responseZu: "AMA-FORCES: F = ma, W = mass x 9.8" },
+  { keywords: ["wave", "frequency", "sound", "light"], subject: "Physical Sciences", responseEn: "WAVES: Wavelength (distance), Amplitude (height), Frequency (waves/sec). Sound needs medium", responseZu: "AMA-WAVES: Wavelength, Amplitude" },
+  { keywords: ["acid", "base", "ph", "indicator", "salt"], subject: "Physical Sciences", responseEn: "ACIDS/BASES: pH 0-6 = Acidic, 7 = Neutral, 8-14 = Basic. Acid + Base = Salt + Water", responseZu: "AMA-ACIDS: pH 0-6 Acid, 7 Neutral, 8-14 Basic" },
+  // LIFE SCIENCES
+  { keywords: ["cell", "mitochondria", "nucleus", "membrane"], subject: "Life Sciences", responseEn: "CELL: Membrane (entrance), Nucleus (control), Mitochondria (energy), Ribosomes (proteins)", responseZu: "ISELE: Membrane, Nucleus, Mitochondria" },
+  { keywords: ["dna", "rna", "gene", "genetics", "chromosome"], subject: "Life Sciences", responseEn: "DNA: Contains genetic code, in nucleus. Genes = sections of DNA. Humans have 46 chromosomes", responseZu: "DNA: Igene laphakathi" },
+  { keywords: ["ecosystem", "food chain", "producer", "consumer"], subject: "Life Sciences", responseEn: "ECOSYSTEM: Sun -> Producer -> Primary Consumer -> Secondary Consumer. 10% energy transfers", responseZu: "EKOSISTEMU: Imvela -> Umveli -> Umdayi" },
+  // HISTORY
+  { keywords: ["south africa", "apartheid", "mandela", "freedom", "1994"], subject: "History", responseEn: "SA HISTORY: 1948 Apartheid begins, 1976 Soweto Uprising, 1990 Mandela released, 1994 first democratic election", responseZu: "SA: 1948 Apartheid, 1990 Mandela khululwa" },
+  { keywords: ["world war", "world war 1", "world war 2", "ww2"], subject: "History", responseEn: "WW1: 1914-1918, WW2: 1939-1945. Causes, major battles, end with atomic bombs", responseZu: "WW1 ne WW2" },
+  // GEOGRAPHY
+  { keywords: ["climate", "weather", "temperature", "season"], subject: "Geography", responseEn: "CLIMATE: Weather = daily conditions, Climate = long-term average. Types: Tropical, Temperate, Arid, Polar", responseZu: "AMA-KLIMA: I-Weather nsuku zonke" },
+  { keywords: ["plate", "tectonic", "earthquake", "volcano"], subject: "Geography", responseEn: "PLATE TECTONICS: Earths crust moves on mantle. Plates move 1-10cm/year. Causes earthquakes, volcanoes", responseZu: "PLATES: Crust ihamba pare" },
+  // ENGLISH
+  { keywords: ["essay", "writing", "paragraph", "introduction", "conclusion"], subject: "English", responseEn: "ESSAY: Introduction (hook, thesis), Body (3-5 paragraphs), Conclusion (restate, summarize)", responseZu: "ESSAY: Ukungenela, Imizu, Isiqutho" },
+  { keywords: ["poetry", "poem", "rhyme", "simile", "metaphor"], subject: "English", responseEn: "POETRY: Rhyme (similar sounds), Simile (like/as), Metaphor (direct), Personification (human traits)", responseZu: "AMA-POEM: Rhyme, Simile, Metaphor" },
+  { keywords: ["novel", "book", "character", "plot", "theme"], subject: "English", responseEn: "NOVEL: Characters (protagonist, antagonist), Plot (exposition, rising action, climax, conclusion), Themes", responseZu: "INCWADI: Abalingani, Plot, Imqo" },
+  // BUSINESS
+  { keywords: ["business", "entrepreneur", "profit", "loss", "cost"], subject: "Business Studies", responseEn: "BUSINESS: Entrepreneur takes risk for profit. Fixed costs (rent) + Variable costs = Total cost", responseZu: "BIZINISI: Ungayibona uyasebenza" },
+  { keywords: ["marketing", "advertising", "brand", "target"], subject: "Business Studies", responseEn: "MARKETING: Product, Price, Place, Promotion. Target market = who your customers are", responseZu: "MAKETING: Product, Price, Place" },
+  // ACCOUNTING
+  { keywords: ["accounting", "debit", "credit", "ledger"], subject: "Accounting", responseEn: "ACCOUNTING: Assets = Liabilities + Capital. Debit increases assets, Credit decreases assets", responseZu: "UKUBALEKA: Debit yandisa assets" },
+  // ECONOMICS
+  { keywords: ["economics", "supply", "demand", "price", "scarcity"], subject: "Economics", responseEn: "ECONOMICS: Unlimited wants vs Limited resources = Scarcity. Supply meets demand at equilibrium price", responseZu: "EKONOMICS: Supply idibana demand" },
+  // LIFE ORIENTATION
+  { keywords: ["life orientation", "health", "nutrition", "diet", "exercise"], subject: "Life Orientation", responseEn: "HEALTH: Eat balance (protein, carbs, fats, vitamins). Drink 8 glasses water daily. Exercise 30 min/day", responseZu: "IMPILO: Dla okulinganayo, Amanzi 8 glasses" },
+  { keywords: ["hiv", "aids", "relationships"], subject: "Life Orientation", responseEn: "HIV/AIDS: No cure but treatment available. Prevent: condoms, safe sex, test regularly", responseZu: "HIV: Thwala ucansi, lula" },
+  // IT
+  { keywords: ["computer", "software", "hardware", "internet", "coding"], subject: "IT", responseEn: "IT: Hardware (input, output, CPU), Software (Windows, Word), Internet (TCP/IP browsers)", responseZu: "IT: Hardware, Software" }
 ];
 
-function findBestResponse(userMessage: string, language: string): string {
+function findBestResponse(userMessage: string): string {
   const msg = userMessage.toLowerCase();
-  const isZulu = language === 'zu';
-  
   for (const item of knowledgeBase) {
     for (const keyword of item.keywords) {
       if (msg.includes(keyword)) {
-        return isZulu ? item.responseZu : item.responseEn;
+        return item.responseEn;
       }
     }
   }
-  
   return "";
 }
 
 export async function POST(request: Request) {
   try {
     const { messages, mode, grade, language = "en" } = await request.json();
-    
     const latestMessage = messages[messages.length - 1]?.content || "";
-    
-    console.log("Processing message:", latestMessage, "language:", language);
-    
-    const matchedResponse = findBestResponse(latestMessage, language);
+    const matchedResponse = findBestResponse(latestMessage);
     
     if (matchedResponse) {
       return NextResponse.json({ reply: matchedResponse });
     }
     
-    const defaultStudentEn = `Hello! I am Geleza AI - your study assistant.
+    const reply = `Hello! I am Geleza AI - your study helper.
 
-I can help with:
+MATHEMATICS: Algebra, Fractions, Percentages, Geometry, Statistics, Ratios, Number Theory
 
-MATHEMATICS
-- Algebra (equations, solving for x)
-- Fractions, percentages
-- Geometry (triangles, angles)
+PHYSICS: Photosynthesis, Atoms, Forces, Waves, Acids & Bases
 
-SCIENCES  
-- Photosynthesis
-- Atoms and elements
-- Forces and motion
+BIOLOGY: Cells, DNA, Genetics, Ecosystems
 
-ENGLISH
-- Essay writing
-- Poetry analysis
-- Vocabulary
+HISTORY: SA History, World Wars
 
-HISTORY
-- South African history
-- Key events and figures
+GEOGRAPHY: Climate, Plate Tectonics
 
-Ask me in your language!
-Try: Help me with algebra or Explain photosynthesis`;
+ENGLISH: Essay Writing, Poetry, Novels
 
-    const defaultStudentZu = `Sawubona! Ngingu Geleza AI - usizo lwakho lokufunda.
+BUSINESS: Business Basics, Marketing
 
-Ngingasiza:
+ACCOUNTING: Debits & Credits
 
-MATHEMATICS
-- Algebra
-- Fractions
-- Geometry
+ECONOMICS: Supply & Demand
 
-SCIENCE
-- Photosynthesis
-- Ama-atoms
+LIFE O: Health, Nutrition, HIV/AIDS
 
-UKUBHALA
-- Essays
-- Ama-poems
+IT: Computer Basics
 
-Ngicele ngesizulu!
-Zama: Nganginika algebra`;
+Ask me anything! Try: Help with algebra, Explain photosynthesis`;
 
-    const defaultTeacherEn = `Hello! I am Geleza AI - your teaching assistant.
-
-I can help with:
-
-CREATING TESTS
-- Multiple choice questions
-- Short answer questions
-- Essay topics
-
-HELPING STRUGGLING STUDENTS
-- Intervention strategies
-- Differentiation tips
-- Assessment tips
-
-SUBJECTS
-- Mathematics
-- Sciences
-- Languages
-
-Ask me anything!`;
-
-    const defaultTeacherZu = `Sawubona! Ngingu Geleza AI - usizo lwakho lwokufundisa.
-
-Ngingasiza:
-
-UKUQULETA AMA-TEST
-- Imibuzo enezingane
-
-UKUSESA ABAFUNDI
-- amaStrategy`;
-
-    const reply = mode === 'teacher' 
-      ? (language === 'zu' ? defaultTeacherZu : defaultTeacherEn)
-      : (language === 'zu' ? defaultStudentZu : defaultStudentEn);
-      
+    
     return NextResponse.json({ reply });
     
   } catch (error) {
-    console.error("AI error:", error);
-    return NextResponse.json({ 
-      reply: "Sorry, I encountered an error. Please try again." 
-    }, { status: 500 });
+    return NextResponse.json({ reply: "Sorry, error. Try again." }, { status: 500 });
   }
 }
