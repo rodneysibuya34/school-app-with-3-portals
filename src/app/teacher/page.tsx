@@ -1054,15 +1054,26 @@ export default function TeacherPortal() {
             </div>
             <h3 className="text-lg font-semibold text-white mb-2">{hw.title}</h3>
             <p className="text-slate-400 text-sm mb-4">{hw.description}</p>
-            <div className="flex items-center justify-between text-sm">
+            <div className="flex items-center justify-between text-sm mt-4">
               <span className="text-slate-500">Due: {hw.dueDate}</span>
-              {hw.fileUrl ? (
-                <button onClick={() => handleDownload(hw.fileUrl || '', hw.title, hw.fileType || '')} className="text-purple-400 hover:text-purple-300">
-                  {(hw.fileType || '').startsWith('image/') ? 'View/Download' : 'Download'}
+              <div className="flex gap-2">
+                {hw.fileUrl ? (
+                  <button onClick={() => handleDownload(hw.fileUrl || '', hw.title, hw.fileType || '')} className="text-purple-400 hover:text-purple-300">
+                    {(hw.fileType || '').startsWith('image/') ? 'View/Download' : 'Download'}
+                  </button>
+                ) : (
+                  <span className="text-slate-500">No file</span>
+                )}
+                <button onClick={() => {
+                  if (confirm('Are you sure you want to delete this homework?')) {
+                    const updated = homeworkList.filter(h => h.id !== hw.id);
+                    setHomeworkList(updated);
+                    localStorage.setItem("homeworkData", JSON.stringify(updated));
+                  }
+                }} className="text-red-400 hover:text-red-300 ml-2">
+                  Delete
                 </button>
-              ) : (
-                <span className="text-slate-500">No file</span>
-              )}
+              </div>
             </div>
           </div>
         ))}
