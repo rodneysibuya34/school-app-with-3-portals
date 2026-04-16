@@ -13,7 +13,7 @@ const portals = [
     ),
     gradient: "from-[#F59E0B] to-[#FBBF24]",
     borderColor: "#F59E0B",
-    loginHref: "/login",
+    loginHref: "/login?type=student",
   },
   {
     id: "teacher",
@@ -26,7 +26,7 @@ const portals = [
     ),
     gradient: "from-[#EF4444] to-[#F97316]",
     borderColor: "#EF4444",
-    loginHref: "/login",
+    loginHref: "/login?type=teacher",
   },
   {
     id: "admin",

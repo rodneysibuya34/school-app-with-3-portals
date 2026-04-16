@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Logo from "@/components/Logo";
 
 interface User {
@@ -22,7 +22,8 @@ interface Teacher extends User {
 
 export default function LoginPage() {
   const router = useRouter();
-  const [loginType, setLoginType] = useState<"student" | "teacher">("student");
+  const searchParams = useSearchParams();
+  const [loginType, setLoginType] = useState<"student" | "teacher">(searchParams.get("type") === "teacher" ? "teacher" : "student");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
