@@ -512,7 +512,7 @@ export default function StudentPortal() {
   const [profilePictureFile, setProfilePictureFile] = useState<string | null>(null);
 
   const PRIMARY_SUBJECTS = useMemo(() => [
-    // Home Languages only for Grade 1-6
+    // Home Languages only for Grade 1-3
     'English Home Language',
     'Afrikaans Home Language',
     'isiZulu Home Language',
@@ -526,7 +526,7 @@ export default function StudentPortal() {
   ], []);
 
   const INTERMEDIATE_SUBJECTS = useMemo(() => [
-    // Home Languages (Grade 7-9)
+    // Home Languages (Grade 4-7)
     'English Home Language',
     'Afrikaans Home Language',
     'isiZulu Home Language',
@@ -537,7 +537,7 @@ export default function StudentPortal() {
     'Sesotho Home Language',
     'Xitsonga Home Language',
     'Tshivenda Home Language',
-    // First Additional Languages
+    // First Additional Languages (Grade 4-7)
     'Afrikaans First Additional Language',
     'isiZulu First Additional Language',
     'isiXhosa First Additional Language',
@@ -547,7 +547,7 @@ export default function StudentPortal() {
     'Sesotho First Additional Language',
     'Xitsonga First Additional Language',
     'Tshivenda First Additional Language',
-    // Core Subjects
+    // Core Subjects (Grade 4-7)
     'Mathematics',
     'Life Orientation',
     'EMS (Economic and Management Sciences)',
@@ -572,11 +572,8 @@ export default function StudentPortal() {
     const storedSubjects = localStorage.getItem(`studentSubjects_${parsedStudent.id}`);
     if (storedSubjects) {
       setSelectedSubjects(JSON.parse(storedSubjects));
-    } else if (parsedStudent.grade >= 1 && parsedStudent.grade <= 9) {
-      // Primary school (Grade 1-9): must select subjects via modal
-      setShowSubjectModal(true);
-    } else if (parsedStudent.grade >= 10 && parsedStudent.grade <= 12) {
-      // High school (Grade 10-12): must select subjects via modal
+    } else {
+      // All grades must select subjects via modal
       setShowSubjectModal(true);
     }
 
@@ -1449,8 +1446,8 @@ const grade10Subjects = [
   };
 
   const getSubjectsList = (grade: number) => {
-    if (grade >= 1 && grade <= 6) return PRIMARY_SUBJECTS;
-    if (grade >= 7 && grade <= 9) return INTERMEDIATE_SUBJECTS;
+    if (grade >= 1 && grade <= 3) return PRIMARY_SUBJECTS;
+    if (grade >= 4 && grade <= 7) return INTERMEDIATE_SUBJECTS;
     return grade10Subjects;
   };
   const subjectsList = loggedInStudent ? getSubjectsList(loggedInStudent.grade) : PRIMARY_SUBJECTS;
