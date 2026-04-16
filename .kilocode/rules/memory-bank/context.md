@@ -16,6 +16,7 @@ Using JSON file storage for Vercel compatibility (localStorage/SQLite don't work
 - [x] Fixed TypeScript errors in content-actions.ts and homework route
 - [x] Seed file moved to backup (seed.ts.bak) - not needed for JSON approach
 - [x] Build passes successfully
+- [x] Fixed teacher dashboard: students now filtered by teacher's grade, combined teacher data from localStorage
 
 ## Current Structure
 

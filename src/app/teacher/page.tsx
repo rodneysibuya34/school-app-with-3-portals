@@ -2176,8 +2176,12 @@ export default function TeacherPortal() {
   const storedStudentsList = localStorage.getItem("studentsData");
   const allStudentsList: StudentData[] = storedStudentsList ? JSON.parse(storedStudentsList) : [];
   const combinedStudentsList = [...studentsData, ...allStudentsList.filter(s => !studentsData.some(d => d.id === s.id))];
-  const schoolStudents = combinedStudentsList.filter(s => s.school === loggedInTeacher.school);
-  const schoolTeachers = teachersData.filter(t => t.school === loggedInTeacher.school);
+  const schoolStudents = combinedStudentsList.filter(s => s.school === loggedInTeacher.school && s.grade === loggedInTeacher.grade);
+
+  const storedTeachersList = localStorage.getItem("teachersData");
+  const allTeachersList: TeacherData[] = storedTeachersList ? JSON.parse(storedTeachersList) : [];
+  const combinedTeachersList = [...teachersData, ...allTeachersList.filter(t => !teachersData.some(d => t.id === d.id))];
+  const schoolTeachers = combinedTeachersList.filter(t => t.school === loggedInTeacher.school);
 
   const stats = [
     { label: "My Students", value: schoolStudents.length.toString(), icon: "M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z", color: "#A855F7" },
