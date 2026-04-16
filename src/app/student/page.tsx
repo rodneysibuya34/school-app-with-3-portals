@@ -512,21 +512,7 @@ export default function StudentPortal() {
   const [profilePictureFile, setProfilePictureFile] = useState<string | null>(null);
 
   const PRIMARY_SUBJECTS = useMemo(() => [
-    // Home Languages only for Grade 1-3
-    'English Home Language',
-    'Afrikaans Home Language',
-    'isiZulu Home Language',
-    'isiXhosa Home Language',
-    'Setswana Home Language',
-    'siSwati Home Language',
-    'isiNdebele Home Language',
-    'Sesotho Home Language',
-    'Xitsonga Home Language',
-    'Tshivenda Home Language'
-  ], []);
-
-  const INTERMEDIATE_SUBJECTS = useMemo(() => [
-    // Home Languages (Grade 4-7)
+    // Home Languages (Grade 4-9)
     'English Home Language',
     'Afrikaans Home Language',
     'isiZulu Home Language',
@@ -537,7 +523,7 @@ export default function StudentPortal() {
     'Sesotho Home Language',
     'Xitsonga Home Language',
     'Tshivenda Home Language',
-    // First Additional Languages (Grade 4-7)
+    // First Additional Languages (Grade 4-9)
     'Afrikaans First Additional Language',
     'isiZulu First Additional Language',
     'isiXhosa First Additional Language',
@@ -547,7 +533,7 @@ export default function StudentPortal() {
     'Sesotho First Additional Language',
     'Xitsonga First Additional Language',
     'Tshivenda First Additional Language',
-    // Core Subjects (Grade 4-7)
+    // Core Subjects (Grade 4-9)
     'Mathematics',
     'Life Orientation',
     'EMS (Economic and Management Sciences)',
@@ -1446,8 +1432,7 @@ const grade10Subjects = [
   };
 
   const getSubjectsList = (grade: number) => {
-    if (grade >= 1 && grade <= 3) return PRIMARY_SUBJECTS;
-    if (grade >= 4 && grade <= 7) return INTERMEDIATE_SUBJECTS;
+    if (grade >= 4 && grade <= 9) return PRIMARY_SUBJECTS;
     return grade10Subjects;
   };
   const subjectsList = loggedInStudent ? getSubjectsList(loggedInStudent.grade) : PRIMARY_SUBJECTS;
