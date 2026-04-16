@@ -700,7 +700,7 @@ export default function StudentPortal() {
   };
 
   const filterBySubjects = <T extends { subject: string }>(items: T[]): T[] => {
-    if (loggedInStudent!.grade < 10 || selectedSubjects.length === 0) return items;
+    if (loggedInStudent!.grade < 7 || selectedSubjects.length === 0) return items;
     return items.filter(item => !isSubjectSpecific(item.subject) || selectedSubjects.includes(item.subject));
   };
 
@@ -1339,25 +1339,76 @@ export default function StudentPortal() {
   };
 
 const grade10Subjects = [
-    // Languages
-    'English Home Language', 'Afrikaans First Add', 'isiZulu Home Language', 'isiXhosa Home Language', 
-    'Setswana Home Language', 'siSwati Home Language', 'isiNdebele Home Language', 
-    'Sesotho Home Language', 'Xitsonga Home Language', 'Tshivenda Home Language',
-    // Other Subjects
-    'Mathematics', 'Mathematical Literacy', 'Physical Sciences', 'Life Sciences',
-    'Geography', 'History', 'Business Studies', 'Economics', 'Information Technology',
-    'Religious Studies', 'Accounting', 'Consumer Studies', 'Life Orientation', 
-    'Tourism', 'Visual Arts', 'Music'
+    // Languages - Home Language (Compulsory)
+    'English Home Language', 
+    'Afrikaans Home Language',
+    'isiZulu Home Language', 
+    'isiXhosa Home Language', 
+    'Setswana Home Language', 
+    'siSwati Home Language', 
+    'isiNdebele Home Language', 
+    'Sesotho Home Language', 
+    'Xitsonga Home Language', 
+    'Tshivenda Home Language',
+    // Languages - First Additional
+    'Afrikaans First Additional Language',
+    'isiZulu First Additional Language',
+    'isiXhosa First Additional Language',
+    'Setswana First Additional Language',
+    'siSwati First Additional Language',
+    'isiNdebele First Additional Language',
+    'Sesotho First Additional Language',
+    'Xitsonga First Additional Language',
+    'Tshivenda First Additional Language',
+    // Compulsory
+    'Mathematics', 
+    'Mathematical Literacy', 
+    'Life Orientation',
+    // Sciences
+    'Physical Sciences', 
+    'Life Sciences',
+    'Technical Sciences',
+    // Technical/FET
+    'Engineering Graphics and Design',
+    'Computer Applications Technology',
+    'Information Technology',
+    // Business
+    'Accounting', 
+    'Business Studies', 
+    'Economics', 
+    'Consumer Studies',
+    // Humanities
+    'Geography', 
+    'History', 
+    'Religion Studies',
+    'Tourism',
+    // Arts
+    'Visual Arts', 
+    'Music',
+    'Dramatic Arts'
   ];
 
   const primarySubjects = [
-    // Languages (all grades can choose home language)
-    'English Home Language', 'Afrikaans First Add', 'isiZulu Home Language', 'isiXhosa Home Language', 
-    'Setswana Home Language', 'siSwati Home Language', 'isiNdebele Home Language', 
-    'Sesotho Home Language', 'Xitsonga Home Language', 'Tshivenda Home Language',
-    // Primary School Subjects
-    'Mathematics', 'Natural Sciences', 'Social Sciences', 'Life Skills',
-    'English', 'Afrikaans', 'isiZulu', 'isiXhosa', 'Setswana'
+    // Languages
+    'English Home Language',
+    'Afrikaans First Additional Language',
+    'isiZulu First Additional Language',
+    'isiXhosa First Additional Language',
+    'Setswana First Additional Language',
+    'siSwati First Additional Language',
+    'isiNdebele First Additional Language',
+    'Sesotho First Additional Language',
+    'Xitsonga First Additional Language',
+    'Tshivenda First Additional Language',
+    // Primary Subjects
+    'Mathematics',
+    'Natural Sciences and Technology',
+    'Social Sciences',
+    'Life Skills (Grades 1-6)',
+    'Life Orientation (Grade 7)',
+    'Creative Arts',
+    'Physical Education',
+    'Religious Education'
   ];
 
   const handleSubjectToggle = (subject: string) => {
@@ -1368,7 +1419,7 @@ const grade10Subjects = [
     }
   };
 
-  const subjectsList = loggedInStudent && loggedInStudent.grade >= 8 ? grade10Subjects : primarySubjects;
+  const subjectsList = loggedInStudent && loggedInStudent.grade >= 7 ? grade10Subjects : primarySubjects;
 
   return (
     <div className="min-h-screen bg-[#0F172A] flex flex-col md:flex-row">
