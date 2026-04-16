@@ -512,7 +512,32 @@ export default function StudentPortal() {
   const [profilePictureFile, setProfilePictureFile] = useState<string | null>(null);
 
   const PRIMARY_SUBJECTS = useMemo(() => [
+    // Home Languages only for Grade 1-6
     'English Home Language',
+    'Afrikaans Home Language',
+    'isiZulu Home Language',
+    'isiXhosa Home Language',
+    'Setswana Home Language',
+    'siSwati Home Language',
+    'isiNdebele Home Language',
+    'Sesotho Home Language',
+    'Xitsonga Home Language',
+    'Tshivenda Home Language'
+  ], []);
+
+  const INTERMEDIATE_SUBJECTS = useMemo(() => [
+    // Home Languages (Grade 7-9)
+    'English Home Language',
+    'Afrikaans Home Language',
+    'isiZulu Home Language',
+    'isiXhosa Home Language',
+    'Setswana Home Language',
+    'siSwati Home Language',
+    'isiNdebele Home Language',
+    'Sesotho Home Language',
+    'Xitsonga Home Language',
+    'Tshivenda Home Language',
+    // First Additional Languages
     'Afrikaans First Additional Language',
     'isiZulu First Additional Language',
     'isiXhosa First Additional Language',
@@ -522,10 +547,13 @@ export default function StudentPortal() {
     'Sesotho First Additional Language',
     'Xitsonga First Additional Language',
     'Tshivenda First Additional Language',
+    // Core Subjects
     'Mathematics',
-    'Natural Sciences and Technology',
-    'Social Sciences',
-    'Life Skills (Grades 1-6)',
+    'Life Orientation',
+    'EMS (Economic and Management Sciences)',
+    'Technology',
+    'Natural Sciences',
+    'Social Sciences (History and Geography)',
     'Creative Arts',
     'Physical Education',
     'Religious Education'
@@ -544,12 +572,11 @@ export default function StudentPortal() {
     const storedSubjects = localStorage.getItem(`studentSubjects_${parsedStudent.id}`);
     if (storedSubjects) {
       setSelectedSubjects(JSON.parse(storedSubjects));
-    } else if (parsedStudent.grade >= 1 && parsedStudent.grade <= 6) {
-      // Primary school (Grade 1-6): auto-select all subjects
-      setSelectedSubjects(PRIMARY_SUBJECTS);
-      localStorage.setItem(`studentSubjects_${parsedStudent.id}`, JSON.stringify(PRIMARY_SUBJECTS));
-    } else if (parsedStudent.grade >= 7 && parsedStudent.grade <= 12) {
-      // Grade 7-12: must select subjects via modal
+    } else if (parsedStudent.grade >= 1 && parsedStudent.grade <= 9) {
+      // Primary school (Grade 1-9): must select subjects via modal
+      setShowSubjectModal(true);
+    } else if (parsedStudent.grade >= 10 && parsedStudent.grade <= 12) {
+      // High school (Grade 10-12): must select subjects via modal
       setShowSubjectModal(true);
     }
 
@@ -1421,7 +1448,12 @@ const grade10Subjects = [
     }
   };
 
-  const subjectsList = loggedInStudent && loggedInStudent.grade >= 7 ? grade10Subjects : PRIMARY_SUBJECTS;
+  const getSubjectsList = (grade: number) => {
+    if (grade >= 1 && grade <= 6) return PRIMARY_SUBJECTS;
+    if (grade >= 7 && grade <= 9) return INTERMEDIATE_SUBJECTS;
+    return grade10Subjects;
+  };
+  const subjectsList = loggedInStudent ? getSubjectsList(loggedInStudent.grade) : PRIMARY_SUBJECTS;
 
   return (
     <div className="min-h-screen bg-[#0F172A] flex flex-col md:flex-row">
