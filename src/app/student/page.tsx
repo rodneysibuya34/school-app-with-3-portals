@@ -1411,6 +1411,7 @@ const grade10Subjects = [
     'Physical Sciences', 
     'Life Sciences',
     'Technical Sciences',
+    'Agricultural Sciences',
     // Technical/FET
     'Engineering Graphics and Design',
     'Computer Applications Technology',
