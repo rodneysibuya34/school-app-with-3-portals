@@ -1481,14 +1481,6 @@ const grade10Subjects = [
               >
                 Save Subjects
               </button>
-              {selectedSubjects.length > 0 && (
-                <button
-                  onClick={() => setShowSubjectModal(false)}
-                  className="flex-1 px-4 py-3 rounded-xl bg-[#1E293B]/10 text-white hover:bg-[#1E293B]/20"
-                >
-                  Skip for now
-                </button>
-              )}
             </div>
           </div>
         </div>
