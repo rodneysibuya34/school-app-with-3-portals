@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import AIAssistant from "@/components/AIAssistant";
 import Logo from "@/components/Logo";
 import Image from "next/image";
 
@@ -2234,7 +2233,7 @@ export default function TeacherPortal() {
         </div>
       )}
 
-      <AIAssistant mode="teacher" onStrugglingAlert={handleStrugglingAlert} />
+      {/* <AIAssistant mode="teacher" onStrugglingAlert={handleStrugglingAlert} /> */}
     </div>
   );
 }

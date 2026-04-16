@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import AIAssistant from "@/components/AIAssistant";
 import Logo from "@/components/Logo";
 import Image from "next/image";
 
@@ -510,6 +509,8 @@ export default function StudentPortal() {
   const [unlockingMessageId, setUnlockingMessageId] = useState<number | null>(null);
   const [unlockedMessages, setUnlockedMessages] = useState<Record<number, boolean>>({});
   const [profilePictureFile, setProfilePictureFile] = useState<string | null>(null);
+  const [submittedHomework, setSubmittedHomework] = useState<Record<number, string>>({});
+  const [submittingHomeworkId, setSubmittingHomeworkId] = useState<number | null>(null);
 
 const PRIMARY_SUBJECTS = useMemo(() => [
     // Auto-selected for Grade 4-6
@@ -667,6 +668,9 @@ const PRIMARY_SUBJECTS = useMemo(() => [
 
     const storedResults = localStorage.getItem(`testResults_${parsedStudent.id}`);
     if (storedResults) setCompletedTests(JSON.parse(storedResults));
+
+    const storedHomework = localStorage.getItem("submittedHomework");
+    if (storedHomework) setSubmittedHomework(JSON.parse(storedHomework));
 
     const storedSchools = localStorage.getItem("schoolsData");
     if (storedSchools && parsedStudent.school) {
@@ -1054,6 +1058,18 @@ const PRIMARY_SUBJECTS = useMemo(() => [
   );
   };
 
+  const handleSubmitHomework = async (hwId: number, file: File) => {
+    setSubmittingHomeworkId(hwId);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const newSubmitted = { ...submittedHomework, [hwId]: reader.result as string };
+      setSubmittedHomework(newSubmitted);
+      localStorage.setItem("submittedHomework", JSON.stringify(newSubmitted));
+      setSubmittingHomeworkId(null);
+    };
+    reader.readAsDataURL(file);
+  };
+
   const renderHomework = () => (
     <div>
       <h1 className="text-3xl font-bold text-white mb-6">Homework & Assignments</h1>
@@ -1062,10 +1078,37 @@ const PRIMARY_SUBJECTS = useMemo(() => [
           <div key={hw.id} className="p-6 rounded-2xl bg-[#1E293B]/5 backdrop-blur-xl border border-white/10">
             <h3 className="text-lg font-semibold text-white mb-2">{hw.title}</h3>
             <p className="text-slate-400 text-sm mb-4">{hw.description}</p>
-            <div className="flex justify-between text-sm">
+            <div className="flex justify-between text-sm mb-4">
               <span className="text-slate-500">Due: {hw.dueDate}</span>
-              <button onClick={() => handleDownload(hw.fileUrl, hw.title, hw.fileType)} className="text-blue-400 hover:text-blue-300">Download</button>
+              {hw.fileUrl && (
+                <button onClick={() => handleDownload(hw.fileUrl, hw.title, hw.fileType)} className="text-blue-400 hover:text-blue-300">Download</button>
+              )}
             </div>
+            {submittedHomework[hw.id] ? (
+              <div className="flex items-center gap-2 text-green-400 text-sm">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Submitted
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <input
+                  type="file"
+                  id={`hw-submit-${hw.id}`}
+                  accept="image/*"
+                  capture="environment"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleSubmitHomework(hw.id, file);
+                  }}
+                />
+                <label htmlFor={`hw-submit-${hw.id}`} className="flex-1 px-4 py-2 rounded-lg bg-amber-600/20 text-amber-400 text-sm text-center hover:bg-amber-600/30 cursor-pointer">
+                  {submittingHomeworkId === hw.id ? "Submitting..." : "Submit as Photo"}
+                </label>
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -1589,7 +1632,7 @@ const grade10Subjects = [
         </div>
       )}
 
-      <AIAssistant mode="student" studentName={loggedInStudent?.name} grade={loggedInStudent?.grade} />
+      {/* <AIAssistant mode="student" studentName={loggedInStudent?.name} grade={loggedInStudent?.grade} /> */}
     </div>
   );
 }
