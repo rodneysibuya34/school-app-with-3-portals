@@ -544,13 +544,13 @@ export default function StudentPortal() {
     const storedSubjects = localStorage.getItem(`studentSubjects_${parsedStudent.id}`);
     if (storedSubjects) {
       setSelectedSubjects(JSON.parse(storedSubjects));
-    } else if (parsedStudent.grade >= 7) {
-      // High school (Grade 7-12): must select subjects
-      setShowSubjectModal(true);
-    } else {
+    } else if (parsedStudent.grade >= 1 && parsedStudent.grade <= 6) {
       // Primary school (Grade 1-6): auto-select all subjects
       setSelectedSubjects(PRIMARY_SUBJECTS);
       localStorage.setItem(`studentSubjects_${parsedStudent.id}`, JSON.stringify(PRIMARY_SUBJECTS));
+    } else if (parsedStudent.grade >= 7 && parsedStudent.grade <= 12) {
+      // Grade 7-12: must select subjects via modal
+      setShowSubjectModal(true);
     }
 
     async function fetchContentData() {
@@ -1413,30 +1413,7 @@ const grade10Subjects = [
     'Dramatic Arts'
   ];
 
-  const primarySubjects = [
-    // Languages
-    'English Home Language',
-    'Afrikaans First Additional Language',
-    'isiZulu First Additional Language',
-    'isiXhosa First Additional Language',
-    'Setswana First Additional Language',
-    'siSwati First Additional Language',
-    'isiNdebele First Additional Language',
-    'Sesotho First Additional Language',
-    'Xitsonga First Additional Language',
-    'Tshivenda First Additional Language',
-    // Primary Subjects
-    'Mathematics',
-    'Natural Sciences and Technology',
-    'Social Sciences',
-    'Life Skills (Grades 1-6)',
-    'Life Orientation (Grade 7)',
-    'Creative Arts',
-    'Physical Education',
-    'Religious Education'
-  ];
-
-  const handleSubjectToggle = (subject: string) => {
+  const handleSubjectToggle = (subject: string): void => {
     if (selectedSubjects.includes(subject)) {
       setSelectedSubjects(selectedSubjects.filter(s => s !== subject));
     } else {
@@ -1444,7 +1421,7 @@ const grade10Subjects = [
     }
   };
 
-  const subjectsList = loggedInStudent && loggedInStudent.grade >= 7 ? grade10Subjects : primarySubjects;
+  const subjectsList = loggedInStudent && loggedInStudent.grade >= 7 ? grade10Subjects : PRIMARY_SUBJECTS;
 
   return (
     <div className="min-h-screen bg-[#0F172A] flex flex-col md:flex-row">
