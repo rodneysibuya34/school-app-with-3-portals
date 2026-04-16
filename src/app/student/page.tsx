@@ -512,21 +512,25 @@ export default function StudentPortal() {
   const [profilePictureFile, setProfilePictureFile] = useState<string | null>(null);
 
 const PRIMARY_SUBJECTS = useMemo(() => [
-    // Auto-selected for Grade 4-6 (no EMS, Technology, Natural/Social Sciences)
+    // Auto-selected for Grade 4-6
+    'English',
     'Mathematics',
-    'Life Orientation',
+    'Natural Science and Technology',
+    'Social Science',
+    'Life Skills',
     'Creative Arts',
     'Physical Education',
     'Religious Education'
   ], []);
 
   const INTERMEDIATE_SUBJECTS = useMemo(() => [
-    // Auto-selected for Grade 7-9 (includes EMS, Technology, Natural/Social Sciences)
+    // Auto-selected for Grade 7-9 (same subjects as Grade 4-6 + EMS + Technology)
+    'English',
     'Mathematics',
-    'EMS (Economic and Management Sciences)',
-    'Technology',
     'Natural Sciences',
     'Social Sciences (History and Geography)',
+    'Technology',
+    'EMS (Economic and Management Sciences)',
     'Life Orientation',
     'Creative Arts',
     'Physical Education',
