@@ -1120,7 +1120,8 @@ export default function TeacherPortal() {
                 <input 
                   type="file" 
                   id="homework-file"
-                  accept="image/*,.pdf,.doc,.docx,.txt,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                  accept=".pdf,.doc,.docx,.txt,image/*"
+                  capture="environment"
                   onChange={handleFileChange}
                   className="hidden"
                 />
@@ -1553,7 +1554,8 @@ export default function TeacherPortal() {
                 <input 
                   type="file" 
                   id="exam-file"
-                  accept="image/*,.pdf,.doc,.docx,.txt"
+                  accept=".pdf,.doc,.docx,.txt,image/*"
+                  capture="environment"
                   onChange={(e) => { const file = e.target.files?.[0]; if (file) { const reader = new FileReader(); reader.onloadend = () => setExamFile({ name: file.name, data: reader.result as string, type: file.type }); reader.readAsDataURL(file); }}}
                   className="hidden"
                 />
@@ -1645,7 +1647,8 @@ export default function TeacherPortal() {
                 <input 
                   type="file" 
                   id="schedule-file"
-                  accept="image/*,.pdf,.doc,.docx,.txt"
+                  accept=".pdf,.doc,.docx,.txt,image/*"
+                  capture="environment"
                   onChange={(e) => { const file = e.target.files?.[0]; if (file) { const reader = new FileReader(); reader.onloadend = () => setScheduleFile({ name: file.name, data: reader.result as string, type: file.type }); reader.readAsDataURL(file); }}}
                   className="hidden"
                 />
@@ -1882,7 +1885,7 @@ export default function TeacherPortal() {
               </div>
               <div>
                 <label className="block text-sm text-slate-400 mb-2">File</label>
-                <input type="file" accept="image/*,.pdf,.doc,.docx,.txt" onChange={(e) => {
+                <input type="file" id="study-material-file" accept=".pdf,.doc,.docx,.txt,image/*" capture="environment" className="hidden" onChange={(e) => {
                   const file = e.target.files?.[0];
                   if (file) {
                     const reader = new FileReader();
@@ -1891,13 +1894,25 @@ export default function TeacherPortal() {
                     };
                     reader.readAsDataURL(file);
                   }
-                }} className="w-full text-slate-400 text-sm file:mr-2 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-purple-600 file:text-white file:cursor-pointer" />
-                {studyMaterialFile && (
-                  <div className="flex items-center gap-2 mt-2 text-sm">
-                    <span className="text-slate-400">{studyMaterialFile.name}</span>
-                    <button onClick={() => setStudyMaterialFile(null)} className="text-red-400 hover:text-red-300">Remove</button>
-                  </div>
-                )}
+                }} />
+                <label htmlFor="study-material-file" className="border-2 border-dashed border-white/20 rounded-xl p-4 text-center hover:border-purple-500 transition-colors cursor-pointer block">
+                  {studyMaterialFile ? (
+                    <div className="flex flex-col items-center">
+                      <svg className="w-8 h-8 text-green-400 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <p className="text-green-400 text-sm font-medium">{studyMaterialFile.name}</p>
+                      <p className="text-slate-500 text-xs mt-1">Click to change file</p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center">
+                      <svg className="w-8 h-8 text-slate-500 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                      </svg>
+                      <p className="text-slate-400 text-sm">Click to upload PDF, Word, or Image</p>
+                    </div>
+                  )}
+                </label>
               </div>
             </div>
             <div className="flex gap-3 mt-6">
@@ -1977,7 +1992,7 @@ export default function TeacherPortal() {
                 <input type="text" value={chatPassword} onChange={(e) => setChatPassword(e.target.value)} placeholder="Set password for this message" className="w-full px-4 py-2 rounded-xl bg-slate-700 border border-white/10 text-white mb-3 focus:outline-none focus:border-purple-500" />
               )}
               <div className="flex gap-2 mb-3">
-                <input type="file" onChange={(e) => {
+                <input type="file" id="chat-file" accept=".pdf,.doc,.docx,.txt,image/*" capture="environment" className="hidden" onChange={(e) => {
                   const file = e.target.files?.[0];
                   if (file) {
                     const reader = new FileReader();
@@ -1986,7 +2001,13 @@ export default function TeacherPortal() {
                     };
                     reader.readAsDataURL(file);
                   }
-                }} className="flex-1 text-slate-400 text-sm file:mr-2 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-purple-600 file:text-white file:cursor-pointer" />
+                }} />
+                <label htmlFor="chat-file" className="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-600/20 text-purple-400 hover:bg-purple-600/30 cursor-pointer">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                  </svg>
+                  <span className="text-sm">Attach File</span>
+                </label>
               </div>
               {chatFile && (
                 <div className="flex items-center gap-2 mb-3 text-sm">
