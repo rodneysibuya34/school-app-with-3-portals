@@ -438,13 +438,22 @@ export default function AdminPortal() {
   };
 
   const handleUpgradeClick = (schoolId: number) => {
-    // Temporarily disabled - Redis configuration needed
-    alert("Upgrade functionality requires Redis database configuration. Please add Upstash Redis environment variables in Vercel settings first.");
+    const school = schools.find(s => s.id === schoolId);
+    if (!school) return;
+    setUpgradeSchool(school);
+    setUpgradePlan('monthly');
+    setUpgradeStartDate(new Date().toISOString().split('T')[0]);
+    setShowModal('upgrade');
   };
 
   const handleUpgradeConfirm = async () => {
-    // Temporarily disabled - Redis configuration needed
-    alert("Upgrade functionality requires Redis database configuration.");
+    if (!upgradeSchool || !upgradeStartDate) {
+      alert("Please select a start date");
+      return;
+    }
+    await upgradeToPaid(upgradeSchool.id, upgradePlan, upgradeStartDate);
+    setShowModal(null);
+    setUpgradeSchool(null);
   };
 
   const updateExpiryDate = async (schoolId: number, newDate: string) => {
