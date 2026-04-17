@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
 import Image from "next/image";
+import NotificationBell from "@/components/NotificationBell";
 
 interface StudentData {
   id: number;
@@ -1030,14 +1031,17 @@ const PRIMARY_SUBJECTS = useMemo(() => [
     return (
     <>
       <div className="p-6 rounded-2xl bg-gradient-to-r from-blue-500/20 to-purple-500/10 border border-blue-500/20 mb-8">
-        <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-xl font-bold">
-            {getInitials(loggedInStudent.name)}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-xl font-bold">
+              {getInitials(loggedInStudent.name)}
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold text-white">{loggedInStudent.name}</h2>
+              <p className="text-blue-300">Grade {loggedInStudent.grade} • {loggedInStudent.school}</p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-xl font-semibold text-white">{loggedInStudent.name}</h2>
-            <p className="text-blue-300">Grade {loggedInStudent.grade} • {loggedInStudent.school}</p>
-          </div>
+          <NotificationBell userId={loggedInStudent.id.toString()} userType="student" />
         </div>
       </div>
 

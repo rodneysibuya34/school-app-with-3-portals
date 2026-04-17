@@ -360,6 +360,36 @@ export default function TeacherPortal() {
     localStorage.setItem("strugglingStudents", JSON.stringify(updated));
   };
 
+  const createNotificationsForStudents = async (type: 'homework' | 'test' | 'timetable', title: string, school: string, grade: number) => {
+    try {
+      // Get all students in the same school and grade
+      const response = await fetch(`/api/students?school=${encodeURIComponent(school)}`);
+      if (!response.ok) return;
+
+      const students = await response.json();
+      const gradeStudents = students.filter((s: any) => s.grade === grade);
+
+      // Create notification for each student
+      const notificationPromises = gradeStudents.map((student: any) =>
+        fetch('/api/notifications', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: `${type.charAt(0).toUpperCase() + type.slice(1)} Available`,
+            message: `${title} has been posted by ${loggedInTeacher?.name || 'Teacher'}`,
+            type,
+            recipientId: student.id.toString(),
+            recipientType: 'student'
+          })
+        })
+      );
+
+      await Promise.all(notificationPromises);
+    } catch (error) {
+      console.error('Error creating notifications:', error);
+    }
+  };
+
   const handleViewStudentGrades = (student: StudentData) => {
     setSelectedStudent(student);
     const storedResults = localStorage.getItem(`testResults_${student.id}`);
@@ -430,6 +460,10 @@ export default function TeacherPortal() {
           const updatedList = [...homeworkList, hw as Homework];
           setHomeworkList(updatedList);
           localStorage.setItem("homeworkData", JSON.stringify(updatedList));
+
+          // Create notifications for students
+          await createNotificationsForStudents('homework', `${hw.title} - ${hw.subject}`, loggedInTeacher.school, hw.grade);
+
           alert("Homework created successfully!");
         } else {
           const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
@@ -479,6 +513,12 @@ export default function TeacherPortal() {
           const updatedList = [...studyMaterialsList, sm];
           setStudyMaterialsList(updatedList);
           localStorage.setItem("studyMaterialsData", JSON.stringify(updatedList));
+
+          // Create notifications for students (study materials might be for all grades or specific grade)
+          if (sm.grade) {
+            await createNotificationsForStudents('homework', `${sm.title} - ${sm.subject}`, loggedInTeacher.school, sm.grade);
+          }
+
           alert("Study material created successfully!");
         } else {
           const localSm = { id: Date.now(), ...smData, createdAt: Date.now() };
@@ -534,6 +574,10 @@ export default function TeacherPortal() {
             const updatedList = [...testList, test as unknown as Test];
             setTestList(updatedList);
             localStorage.setItem("testData", JSON.stringify(updatedList));
+
+            // Create notifications for students
+            await createNotificationsForStudents('test', `${test.title} - ${test.subject}`, loggedInTeacher.school, test.grade);
+
             alert("Test created successfully!");
           } else {
             const localTest = { id: Date.now(), ...testData, createdAt: Date.now() } as unknown as Test;
@@ -789,6 +833,12 @@ export default function TeacherPortal() {
           const updatedList = [...examTimetable, exam];
           setExamTimetable(updatedList);
           localStorage.setItem("examTimetableData", JSON.stringify(updatedList));
+
+          // Create notifications for students (exam affects specific grade)
+          if (exam.grade) {
+            await createNotificationsForStudents('timetable', `Exam: ${exam.exam} - ${exam.subject}`, loggedInTeacher.school, exam.grade);
+          }
+
           alert("Exam created successfully!");
         } else {
           const localExam = { id: Date.now(), ...examData, createdAt: Date.now() };
@@ -861,6 +911,10 @@ export default function TeacherPortal() {
           const updatedList = [...weeklyTimetable, schedule];
           setWeeklyTimetable(updatedList);
           localStorage.setItem("weeklyTimetableData", JSON.stringify(updatedList));
+
+          // Create notifications for students
+          await createNotificationsForStudents('timetable', `New Schedule: ${schedule.subject} on ${schedule.day}`, loggedInTeacher.school, schedule.grade);
+
           alert("Schedule created successfully!");
         } else {
           const localSchedule = { id: Date.now(), ...scheduleData, createdAt: Date.now() };

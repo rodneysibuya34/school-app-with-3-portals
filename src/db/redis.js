@@ -37,7 +37,8 @@ const defaultData = {
   weeklyTimetable: [],
   announcements: [],
   courses: [],
-  chat: []
+  chat: [],
+  notifications: []
 };
 
 async function loadData() {
@@ -411,6 +412,52 @@ async function updateChatMessage(id, updates) {
   }
 }
 
+function getNotifications(userId, userType) {
+  return getData().then(d =>
+    d.notifications
+      .filter(n => n.recipientId === userId && n.recipientType === userType)
+      .sort((a, b) => b.createdAt - a.createdAt)
+  );
+}
+
+async function addNotification(notificationData) {
+  const d = await getData();
+  const notification = {
+    id: Date.now(),
+    ...notificationData,
+    read: false,
+    createdAt: Date.now()
+  };
+  d.notifications.push(notification);
+  await saveData(d);
+  return notification;
+}
+
+async function markNotificationAsRead(id) {
+  const d = await getData();
+  const idx = d.notifications.findIndex(n => n.id === id);
+  if (idx !== -1) {
+    d.notifications[idx].read = true;
+    await saveData(d);
+  }
+}
+
+async function deleteNotification(id) {
+  const d = await getData();
+  d.notifications = d.notifications.filter(n => n.id !== id);
+  await saveData(d);
+}
+
+function getUnreadNotificationsCount(userId, userType) {
+  return getData().then(d =>
+    d.notifications.filter(n =>
+      n.recipientId === userId &&
+      n.recipientType === userType &&
+      !n.read
+    ).length
+  );
+}
+
 module.exports = {
   getSchools,
   addSchool,
@@ -455,6 +502,11 @@ module.exports = {
   addChatMessage,
   deleteChatMessage,
   updateChatMessage,
+  getNotifications,
+  addNotification,
+  markNotificationAsRead,
+  deleteNotification,
+  getUnreadNotificationsCount,
   getData,
   clearCache
 };

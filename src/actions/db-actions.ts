@@ -72,3 +72,23 @@ export async function loginTeacher(username: string, password: string) {
 export async function loginSchoolAdmin(username: string, password: string) {
   return db.loginSchoolAdmin(username, password);
 }
+
+export async function getNotifications(userId: string, userType: string) {
+  return db.getNotifications(userId, userType);
+}
+
+export async function addNotification(notificationData: any) {
+  return db.addNotification(notificationData);
+}
+
+export async function markNotificationAsRead(id: number) {
+  return db.markNotificationAsRead(id);
+}
+
+export async function deleteNotification(id: number) {
+  return db.deleteNotification(id);
+}
+
+export async function getUnreadNotificationsCount(userId: string, userType: string) {
+  return db.getUnreadNotificationsCount(userId, userType);
+}
