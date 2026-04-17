@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getNotifications, addNotification, markNotificationAsRead, deleteNotification, getUnreadNotificationsCount } from "@/actions/db-actions";
+import * as db from "@/db/redis";
 
 export async function GET(request: Request) {
   try {
@@ -13,11 +13,11 @@ export async function GET(request: Request) {
     }
 
     if (action === 'unread-count') {
-      const count = await getUnreadNotificationsCount(userId, userType);
+      const count = await db.getUnreadNotificationsCount(userId, userType);
       return NextResponse.json({ count });
     }
 
-    const notifications = await getNotifications(userId, userType);
+    const notifications = await db.getNotifications(userId, userType);
     return NextResponse.json(notifications);
   } catch (error: any) {
     console.error("Error fetching notifications:", error);
@@ -31,7 +31,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const notification = await addNotification(body);
+    const notification = await db.addNotification(body);
     return NextResponse.json(notification);
   } catch (error: any) {
     console.error("Error creating notification:", error);
@@ -44,7 +44,7 @@ export async function PUT(request: Request) {
     const { id, action } = await request.json();
 
     if (action === 'mark-read') {
-      await markNotificationAsRead(id);
+      await db.markNotificationAsRead(id);
       return NextResponse.json({ success: true });
     }
 
@@ -58,7 +58,7 @@ export async function PUT(request: Request) {
 export async function DELETE(request: Request) {
   try {
     const { id } = await request.json();
-    await deleteNotification(id);
+    await db.deleteNotification(id);
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error("Error deleting notification:", error);
