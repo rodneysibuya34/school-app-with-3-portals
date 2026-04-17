@@ -497,7 +497,8 @@ async function removePushSubscription(userId, userType) {
   await saveData(d);
 }
 
-module.exports = {
+// ES6 exports
+export {
   getSchools,
   addSchool,
   updateSchool,
