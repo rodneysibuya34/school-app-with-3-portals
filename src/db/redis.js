@@ -415,11 +415,24 @@ async function updateChatMessage(id, updates) {
 }
 
 function getNotifications(userId, userType) {
-  return getData().then(d =>
-    d.notifications
+  return getData().then(d => {
+    console.log("getNotifications: data keys:", Object.keys(d));
+    console.log("getNotifications: notifications exists:", !!d.notifications);
+    console.log("getNotifications: notifications type:", typeof d.notifications);
+    console.log("getNotifications: notifications length:", Array.isArray(d.notifications) ? d.notifications.length : 'not array');
+
+    if (!Array.isArray(d.notifications)) {
+      console.log("getNotifications: notifications is not array, using empty array");
+      return [];
+    }
+
+    const filtered = d.notifications
       .filter(n => n.recipientId === userId && n.recipientType === userType)
-      .sort((a, b) => b.createdAt - a.createdAt)
-  );
+      .sort((a, b) => b.createdAt - a.createdAt);
+
+    console.log("getNotifications: filtered results:", filtered.length);
+    return filtered;
+  });
 }
 
 async function addNotification(notificationData) {
