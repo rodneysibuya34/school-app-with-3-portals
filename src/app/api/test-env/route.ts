@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import * as db from "@/db/redis";
 
 export async function GET() {
   const allEnvVars = Object.keys(process.env).filter(key =>
@@ -7,7 +8,6 @@ export async function GET() {
 
   try {
     // Test basic Redis import
-    const db = require("@/db/redis");
     const hasGetNotifications = typeof db.getNotifications === 'function';
 
     return NextResponse.json({
@@ -22,7 +22,7 @@ export async function GET() {
       timestamp: new Date().toISOString(),
       redisFunctions: {
         getNotifications: hasGetNotifications,
-        availableFunctions: Object.keys(db).filter(key => typeof db[key] === 'function')
+        availableFunctions: Object.keys(db).filter(key => typeof (db as any)[key] === 'function')
       }
     });
   } catch (error: any) {
