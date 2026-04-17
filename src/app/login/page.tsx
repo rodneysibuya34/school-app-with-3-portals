@@ -62,24 +62,31 @@ function LoginForm() {
         const localTeachers = localStorage.getItem('teachersData');
         const localStudents = localStorage.getItem('studentsData');
         
+        console.log("Login: API data - schools:", schools.length, "teachers:", teachers.length, "students:", students.length);
+
         if (localSchools) {
           const parsedLocalSchools = JSON.parse(localSchools);
+          console.log("Login: Adding localStorage schools:", parsedLocalSchools.length);
           parsedLocalSchools.forEach((s: any) => {
             if (!schools.find((es: any) => es.id === s.id)) schools.push(s);
           });
         }
         if (localTeachers) {
           const parsedLocalTeachers = JSON.parse(localTeachers);
+          console.log("Login: Adding localStorage teachers:", parsedLocalTeachers.length);
           parsedLocalTeachers.forEach((t: any) => {
             if (!teachers.find((et: any) => et.id === t.id)) teachers.push(t);
           });
         }
         if (localStudents) {
           const parsedLocalStudents = JSON.parse(localStudents);
+          console.log("Login: Adding localStorage students:", parsedLocalStudents.length);
           parsedLocalStudents.forEach((s: any) => {
             if (!students.find((es: any) => es.id === s.id)) students.push(s);
           });
         }
+
+        console.log("Login: Final data - schools:", schools.length, "teachers:", teachers.length, "students:", students.length);
         
         setSchoolsData(Array.isArray(schools) ? schools.map((s: { name: string; year: number }) => ({ name: s.name, year: s.year || 2026 })) : []);
         setTeachersData(Array.isArray(teachers) ? teachers : []);
