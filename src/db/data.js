@@ -30,6 +30,52 @@ function saveData(data) {
 
 const data = loadData();
 
+function getFromClientStorage(key) {
+  if (typeof window !== 'undefined') {
+    try {
+      const stored = localStorage.getItem(key);
+      if (stored) {
+        return JSON.parse(stored);
+      }
+    } catch (e) {}
+  }
+  return null;
+}
+
+function syncFromClientStorage() {
+  if (typeof window !== 'undefined') return;
+  const storedSchools = getFromClientStorage('schoolsData');
+  const storedTeachers = getFromClientStorage('teachersData');
+  const storedStudents = getFromClientStorage('studentsData');
+  
+  if (storedSchools && storedSchools.length > 0) {
+    storedSchools.forEach(s => {
+      if (!data.schools.find(existing => existing.id === s.id)) {
+        data.schools.push(s);
+      }
+    });
+    saveData(data);
+  }
+  if (storedTeachers && storedTeachers.length > 0) {
+    storedTeachers.forEach(t => {
+      if (!data.teachers.find(existing => existing.id === t.id)) {
+        data.teachers.push(t);
+      }
+    });
+    saveData(data);
+  }
+  if (storedStudents && storedStudents.length > 0) {
+    storedStudents.forEach(s => {
+      if (!data.students.find(existing => existing.id === s.id)) {
+        data.students.push(s);
+      }
+    });
+    saveData(data);
+  }
+}
+
+syncFromClientStorage();
+
 function getSchools() {
   return data.schools.sort((a, b) => b.id - a.id);
 }

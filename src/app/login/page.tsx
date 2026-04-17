@@ -50,15 +50,50 @@ function LoginForm() {
           fetch('/api/students')
         ]);
         
-        const schools = schoolsRes.ok ? await schoolsRes.json() : [];
-        const teachers = teachersRes.ok ? await teachersRes.json() : [];
-        const students = studentsRes.ok ? await studentsRes.json() : [];
+        let schools = schoolsRes.ok ? await schoolsRes.json() : [];
+        let teachers = teachersRes.ok ? await teachersRes.json() : [];
+        let students = studentsRes.ok ? await studentsRes.json() : [];
+        
+        if (!Array.isArray(schools)) schools = [];
+        if (!Array.isArray(teachers)) teachers = [];
+        if (!Array.isArray(students)) students = [];
+        
+        const localSchools = localStorage.getItem('schoolsData');
+        const localTeachers = localStorage.getItem('teachersData');
+        const localStudents = localStorage.getItem('studentsData');
+        
+        if (localSchools) {
+          const parsedLocalSchools = JSON.parse(localSchools);
+          parsedLocalSchools.forEach((s: any) => {
+            if (!schools.find((es: any) => es.id === s.id)) schools.push(s);
+          });
+        }
+        if (localTeachers) {
+          const parsedLocalTeachers = JSON.parse(localTeachers);
+          parsedLocalTeachers.forEach((t: any) => {
+            if (!teachers.find((et: any) => et.id === t.id)) teachers.push(t);
+          });
+        }
+        if (localStudents) {
+          const parsedLocalStudents = JSON.parse(localStudents);
+          parsedLocalStudents.forEach((s: any) => {
+            if (!students.find((es: any) => es.id === s.id)) students.push(s);
+          });
+        }
         
         setSchoolsData(Array.isArray(schools) ? schools.map((s: { name: string; year: number }) => ({ name: s.name, year: s.year || 2026 })) : []);
         setTeachersData(Array.isArray(teachers) ? teachers : []);
         setStudentsData(Array.isArray(students) ? students : []);
       } catch (err) {
         console.error("Error fetching data:", err);
+        
+        const localSchools = localStorage.getItem('schoolsData');
+        const localTeachers = localStorage.getItem('teachersData');
+        const localStudents = localStorage.getItem('studentsData');
+        
+        if (localSchools) setSchoolsData(JSON.parse(localSchools).map((s: any) => ({ name: s.name, year: s.year || 2026 })));
+        if (localTeachers) setTeachersData(JSON.parse(localTeachers));
+        if (localStudents) setStudentsData(JSON.parse(localStudents));
       } finally {
         setLoading(false);
       }

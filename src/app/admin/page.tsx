@@ -150,10 +150,38 @@ const [upgradeStartDate, setUpgradeStartDate] = useState('');
           fetch('/api/subscriptions')
         ]);
         
-        const schools = schoolsRes.ok ? await schoolsRes.json() : [];
-        const teachers = teachersRes.ok ? await teachersRes.json() : [];
-        const students = studentsRes.ok ? await studentsRes.json() : [];
-        const subs = subsRes.ok ? await subsRes.json() : [];
+        let schools = schoolsRes.ok ? await schoolsRes.json() : [];
+        let teachers = teachersRes.ok ? await teachersRes.json() : [];
+        let students = studentsRes.ok ? await studentsRes.json() : [];
+        let subs = subsRes.ok ? await subsRes.json() : [];
+        
+        if (!Array.isArray(schools)) schools = [];
+        if (!Array.isArray(teachers)) teachers = [];
+        if (!Array.isArray(students)) students = [];
+        if (!Array.isArray(subs)) subs = [];
+        
+        const localSchools = localStorage.getItem('schoolsData');
+        const localTeachers = localStorage.getItem('teachersData');
+        const localStudents = localStorage.getItem('studentsData');
+        
+        if (localSchools) {
+          const parsedLocalSchools = JSON.parse(localSchools);
+          parsedLocalSchools.forEach((s: any) => {
+            if (!schools.find((es: any) => es.id === s.id)) schools.push(s);
+          });
+        }
+        if (localTeachers) {
+          const parsedLocalTeachers = JSON.parse(localTeachers);
+          parsedLocalTeachers.forEach((t: any) => {
+            if (!teachers.find((et: any) => et.id === t.id)) teachers.push(t);
+          });
+        }
+        if (localStudents) {
+          const parsedLocalStudents = JSON.parse(localStudents);
+          parsedLocalStudents.forEach((s: any) => {
+            if (!students.find((es: any) => es.id === s.id)) students.push(s);
+          });
+        }
         
         setSchools(Array.isArray(schools) ? schools : []);
         setTeachers(Array.isArray(teachers) ? teachers : []);
@@ -161,6 +189,14 @@ const [upgradeStartDate, setUpgradeStartDate] = useState('');
         setSubscriptions(Array.isArray(subs) ? subs : []);
       } catch (error) {
         console.error("Error fetching data:", error);
+        
+        const localSchools = localStorage.getItem('schoolsData');
+        const localTeachers = localStorage.getItem('teachersData');
+        const localStudents = localStorage.getItem('studentsData');
+        
+        if (localSchools) setSchools(JSON.parse(localSchools));
+        if (localTeachers) setTeachers(JSON.parse(localTeachers));
+        if (localStudents) setStudents(JSON.parse(localStudents));
       } finally {
         setLoading(false);
       }
