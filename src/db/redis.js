@@ -38,7 +38,8 @@ const defaultData = {
   announcements: [],
   courses: [],
   chat: [],
-  notifications: []
+  notifications: [],
+  pushSubscriptions: []
 };
 
 async function loadData() {
@@ -458,6 +459,30 @@ function getUnreadNotificationsCount(userId, userType) {
   );
 }
 
+function getPushSubscriptions(userId, userType) {
+  return getData().then(d =>
+    d.pushSubscriptions.filter(s => s.userId === userId && s.userType === userType)
+  );
+}
+
+async function addPushSubscription(subscriptionData) {
+  const d = await getData();
+  const subscription = {
+    id: Date.now(),
+    ...subscriptionData,
+    createdAt: Date.now()
+  };
+  d.pushSubscriptions.push(subscription);
+  await saveData(d);
+  return subscription;
+}
+
+async function removePushSubscription(userId, userType) {
+  const d = await getData();
+  d.pushSubscriptions = d.pushSubscriptions.filter(s => !(s.userId === userId && s.userType === userType));
+  await saveData(d);
+}
+
 module.exports = {
   getSchools,
   addSchool,
@@ -507,6 +532,9 @@ module.exports = {
   markNotificationAsRead,
   deleteNotification,
   getUnreadNotificationsCount,
+  getPushSubscriptions,
+  addPushSubscription,
+  removePushSubscription,
   getData,
   clearCache
 };

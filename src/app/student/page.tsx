@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
 import Image from "next/image";
 import NotificationBell from "@/components/NotificationBell";
+import PushNotificationManager from "@/components/PushNotificationManager";
 
 interface StudentData {
   id: number;
@@ -1041,7 +1042,10 @@ const PRIMARY_SUBJECTS = useMemo(() => [
               <p className="text-blue-300">Grade {loggedInStudent.grade} • {loggedInStudent.school}</p>
             </div>
           </div>
-          <NotificationBell userId={loggedInStudent.id.toString()} userType="student" />
+          <div className="flex gap-3">
+            <NotificationBell userId={loggedInStudent.id.toString()} userType="student" />
+            <PushNotificationManager userId={loggedInStudent.id.toString()} userType="student" />
+          </div>
         </div>
       </div>
 

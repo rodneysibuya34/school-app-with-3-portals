@@ -369,7 +369,7 @@ export default function TeacherPortal() {
       const students = await response.json();
       const gradeStudents = students.filter((s: any) => s.grade === grade);
 
-      // Create notification for each student
+      // Create in-app notification for each student
       const notificationPromises = gradeStudents.map((student: any) =>
         fetch('/api/notifications', {
           method: 'POST',
@@ -385,6 +385,20 @@ export default function TeacherPortal() {
       );
 
       await Promise.all(notificationPromises);
+
+      // Also send push notifications to subscribed students
+      if (typeof window !== 'undefined') {
+        // Import push notification function dynamically to avoid SSR issues
+        import('@/lib/pushNotifications').then(({ sendPushNotificationToClass }) => {
+          sendPushNotificationToClass(
+            school,
+            grade,
+            `${type.charAt(0).toUpperCase() + type.slice(1)} Available`,
+            `${title} has been posted by ${loggedInTeacher?.name || 'Teacher'}`,
+            '/student'
+          );
+        });
+      }
     } catch (error) {
       console.error('Error creating notifications:', error);
     }

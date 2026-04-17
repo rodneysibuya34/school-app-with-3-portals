@@ -92,3 +92,15 @@ export async function deleteNotification(id: number) {
 export async function getUnreadNotificationsCount(userId: string, userType: string) {
   return db.getUnreadNotificationsCount(userId, userType);
 }
+
+export async function getPushSubscriptions(userId: string, userType: string) {
+  return db.getPushSubscriptions(userId, userType);
+}
+
+export async function addPushSubscription(subscriptionData: any) {
+  return db.addPushSubscription(subscriptionData);
+}
+
+export async function removePushSubscription(userId: string, userType: string) {
+  return db.removePushSubscription(userId, userType);
+}

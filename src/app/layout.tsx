@@ -17,6 +17,13 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: "Geleza Mzansi - School Portal System",
   description: "Multi-portal school management system for students, teachers, and parents",
+  manifest: "/manifest.json",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/icon-192x192.svg",
+  },
+  themeColor: "#3B82F6",
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
 };
 
 export default function RootLayout({

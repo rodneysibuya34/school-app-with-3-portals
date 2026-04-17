@@ -1,0 +1,22 @@
+{
+  "name": "Geleza Mzansi - School Portal",
+  "short_name": "Geleza Mzansi",
+  "description": "Multi-portal school management system for students, teachers, and administrators",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1C1917",
+  "theme_color": "#3B82F6",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icon-192x192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "lang": "en",
+  "dir": "ltr"
+}
