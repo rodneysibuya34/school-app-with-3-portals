@@ -4,6 +4,7 @@ import { getSchools, addSchool, updateSchool, deleteSchool } from "@/actions/db-
 export async function GET() {
   try {
     const schools = await getSchools();
+    console.log("Schools API: returning", schools.length, "schools");
     return NextResponse.json(schools);
   } catch (error: any) {
     console.error("Error fetching schools:", error);

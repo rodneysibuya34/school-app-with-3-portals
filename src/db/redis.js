@@ -5,12 +5,22 @@ let redis = null;
 function getClient() {
   if (!redis && process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
     console.log("Initializing Redis client with Upstash");
-    redis = new Redis({
-      url: process.env.UPSTASH_REDIS_REST_URL,
-      token: process.env.UPSTASH_REDIS_REST_TOKEN,
-    });
+    console.log("Redis URL available:", !!process.env.UPSTASH_REDIS_REST_URL);
+    console.log("Redis Token available:", !!process.env.UPSTASH_REDIS_REST_TOKEN);
+    try {
+      redis = new Redis({
+        url: process.env.UPSTASH_REDIS_REST_URL,
+        token: process.env.UPSTASH_REDIS_REST_TOKEN,
+      });
+      console.log("Redis client created successfully");
+    } catch (e) {
+      console.error("Error creating Redis client:", e.message);
+      redis = null;
+    }
   } else if (!process.env.UPSTASH_REDIS_REST_URL) {
     console.log("UPSTASH_REDIS_REST_URL not set - using in-memory fallback");
+  } else if (!process.env.UPSTASH_REDIS_REST_TOKEN) {
+    console.log("UPSTASH_REDIS_REST_TOKEN not set - using in-memory fallback");
   }
   return redis;
 }
@@ -37,9 +47,17 @@ async function loadData() {
     return defaultData;
   }
   try {
+    console.log("Attempting to load data from Redis...");
     const data = await client.get('geleza_data');
-    console.log("Redis load: data loaded successfully, entries:", data ? Object.keys(data).map(k => `${k}: ${Array.isArray(data[k]) ? data[k].length : 'object'}`).join(', ') : 'empty');
-    return data || defaultData;
+    console.log("Redis load: raw data received:", typeof data, data ? "has data" : "null/empty");
+    if (data) {
+      const parsed = typeof data === 'string' ? JSON.parse(data) : data;
+      console.log("Redis load: parsed data, entries:", Object.keys(parsed).map(k => `${k}: ${Array.isArray(parsed[k]) ? parsed[k].length : 'object'}`).join(', '));
+      return parsed;
+    } else {
+      console.log("Redis load: no data found, using default");
+      return defaultData;
+    }
   } catch (e) {
     console.error('Redis load error:', e.message);
     return defaultData;
