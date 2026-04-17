@@ -55,7 +55,8 @@ async function loadData() {
     if (data) {
       const parsed = typeof data === 'string' ? JSON.parse(data) : data;
       console.log("Redis load: parsed data, entries:", Object.keys(parsed).map(k => `${k}: ${Array.isArray(parsed[k]) ? parsed[k].length : 'object'}`).join(', '));
-      return parsed;
+      // Merge with defaultData to ensure all arrays exist
+      return { ...defaultData, ...parsed };
     } else {
       console.log("Redis load: no data found, using default");
       return defaultData;
