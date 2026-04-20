@@ -12,10 +12,13 @@ interface TeacherData {
   school: string;
   subject: string;
   grade?: number;
+  grades?: number[];
   username: string;
   password: string;
   schoolYear: number;
   profilePicture?: string;
+  status?: string;
+  createdAt?: number;
 }
 
 interface StudentData {
@@ -1781,10 +1784,10 @@ export default function TeacherPortal() {
     const combinedStudents = [...studentsData, ...allStudents.filter(s => !studentsData.some(d => d.id === s.id))];
     const myStudents = combinedStudents.filter(s => s.school === loggedInTeacher?.school);
     
-    // Filter by teacher's assigned grade
+    // Filter by teacher's assigned grades
     let filteredByGrade = myStudents;
-    if (loggedInTeacher?.grade) {
-      filteredByGrade = myStudents.filter(s => s.grade === loggedInTeacher.grade);
+    if (loggedInTeacher?.grades && loggedInTeacher.grades.length > 0) {
+      filteredByGrade = myStudents.filter(s => loggedInTeacher.grades!.includes(s.grade));
     }
     
     const gradeFilter = localStorage.getItem("teacherGradeFilter") || "";
@@ -2244,7 +2247,10 @@ export default function TeacherPortal() {
   const storedStudentsList = localStorage.getItem("studentsData");
   const allStudentsList: StudentData[] = storedStudentsList ? JSON.parse(storedStudentsList) : [];
   const combinedStudentsList = [...studentsData, ...allStudentsList.filter(s => !studentsData.some(d => d.id === s.id))];
-  const schoolStudents = combinedStudentsList.filter(s => s.school === loggedInTeacher.school && s.grade === loggedInTeacher.grade);
+  const schoolStudents = combinedStudentsList.filter(s =>
+    s.school === loggedInTeacher.school &&
+    (!loggedInTeacher.grades || loggedInTeacher.grades.length === 0 || loggedInTeacher.grades.includes(s.grade))
+  );
 
   const storedTeachersList = localStorage.getItem("teachersData");
   const allTeachersList: TeacherData[] = storedTeachersList ? JSON.parse(storedTeachersList) : [];
