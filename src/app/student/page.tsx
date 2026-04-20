@@ -764,7 +764,7 @@ const PRIMARY_SUBJECTS = useMemo(() => [
     const schoolTeachers = teachersList.filter((t: any) => t.school === loggedInStudent.school);
     const allTeachers = [...schoolTeachers, ...localTeachers.filter((t: any) => !schoolTeachers.some((st: any) => st.id === t.id))];
     const teacher = allTeachers.find((t: any) => t.subject && t.subject.split(',').map((s: string) => s.trim()).includes(subject) && t.grade === loggedInStudent.grade);
-    return teacher ? teacher.name : coursesByGrade[loggedInStudent.grade]?.find((c: any) => c.name === subject)?.teacher || "TBA";
+    return teacher ? teacher.name : "TBA";
   };
 
   const coursesWithRealTeachers = allCourses.map((course: any) => ({
@@ -777,7 +777,7 @@ const PRIMARY_SUBJECTS = useMemo(() => [
   const examTimetable = allExamTimetable.filter(et => et.grade === loggedInStudent.grade);
   const weeklyTimetable = allWeeklyTimetable.filter(wt => wt.grade === loggedInStudent.grade);
   const studyMaterials = filterBySubjects(allStudyMaterials.filter(sm => sm.grade === loggedInStudent.grade));
-  const courses = coursesList.length > 0 ? coursesWithRealTeachers : coursesByGrade[loggedInStudent.grade] || [];
+  const courses = coursesWithRealTeachers;
 
   const gpaValues: Record<string, string> = { "A": "4.0", "A-": "3.7", "B+": "3.3", "B": "3.0", "B-": "2.7", "C+": "2.3", "C": "2.0" };
   const avgGrade = courses.length > 0 ? courses.reduce((acc, c) => acc + (gpaValues[c.grade] ? parseFloat(gpaValues[c.grade]) : 0), 0) / courses.length : 0;
@@ -1473,6 +1473,7 @@ const grade10Subjects = [
     'Xitsonga Home Language', 
     'Tshivenda Home Language',
     // Languages - First Additional
+    'English First Additional Language',
     'Afrikaans First Additional Language',
     'isiZulu First Additional Language',
     'isiXhosa First Additional Language',
