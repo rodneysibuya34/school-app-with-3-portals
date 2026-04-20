@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Outfit, DM_Sans } from "next/font/google";
 import "./globals.css";
 
@@ -22,8 +22,13 @@ export const metadata: Metadata = {
     icon: "/favicon.ico",
     apple: "/icon-192x192.svg",
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
   themeColor: "#3B82F6",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
 };
 
 export default function RootLayout({
