@@ -93,6 +93,10 @@ export async function getUnreadNotificationsCount(userId: string, userType: stri
   return db.getUnreadNotificationsCount(userId, userType);
 }
 
+export async function clearAllData() {
+  return db.clearAllData();
+}
+
 export async function getPushSubscriptions(userId: string, userType: string) {
   return db.getPushSubscriptions(userId, userType);
 }

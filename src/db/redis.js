@@ -88,6 +88,13 @@ function clearCache() {
   cachedData = null;
 }
 
+async function clearAllData() {
+  console.log("Clearing all Redis data...");
+  await saveData(defaultData);
+  cachedData = null;
+  console.log("All data cleared successfully");
+}
+
 async function getData() {
   if (!cachedData) {
     cachedData = await loadData();
@@ -551,5 +558,6 @@ export {
   addPushSubscription,
   removePushSubscription,
   getData,
-  clearCache
+  clearCache,
+  clearAllData
 };
