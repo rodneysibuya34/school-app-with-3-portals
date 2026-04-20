@@ -1132,7 +1132,7 @@ const PRIMARY_SUBJECTS = useMemo(() => [
                 <input
                   type="file"
                   id={`hw-submit-${hw.id}`}
-                  accept="image/*"
+                  accept=".pdf,.doc,.docx,.txt,image/*"
                   capture="environment"
                   className="hidden"
                   onChange={(e) => {
@@ -1141,7 +1141,7 @@ const PRIMARY_SUBJECTS = useMemo(() => [
                   }}
                 />
                 <label htmlFor={`hw-submit-${hw.id}`} className="flex-1 px-4 py-2 rounded-lg bg-amber-600/20 text-amber-400 text-sm text-center hover:bg-amber-600/30 cursor-pointer">
-                  {submittingHomeworkId === hw.id ? "Submitting..." : "Submit as Photo"}
+                  {submittingHomeworkId === hw.id ? "Submitting..." : "Submit Assignment"}
                 </label>
               </div>
             )}

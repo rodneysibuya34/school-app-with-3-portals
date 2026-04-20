@@ -1155,14 +1155,48 @@ export default function TeacherPortal() {
         <div className="mt-12">
           <h2 className="text-2xl font-bold text-white mb-6">Submitted Homework</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Object.entries(submittedHomework).map(([hwId, imageData]) => {
+            {Object.entries(submittedHomework).map(([hwId, fileData]) => {
               const hw = homeworkList.find(h => h.id === parseInt(hwId));
               if (!hw) return null;
+
+              // Check if it's an image or document
+              const isImage = fileData.startsWith('data:image/');
+              const isPDF = fileData.startsWith('data:application/pdf');
+
               return (
                 <div key={hwId} className="p-6 rounded-2xl bg-green-900/20 border border-green-500/30">
                   <h3 className="text-lg font-semibold text-white mb-2">{hw.title}</h3>
                   <p className="text-slate-400 text-sm mb-2">Grade {hw.grade} - {hw.subject}</p>
-                  <img src={imageData} alt="Submitted homework" className="w-full rounded-lg mt-2" />
+
+                  {isImage ? (
+                    <img src={fileData} alt="Submitted homework" className="w-full rounded-lg mt-2" />
+                  ) : isPDF ? (
+                    <div className="mt-2">
+                      <iframe
+                        src={fileData}
+                        className="w-full h-64 rounded-lg border border-slate-600"
+                        title="Submitted PDF homework"
+                      />
+                      <a
+                        href={fileData}
+                        download={`homework_${hwId}.pdf`}
+                        className="inline-block mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                      >
+                        Download PDF
+                      </a>
+                    </div>
+                  ) : (
+                    <div className="mt-2 p-4 bg-slate-800 rounded-lg">
+                      <p className="text-slate-300 mb-2">Document submitted</p>
+                      <a
+                        href={fileData}
+                        download={`homework_${hwId}`}
+                        className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                      >
+                        Download File
+                      </a>
+                    </div>
+                  )}
                 </div>
               );
             })}
