@@ -39,7 +39,8 @@ const defaultData = {
   courses: [],
   chat: [],
   notifications: [],
-  pushSubscriptions: []
+  pushSubscriptions: [],
+  testResults: []
 };
 
 async function loadData() {
@@ -308,6 +309,29 @@ async function updateTest(id, updates) {
   }
 }
 
+/**
+ * @param {string} [school]
+ */
+function getTestResults(school) {
+  return getData().then(d => {
+    let results = d.testResults || [];
+    if (school) {
+      results = results.filter(r => r.school === school);
+    }
+    return results.sort((a, b) => b.takenAt - a.takenAt);
+  });
+}
+
+function addTestResult(resultData) {
+  return getData().then(d => {
+    const newResult = { id: Date.now(), ...resultData, takenAt: Date.now() };
+    if (!d.testResults) d.testResults = [];
+    d.testResults.push(newResult);
+    saveData(d);
+    return newResult;
+  });
+}
+
 function getStudyMaterials() {
   return getData().then(d => d.studyMaterials.sort((a, b) => b.id - a.id));
 }
@@ -555,6 +579,8 @@ export {
   addTest,
   updateTest,
   deleteTest,
+  getTestResults,
+  addTestResult,
   getStudyMaterials,
   addStudyMaterial,
   deleteStudyMaterial,

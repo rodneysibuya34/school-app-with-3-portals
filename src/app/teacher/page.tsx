@@ -190,6 +190,7 @@ export default function TeacherPortal() {
   const [showStudentGradesModal, setShowStudentGradesModal] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<StudentData | null>(null);
   const [studentGrades, setStudentGrades] = useState<Record<number, { correct: number; total: number }>>({});
+  const [testResultsFromDb, setTestResultsFromDb] = useState<{ id: number; testId: number; testTitle: string; studentId: number; studentName: string; grade: number; school: string; subject: string; correct: number; total: number; percentage: number; takenAt: number }[]>([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [newHomework, setNewHomework] = useState({ title: "", description: "", dueDate: "", grade: "", subject: "" });
   const [homeworkFile, setHomeworkFile] = useState<{ name: string; data: string; type: string } | null>(null);
@@ -261,14 +262,15 @@ export default function TeacherPortal() {
     async function fetchContentData() {
       if (!loggedInTeacher?.school) return;
       try {
-        const [hwRes, testsRes, smRes, examRes, weeklyRes, annRes, coursesRes] = await Promise.all([
+        const [hwRes, testsRes, smRes, examRes, weeklyRes, annRes, coursesRes, testResultsRes] = await Promise.all([
           fetch('/api/homework?school=' + encodeURIComponent(loggedInTeacher.school)),
           fetch('/api/tests?school=' + encodeURIComponent(loggedInTeacher.school)),
           fetch('/api/study-materials'),
           fetch('/api/exam-timetable?school=' + encodeURIComponent(loggedInTeacher.school)),
           fetch('/api/weekly-timetable?school=' + encodeURIComponent(loggedInTeacher.school)),
           fetch('/api/announcements?school=' + encodeURIComponent(loggedInTeacher.school)),
-          fetch('/api/courses')
+          fetch('/api/courses'),
+          fetch('/api/test-results?school=' + encodeURIComponent(loggedInTeacher.school))
         ]);
         
         let hwData = hwRes.ok ? await hwRes.json() : [];
@@ -278,6 +280,7 @@ export default function TeacherPortal() {
         let weeklyData = weeklyRes.ok ? await weeklyRes.json() : [];
         let annData = annRes.ok ? await annRes.json() : [];
         const coursesData = coursesRes.ok ? await coursesRes.json() : [];
+        let testResultsData = testResultsRes.ok ? await testResultsRes.json() : [];
         
         const localHw = localStorage.getItem("homeworkData");
         const localTests = localStorage.getItem("testData");
@@ -323,6 +326,7 @@ export default function TeacherPortal() {
         setExamTimetable(Array.isArray(examData) ? examData : []);
         setWeeklyTimetable(Array.isArray(weeklyData) ? weeklyData : []);
         setAnnouncements(Array.isArray(annData) ? annData : []);
+        setTestResultsFromDb(testResultsData);
       } catch (error) {
         console.error("Error fetching content data:", error);
       }
@@ -1340,6 +1344,40 @@ export default function TeacherPortal() {
           </div>
         ))}
       </div>
+
+      {testResultsFromDb.length > 0 && (
+        <div className="mt-8">
+          <h2 className="text-xl font-semibold text-white mb-4">Test Results</h2>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-white/10">
+                  <th className="text-left py-3 px-4 text-slate-400">Student</th>
+                  <th className="text-left py-3 px-4 text-slate-400">Test</th>
+                  <th className="text-left py-3 px-4 text-slate-400">Subject</th>
+                  <th className="text-left py-3 px-4 text-slate-400">Score</th>
+                  <th className="text-left py-3 px-4 text-slate-400">Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {testResultsFromDb.map((result, idx) => (
+                  <tr key={idx} className="border-b border-white/5">
+                    <td className="py-3 px-4 text-white">{result.studentName}</td>
+                    <td className="py-3 px-4 text-purple-400">{result.testTitle}</td>
+                    <td className="py-3 px-4 text-slate-300">{result.subject}</td>
+                    <td className="py-3 px-4">
+                      <span className={`px-2 py-1 rounded-full text-sm ${result.percentage >= 70 ? 'bg-green-500/20 text-green-400' : result.percentage >= 50 ? 'bg-yellow-500/20 text-yellow-400' : 'bg-red-500/20 text-red-400'}`}>
+                        {result.correct}/{result.total} ({result.percentage}%)
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 text-slate-400">{new Date(result.takenAt).toLocaleDateString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {showTestModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">

@@ -11,6 +11,9 @@ export async function addTest(data: any) { return db.addTest(data); }
 export async function updateTest(id: number, data: any) { return db.updateTest(id, data); }
 export async function deleteTest(id: number) { db.deleteTest(id); }
 
+export async function getTestResults(school?: string) { return db.getTestResults(school); }
+export async function addTestResult(data: any) { return db.addTestResult(data); }
+
 export async function getStudyMaterials() { return db.getStudyMaterials(); }
 export async function addStudyMaterial(data: any) { return db.addStudyMaterial(data); }
 export async function deleteStudyMaterial(id: number) { db.deleteStudyMaterial(id); }

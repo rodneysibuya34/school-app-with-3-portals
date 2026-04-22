@@ -794,7 +794,7 @@ const PRIMARY_SUBJECTS = useMemo(() => [
     setTimeLeft((test.duration || test.timeLimit || 60) * 60);
   };
 
-  const handleSubmitTest = () => {
+  const handleSubmitTest = async () => {
     if (!activeTest) return;
     let correct = 0;
     activeTest.questions.forEach((q) => { if (answers[q.id] === q.correctAnswer) correct++; });
@@ -810,6 +810,27 @@ const PRIMARY_SUBJECTS = useMemo(() => [
       testResults[activeTest.id] = score;
       localStorage.setItem(`testResults_${loggedInStudent.id}`, JSON.stringify(testResults));
       setCompletedTests(testResults);
+      
+      try {
+        await fetch('/api/test-results', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            testId: activeTest.id,
+            testTitle: activeTest.title,
+            studentId: loggedInStudent.id,
+            studentName: loggedInStudent.name,
+            grade: loggedInStudent.grade,
+            school: loggedInStudent.school,
+            subject: activeTest.subject,
+            correct: score.correct,
+            total: score.total,
+            percentage: Math.round(percentage)
+          })
+        });
+      } catch (e) {
+        console.error("Failed to save test result to server:", e);
+      }
       
       if (percentage < 30) {
         const strugglingKey = `strugglingStudents_${activeTest.subject || 'General'}`;
