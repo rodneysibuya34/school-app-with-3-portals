@@ -272,8 +272,16 @@ async function deleteHomework(id) {
   await saveData(d);
 }
 
-function getTests() {
-  return getData().then(d => d.tests.sort((a, b) => b.id - a.id));
+/**
+ * @param {string} [school]
+ */
+function getTests(school) {
+  return getData().then(d => {
+    if (school) {
+      return d.tests.filter(t => t.school === school).sort((a, b) => b.id - a.id);
+    }
+    return d.tests.sort((a, b) => b.id - a.id);
+  });
 }
 
 async function addTest(testData) {

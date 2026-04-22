@@ -586,7 +586,7 @@ const PRIMARY_SUBJECTS = useMemo(() => [
       try {
         const [hwRes, testsRes, smRes, examRes, weeklyRes, annRes, coursesRes, teachersRes] = await Promise.all([
           fetch('/api/homework?school=' + encodeURIComponent(parsedStudent.school)),
-          fetch('/api/tests'),
+          fetch('/api/tests?school=' + encodeURIComponent(parsedStudent.school)),
           fetch('/api/study-materials'),
           fetch('/api/exam-timetable?school=' + encodeURIComponent(parsedStudent.school)),
           fetch('/api/weekly-timetable?school=' + encodeURIComponent(parsedStudent.school)),

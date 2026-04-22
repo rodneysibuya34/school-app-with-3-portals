@@ -6,7 +6,7 @@ export async function getHomework(school?: string) { return db.getHomework(schoo
 export async function addHomework(data: any) { return db.addHomework(data); }
 export async function deleteHomework(id: number) { db.deleteHomework(id); }
 
-export async function getTests() { return db.getTests(); }
+export async function getTests(school?: string) { return db.getTests(school); }
 export async function addTest(data: any) { return db.addTest(data); }
 export async function updateTest(id: number, data: any) { return db.updateTest(id, data); }
 export async function deleteTest(id: number) { db.deleteTest(id); }
