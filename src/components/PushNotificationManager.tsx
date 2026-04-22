@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Bell, BellOff, Settings } from "lucide-react";
+import { getFCMToken, onFirebaseMessage } from "@/lib/firebase";
 
 interface PushNotificationManagerProps {
   userId: string;
@@ -13,22 +14,22 @@ export default function PushNotificationManager({ userId, userType }: PushNotifi
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [permission, setPermission] = useState<NotificationPermission>('default');
   const [loading, setLoading] = useState(false);
+  const [fcmToken, setFcmToken] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check if push notifications are supported
-    if ('serviceWorker' in navigator && 'PushManager' in window) {
+    if (typeof window !== 'undefined' && 'Notification' in window) {
       setIsSupported(true);
       setPermission(Notification.permission);
 
-      // Check if already subscribed
-      checkSubscriptionStatus();
+      if (Notification.permission === 'granted') {
+        checkExistingSubscription();
+      }
     }
 
-    // Register service worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')
         .then((registration) => {
-          console.log('Service Worker registered successfully:', registration);
+          console.log('Service Worker registered:', registration);
         })
         .catch((error) => {
           console.error('Service Worker registration failed:', error);
@@ -36,13 +37,15 @@ export default function PushNotificationManager({ userId, userType }: PushNotifi
     }
   }, []);
 
-  const checkSubscriptionStatus = async () => {
+  const checkExistingSubscription = async () => {
     try {
-      const registration = await navigator.serviceWorker.ready;
-      const subscription = await registration.pushManager.getSubscription();
-      setIsSubscribed(!!subscription);
+      const token = await getFCMToken();
+      if (token) {
+        setFcmToken(token);
+        setIsSubscribed(true);
+      }
     } catch (error) {
-      console.error('Error checking subscription status:', error);
+      console.error('Error checking subscription:', error);
     }
   };
 
@@ -60,43 +63,40 @@ export default function PushNotificationManager({ userId, userType }: PushNotifi
   const subscribeToNotifications = async () => {
     setLoading(true);
     try {
-      // Request permission first
       const granted = await requestPermission();
       if (!granted) {
         alert('Notification permission denied. Please enable notifications in your browser settings.');
         return;
       }
 
-      const registration = await navigator.serviceWorker.ready;
+      const token = await getFCMToken();
+      
+      if (!token) {
+        alert('Failed to get notification token. Please try again.');
+        return;
+      }
 
-      // You'll need to get these from your push service (like Firebase, OneSignal, etc.)
-      // For demo purposes, we'll use a placeholder
-      const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || 'placeholder-key';
+      setFcmToken(token);
 
-      const subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: vapidPublicKey
-      });
-
-      // Send subscription to your server
       const response = await fetch('/api/push-subscription', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId,
           userType,
-          subscription: subscription.toJSON()
+          fcmToken: token,
+          subscription: null
         })
       });
 
       if (response.ok) {
         setIsSubscribed(true);
-        alert('Push notifications enabled! You\'ll now receive notifications for new content.');
+        alert('Push notifications enabled! You\'ll receive notifications for new content.');
       } else {
         throw new Error('Failed to save subscription');
       }
     } catch (error) {
-      console.error('Error subscribing to push notifications:', error);
+      console.error('Error subscribing:', error);
       alert('Failed to enable push notifications. Please try again.');
     } finally {
       setLoading(false);
@@ -106,25 +106,20 @@ export default function PushNotificationManager({ userId, userType }: PushNotifi
   const unsubscribeFromNotifications = async () => {
     setLoading(true);
     try {
-      const registration = await navigator.serviceWorker.ready;
-      const subscription = await registration.pushManager.getSubscription();
-
-      if (subscription) {
-        await subscription.unsubscribe();
-
-        // Remove subscription from server
+      if (fcmToken) {
         await fetch('/api/push-subscription', {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId, userType })
+          body: JSON.stringify({ userId, userType, fcmToken })
         });
-
-        setIsSubscribed(false);
-        alert('Push notifications disabled.');
       }
+
+      setIsSubscribed(false);
+      setFcmToken(null);
+      alert('Push notifications disabled.');
     } catch (error) {
-      console.error('Error unsubscribing from push notifications:', error);
-      alert('Failed to disable push notifications. Please try again.');
+      console.error('Error unsubscribing:', error);
+      alert('Failed to disable push notifications.');
     } finally {
       setLoading(false);
     }
@@ -134,8 +129,7 @@ export default function PushNotificationManager({ userId, userType }: PushNotifi
     if (permission === 'granted') {
       new Notification('Test Notification', {
         body: 'This is a test push notification from Geleza Mzansi!',
-        icon: '/icon-192x192.png',
-        badge: '/icon-192x192.png'
+        icon: '/icon-192x192.png'
       });
     } else {
       alert('Please enable notifications first.');
@@ -186,7 +180,7 @@ export default function PushNotificationManager({ userId, userType }: PushNotifi
 
       {permission === 'denied' && (
         <span className="text-red-400 text-sm">
-          Notifications blocked. Enable in browser settings.
+          Blocked. Enable in browser settings.
         </span>
       )}
     </div>

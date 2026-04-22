@@ -570,6 +570,12 @@ function getPushSubscriptions(userId, userType) {
   );
 }
 
+function getPushSubscriptionsByGrade(school, grade) {
+  return getData().then(d =>
+    d.pushSubscriptions.filter(s => s.userType === 'student' && s.school === school && s.grade === grade)
+  );
+}
+
 async function addPushSubscription(subscriptionData) {
   const d = await getData();
   const subscription = {
@@ -641,6 +647,7 @@ export {
   deleteNotification,
   getUnreadNotificationsCount,
   getPushSubscriptions,
+  getPushSubscriptionsByGrade,
   addPushSubscription,
   removePushSubscription,
   getData,
