@@ -2,11 +2,19 @@
 
 ## Current State
 
-**Project Status**: ✅ Build passing with JSON file-based database
+**Project Status**: ✅ Build passing with Upstash Redis database
 
 Geleza Mzansi is a multi-portal school management system with 3 portals (Student, Teacher, Admin).
 Now supports both Primary School (Grades 4-7) and High School (Grades 8-12).
-Using JSON file storage for Vercel compatibility (localStorage/SQLite don't work in production).
+Using Upstash Redis for multi-device data persistence.
+
+## Recently Completed
+
+- [x] File upload now shows picker (not forced camera) - removed capture="environment" from all inputs
+- [x] Homework filtered by grade + school on student portal
+- [x] Exam timetable filtered by school on both teacher/student portals
+- [x] Weekly timetable filtered by school on both teacher/student portals
+- [x] Added school parameter to exam-timetable and weekly-timetable APIs
 
 ## Previously Completed
 

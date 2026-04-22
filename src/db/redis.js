@@ -318,8 +318,16 @@ async function deleteStudyMaterial(id) {
   await saveData(d);
 }
 
-function getExamTimetable() {
-  return getData().then(d => d.examTimetable.sort((a, b) => b.id - a.id));
+/**
+ * @param {string} [school]
+ */
+function getExamTimetable(school) {
+  return getData().then(d => {
+    if (school) {
+      return d.examTimetable.filter(et => et.school === school).sort((a, b) => b.id - a.id);
+    }
+    return d.examTimetable.sort((a, b) => b.id - a.id);
+  });
 }
 
 async function addExamTimetable(etData) {
@@ -336,8 +344,16 @@ async function deleteExamTimetable(id) {
   await saveData(d);
 }
 
-function getWeeklyTimetable() {
-  return getData().then(d => d.weeklyTimetable.sort((a, b) => b.id - a.id));
+/**
+ * @param {string} [school]
+ */
+function getWeeklyTimetable(school) {
+  return getData().then(d => {
+    if (school) {
+      return d.weeklyTimetable.filter(wt => wt.school === school).sort((a, b) => b.id - a.id);
+    }
+    return d.weeklyTimetable.sort((a, b) => b.id - a.id);
+  });
 }
 
 async function addWeeklyTimetable(wtData) {

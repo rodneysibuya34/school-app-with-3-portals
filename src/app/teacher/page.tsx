@@ -265,8 +265,8 @@ export default function TeacherPortal() {
           fetch('/api/homework?school=' + encodeURIComponent(loggedInTeacher.school)),
           fetch('/api/tests'),
           fetch('/api/study-materials'),
-          fetch('/api/exam-timetable'),
-          fetch('/api/weekly-timetable'),
+          fetch('/api/exam-timetable?school=' + encodeURIComponent(loggedInTeacher.school)),
+          fetch('/api/weekly-timetable?school=' + encodeURIComponent(loggedInTeacher.school)),
           fetch('/api/announcements?school=' + encodeURIComponent(loggedInTeacher.school)),
           fetch('/api/courses')
         ]);
@@ -1262,7 +1262,6 @@ export default function TeacherPortal() {
                   type="file" 
                   id="homework-file"
                   accept=".pdf,.doc,.docx,.txt,image/*"
-                  capture="environment"
                   onChange={handleFileChange}
                   className="hidden"
                 />
@@ -1696,7 +1695,6 @@ export default function TeacherPortal() {
                   type="file" 
                   id="exam-file"
                   accept=".pdf,.doc,.docx,.txt,image/*"
-                  capture="environment"
                   onChange={(e) => { const file = e.target.files?.[0]; if (file) { const reader = new FileReader(); reader.onloadend = () => setExamFile({ name: file.name, data: reader.result as string, type: file.type }); reader.readAsDataURL(file); }}}
                   className="hidden"
                 />
@@ -1789,7 +1787,6 @@ export default function TeacherPortal() {
                   type="file" 
                   id="schedule-file"
                   accept=".pdf,.doc,.docx,.txt,image/*"
-                  capture="environment"
                   onChange={(e) => { const file = e.target.files?.[0]; if (file) { const reader = new FileReader(); reader.onloadend = () => setScheduleFile({ name: file.name, data: reader.result as string, type: file.type }); reader.readAsDataURL(file); }}}
                   className="hidden"
                 />
@@ -2078,7 +2075,7 @@ export default function TeacherPortal() {
               </div>
               <div>
                 <label className="block text-sm text-slate-400 mb-2">File</label>
-                <input type="file" id="study-material-file" accept=".pdf,.doc,.docx,.txt,image/*" capture="environment" className="hidden" onChange={(e) => {
+                <input type="file" id="study-material-file" accept=".pdf,.doc,.docx,.txt,image/*" className="hidden" onChange={(e) => {
                   const file = e.target.files?.[0];
                   if (file) {
                     const reader = new FileReader();
@@ -2185,7 +2182,7 @@ export default function TeacherPortal() {
                 <input type="text" value={chatPassword} onChange={(e) => setChatPassword(e.target.value)} placeholder="Set password for this message" className="w-full px-4 py-2 rounded-xl bg-slate-700 border border-white/10 text-white mb-3 focus:outline-none focus:border-purple-500" />
               )}
               <div className="flex gap-2 mb-3">
-                <input type="file" id="chat-file" accept=".pdf,.doc,.docx,.txt,image/*" capture="environment" className="hidden" onChange={(e) => {
+                <input type="file" id="chat-file" accept=".pdf,.doc,.docx,.txt,image/*" className="hidden" onChange={(e) => {
                   const file = e.target.files?.[0];
                   if (file) {
                     const reader = new FileReader();

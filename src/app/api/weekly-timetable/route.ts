@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 import { getWeeklyTimetable, addWeeklyTimetable, deleteWeeklyTimetable } from "@/actions/content-actions";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const data = await getWeeklyTimetable();
+    const { searchParams } = new URL(request.url);
+    const school = searchParams.get("school") || undefined;
+    const data = await getWeeklyTimetable(school);
     return NextResponse.json(data);
   } catch (error: any) {
     console.error("Error fetching weekly timetable:", error);

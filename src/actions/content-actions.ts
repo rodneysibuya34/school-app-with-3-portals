@@ -15,11 +15,11 @@ export async function getStudyMaterials() { return db.getStudyMaterials(); }
 export async function addStudyMaterial(data: any) { return db.addStudyMaterial(data); }
 export async function deleteStudyMaterial(id: number) { db.deleteStudyMaterial(id); }
 
-export async function getExamTimetable() { return db.getExamTimetable(); }
+export async function getExamTimetable(school?: string) { return db.getExamTimetable(school); }
 export async function addExamTimetable(data: any) { return db.addExamTimetable(data); }
 export async function deleteExamTimetable(id: number) { db.deleteExamTimetable(id); }
 
-export async function getWeeklyTimetable() { return db.getWeeklyTimetable(); }
+export async function getWeeklyTimetable(school?: string) { return db.getWeeklyTimetable(school); }
 export async function addWeeklyTimetable(data: any) { return db.addWeeklyTimetable(data); }
 export async function deleteWeeklyTimetable(id: number) { db.deleteWeeklyTimetable(id); }
 

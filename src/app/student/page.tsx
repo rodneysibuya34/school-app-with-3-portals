@@ -588,8 +588,8 @@ const PRIMARY_SUBJECTS = useMemo(() => [
           fetch('/api/homework?school=' + encodeURIComponent(parsedStudent.school)),
           fetch('/api/tests'),
           fetch('/api/study-materials'),
-          fetch('/api/exam-timetable'),
-          fetch('/api/weekly-timetable'),
+          fetch('/api/exam-timetable?school=' + encodeURIComponent(parsedStudent.school)),
+          fetch('/api/weekly-timetable?school=' + encodeURIComponent(parsedStudent.school)),
           fetch('/api/announcements?school=' + encodeURIComponent(parsedStudent.school)),
           fetch('/api/courses'),
           fetch('/api/teachers')
@@ -653,11 +653,11 @@ const PRIMARY_SUBJECTS = useMemo(() => [
           localAnnData.filter((a: any) => a.school === parsedStudent.school).forEach((a: any) => { if (!annIds.has(a.id)) annData.push(a); });
         }
         
-        setHomeworkList(hwData);
-        setTestList(testsData);
-        setStudyMaterialsList(smData);
-        setExamTimetableList(examData);
-        setWeeklyTimetableList(weeklyData);
+        setHomeworkList(hwData.filter((h: any) => h.grade === parsedStudent.grade && h.school === parsedStudent.school));
+        setTestList(testsData.filter((t: any) => t.grade === parsedStudent.grade));
+        setStudyMaterialsList(smData.filter((s: any) => s.grade === parsedStudent.grade));
+        setExamTimetableList(examData.filter((e: any) => e.grade === parsedStudent.grade && e.school === parsedStudent.school));
+        setWeeklyTimetableList(weeklyData.filter((w: any) => w.grade === parsedStudent.grade && w.school === parsedStudent.school));
         setAnnouncements(annData);
         setCoursesList(coursesData);
         setTeachersList(teachersData);
@@ -1133,7 +1133,6 @@ const PRIMARY_SUBJECTS = useMemo(() => [
                   type="file"
                   id={`hw-submit-${hw.id}`}
                   accept=".pdf,.doc,.docx,.txt,image/*"
-                  capture="environment"
                   className="hidden"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
