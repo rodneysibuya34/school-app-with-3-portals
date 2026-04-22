@@ -763,7 +763,12 @@ const PRIMARY_SUBJECTS = useMemo(() => [
     const localTeachers = storedTeachers ? JSON.parse(storedTeachers) : [];
     const schoolTeachers = teachersList.filter((t: any) => t.school === loggedInStudent.school);
     const allTeachers = [...schoolTeachers, ...localTeachers.filter((t: any) => !schoolTeachers.some((st: any) => st.id === t.id))];
-    const teacher = allTeachers.find((t: any) => t.subject && t.subject.split(',').map((s: string) => s.trim()).includes(subject) && t.grade === loggedInStudent.grade);
+    const teacher = allTeachers.find((t: any) => {
+      const teacherSubjects = t.subject ? t.subject.split(',').map((s: string) => s.trim()) : [];
+      const teachesSubject = teacherSubjects.includes(subject);
+      const teachesGrade = t.grades ? t.grades.includes(loggedInStudent.grade) : (t.grade === loggedInStudent.grade);
+      return teachesSubject && teachesGrade;
+    });
     return teacher ? teacher.name : "TBA";
   };
 
