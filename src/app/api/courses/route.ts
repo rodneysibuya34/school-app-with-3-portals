@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 import { getCourses, addCourse, deleteCourse } from "@/actions/content-actions";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const data = await getCourses();
+    const { searchParams } = new URL(request.url);
+    const school = searchParams.get("school") || undefined;
+    const data = await getCourses(school);
     return NextResponse.json(data);
   } catch (error: any) {
     console.error("Error fetching courses:", error);

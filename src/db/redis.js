@@ -332,8 +332,17 @@ function addTestResult(resultData) {
   });
 }
 
-function getStudyMaterials() {
-  return getData().then(d => d.studyMaterials.sort((a, b) => b.id - a.id));
+/**
+ * @param {string} [school]
+ */
+function getStudyMaterials(school) {
+  return getData().then(d => {
+    let materials = d.studyMaterials.sort((a, b) => b.id - a.id);
+    if (school) {
+      materials = materials.filter(sm => sm.school === school);
+    }
+    return materials;
+  });
 }
 
 async function addStudyMaterial(smData) {
@@ -425,8 +434,17 @@ async function deleteAnnouncement(id) {
   await saveData(d);
 }
 
-function getCourses() {
-  return getData().then(d => d.courses.sort((a, b) => b.id - a.id));
+/**
+ * @param {string} [school]
+ */
+function getCourses(school) {
+  return getData().then(d => {
+    let courses = d.courses.sort((a, b) => b.id - a.id);
+    if (school) {
+      courses = courses.filter(c => c.school === school);
+    }
+    return courses;
+  });
 }
 
 async function addCourse(courseData) {

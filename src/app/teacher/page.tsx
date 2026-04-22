@@ -265,11 +265,11 @@ export default function TeacherPortal() {
         const [hwRes, testsRes, smRes, examRes, weeklyRes, annRes, coursesRes, testResultsRes] = await Promise.all([
           fetch('/api/homework?school=' + encodeURIComponent(loggedInTeacher.school)),
           fetch('/api/tests?school=' + encodeURIComponent(loggedInTeacher.school)),
-          fetch('/api/study-materials'),
+          fetch('/api/study-materials?school=' + encodeURIComponent(loggedInTeacher.school)),
           fetch('/api/exam-timetable?school=' + encodeURIComponent(loggedInTeacher.school)),
           fetch('/api/weekly-timetable?school=' + encodeURIComponent(loggedInTeacher.school)),
           fetch('/api/announcements?school=' + encodeURIComponent(loggedInTeacher.school)),
-          fetch('/api/courses'),
+          fetch('/api/courses?school=' + encodeURIComponent(loggedInTeacher.school)),
           fetch('/api/test-results?school=' + encodeURIComponent(loggedInTeacher.school))
         ]);
         

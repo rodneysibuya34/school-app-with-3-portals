@@ -14,7 +14,7 @@ export async function deleteTest(id: number) { db.deleteTest(id); }
 export async function getTestResults(school?: string) { return db.getTestResults(school); }
 export async function addTestResult(data: any) { return db.addTestResult(data); }
 
-export async function getStudyMaterials() { return db.getStudyMaterials(); }
+export async function getStudyMaterials(school?: string) { return db.getStudyMaterials(school); }
 export async function addStudyMaterial(data: any) { return db.addStudyMaterial(data); }
 export async function deleteStudyMaterial(id: number) { db.deleteStudyMaterial(id); }
 
@@ -30,7 +30,7 @@ export async function getAnnouncements(school?: string) { return db.getAnnouncem
 export async function addAnnouncement(data: any) { return db.addAnnouncement(data); }
 export async function deleteAnnouncement(id: number) { db.deleteAnnouncement(id); }
 
-export async function getCourses() { return db.getCourses(); }
+export async function getCourses(school?: string) { return db.getCourses(school); }
 export async function addCourse(data: any) { return db.addCourse(data); }
 export async function deleteCourse(id: number) { db.deleteCourse(id); }
 
