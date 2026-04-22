@@ -191,6 +191,8 @@ export default function TeacherPortal() {
   const [selectedStudent, setSelectedStudent] = useState<StudentData | null>(null);
   const [studentGrades, setStudentGrades] = useState<Record<number, { correct: number; total: number }>>({});
   const [testResultsFromDb, setTestResultsFromDb] = useState<{ id: number; testId: number; testTitle: string; studentId: number; studentName: string; grade: number; school: string; subject: string; correct: number; total: number; percentage: number; takenAt: number }[]>([]);
+  const [teachersFromDb, setTeachersFromDb] = useState<TeacherData[]>([]);
+  const [studentsFromDb, setStudentsFromDb] = useState<StudentData[]>([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [newHomework, setNewHomework] = useState({ title: "", description: "", dueDate: "", grade: "", subject: "" });
   const [homeworkFile, setHomeworkFile] = useState<{ name: string; data: string; type: string } | null>(null);
@@ -262,7 +264,7 @@ export default function TeacherPortal() {
     async function fetchContentData() {
       if (!loggedInTeacher?.school) return;
       try {
-        const [hwRes, testsRes, smRes, examRes, weeklyRes, annRes, coursesRes, testResultsRes] = await Promise.all([
+        const [hwRes, testsRes, smRes, examRes, weeklyRes, annRes, coursesRes, testResultsRes, teachersDbRes, studentsDbRes] = await Promise.all([
           fetch('/api/homework?school=' + encodeURIComponent(loggedInTeacher.school)),
           fetch('/api/tests?school=' + encodeURIComponent(loggedInTeacher.school)),
           fetch('/api/study-materials?school=' + encodeURIComponent(loggedInTeacher.school)),
@@ -270,7 +272,9 @@ export default function TeacherPortal() {
           fetch('/api/weekly-timetable?school=' + encodeURIComponent(loggedInTeacher.school)),
           fetch('/api/announcements?school=' + encodeURIComponent(loggedInTeacher.school)),
           fetch('/api/courses?school=' + encodeURIComponent(loggedInTeacher.school)),
-          fetch('/api/test-results?school=' + encodeURIComponent(loggedInTeacher.school))
+          fetch('/api/test-results?school=' + encodeURIComponent(loggedInTeacher.school)),
+          fetch('/api/teachers?school=' + encodeURIComponent(loggedInTeacher.school)),
+          fetch('/api/students?school=' + encodeURIComponent(loggedInTeacher.school))
         ]);
         
         let hwData = hwRes.ok ? await hwRes.json() : [];
@@ -281,6 +285,8 @@ export default function TeacherPortal() {
         let annData = annRes.ok ? await annRes.json() : [];
         const coursesData = coursesRes.ok ? await coursesRes.json() : [];
         let testResultsData = testResultsRes.ok ? await testResultsRes.json() : [];
+        const teachersFromDb = teachersDbRes.ok ? await teachersDbRes.json() : [];
+        const studentsFromDb = studentsDbRes.ok ? await studentsDbRes.json() : [];
         
         const localHw = localStorage.getItem("homeworkData");
         const localTests = localStorage.getItem("testData");
@@ -327,6 +333,8 @@ export default function TeacherPortal() {
         setWeeklyTimetable(Array.isArray(weeklyData) ? weeklyData : []);
         setAnnouncements(Array.isArray(annData) ? annData : []);
         setTestResultsFromDb(testResultsData);
+        setTeachersFromDb(teachersFromDb);
+        setStudentsFromDb(studentsFromDb);
       } catch (error) {
         console.error("Error fetching content data:", error);
       }
@@ -1850,7 +1858,7 @@ export default function TeacherPortal() {
   const renderStudents = () => {
     const storedStudents = localStorage.getItem("studentsData");
     const allStudents: StudentData[] = storedStudents ? JSON.parse(storedStudents) : [];
-    const combinedStudents = [...studentsData, ...allStudents.filter(s => !studentsData.some(d => d.id === s.id))];
+    const combinedStudents = [...studentsData, ...allStudents.filter(s => !studentsData.some(d => d.id === s.id)), ...studentsFromDb];
     const myStudents = combinedStudents.filter(s => s.school === loggedInTeacher?.school);
     
     // Filter by teacher's assigned grades
@@ -1908,7 +1916,7 @@ export default function TeacherPortal() {
   const renderSchoolStaff = () => {
     const storedTeachers = localStorage.getItem("teachersData");
     const allTeachers: TeacherData[] = storedTeachers ? JSON.parse(storedTeachers) : [];
-    const combinedTeachers = [...teachersData, ...allTeachers.filter(t => !teachersData.some(d => t.id === d.id))];
+    const combinedTeachers = [...teachersData, ...allTeachers.filter(t => !teachersData.some(d => t.id === d.id)), ...teachersFromDb];
     const schoolTeachers = combinedTeachers.filter(t => t.school === loggedInTeacher?.school && t.id !== loggedInTeacher?.id);
     
     return (
@@ -2315,7 +2323,7 @@ export default function TeacherPortal() {
 
   const storedStudentsList = localStorage.getItem("studentsData");
   const allStudentsList: StudentData[] = storedStudentsList ? JSON.parse(storedStudentsList) : [];
-  const combinedStudentsList = [...studentsData, ...allStudentsList.filter(s => !studentsData.some(d => d.id === s.id))];
+  const combinedStudentsList = [...studentsData, ...allStudentsList.filter(s => !studentsData.some(d => d.id === s.id)), ...studentsFromDb];
   const schoolStudents = combinedStudentsList.filter(s =>
     s.school === loggedInTeacher.school &&
     (!loggedInTeacher.grades || loggedInTeacher.grades.length === 0 || loggedInTeacher.grades.includes(s.grade))
@@ -2323,7 +2331,7 @@ export default function TeacherPortal() {
 
   const storedTeachersList = localStorage.getItem("teachersData");
   const allTeachersList: TeacherData[] = storedTeachersList ? JSON.parse(storedTeachersList) : [];
-  const combinedTeachersList = [...teachersData, ...allTeachersList.filter(t => !teachersData.some(d => t.id === d.id))];
+  const combinedTeachersList = [...teachersData, ...allTeachersList.filter(t => !teachersData.some(d => t.id === d.id)), ...teachersFromDb];
   const schoolTeachers = combinedTeachersList.filter(t => t.school === loggedInTeacher.school);
 
   const stats = [

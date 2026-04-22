@@ -18,8 +18,8 @@ export async function deleteSchool(id: number) {
   return db.deleteSchool(id);
 }
 
-export async function getTeachers() {
-  return db.getTeachers();
+export async function getTeachers(school?: string) {
+  return db.getTeachers(school);
 }
 
 export async function addTeacher(teacherData: any) {
@@ -35,8 +35,8 @@ export async function deleteTeacher(id: number) {
   return db.deleteTeacher(id);
 }
 
-export async function getStudents() {
-  return db.getStudents();
+export async function getStudents(school?: string) {
+  return db.getStudents(school);
 }
 
 export async function addStudent(studentData: any) {

@@ -140,8 +140,17 @@ async function deleteSchool(id) {
   await saveData(d);
 }
 
-function getTeachers() {
-  return getData().then(d => d.teachers.sort((a, b) => b.id - a.id));
+/**
+ * @param {string} [school]
+ */
+function getTeachers(school) {
+  return getData().then(d => {
+    let teachers = d.teachers.sort((a, b) => b.id - a.id);
+    if (school) {
+      teachers = teachers.filter(t => t.school === school);
+    }
+    return teachers;
+  });
 }
 
 async function addTeacher(teacherData) {
@@ -177,8 +186,17 @@ async function deleteTeacher(id) {
   await saveData(d);
 }
 
-function getStudents() {
-  return getData().then(d => d.students.sort((a, b) => b.id - a.id));
+/**
+ * @param {string} [school]
+ */
+function getStudents(school) {
+  return getData().then(d => {
+    let students = d.students.sort((a, b) => b.id - a.id);
+    if (school) {
+      students = students.filter(s => s.school === school);
+    }
+    return students;
+  });
 }
 
 async function addStudent(studentData) {

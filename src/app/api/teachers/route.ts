@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 import { getTeachers, addTeacher, updateTeacher, deleteTeacher } from "@/actions/db-actions";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const teachers = await getTeachers();
+    const { searchParams } = new URL(request.url);
+    const school = searchParams.get("school") || undefined;
+    const teachers = await getTeachers(school);
     return NextResponse.json(teachers);
   } catch (error: any) {
     console.error("Error fetching teachers:", error);
