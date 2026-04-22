@@ -592,7 +592,7 @@ const PRIMARY_SUBJECTS = useMemo(() => [
           fetch('/api/weekly-timetable?school=' + encodeURIComponent(parsedStudent.school)),
           fetch('/api/announcements?school=' + encodeURIComponent(parsedStudent.school)),
           fetch('/api/courses?school=' + encodeURIComponent(parsedStudent.school)),
-          fetch('/api/teachers')
+          fetch('/api/teachers?school=' + encodeURIComponent(parsedStudent.school))
         ]);
         
         let hwData = hwRes.ok ? await hwRes.json() : [];
